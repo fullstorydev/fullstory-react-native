@@ -1,0 +1,22 @@
+{
+  "name": "@fullstory/react-native",
+  "version": "0.9.0",
+  "description": "The official FullStory React Native plugin",
+  "repository": "git://github.com/fullstorydev/react-native-fullstory.git",
+  "homepage": "https://github.com/fullstorydev/react-native-fullstory",
+  "author": "FullStory",
+  "license": "MIT",
+  "main": "src/index.js",
+  "keywords": [
+    "react-native",
+    "fullstory"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "react": "^16.12.0",
+    "react-native": "^0.61.5"
+  }
+}

@@ -1,0 +1,75 @@
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+buildscript {
+    /* In case of submodule usage, do not try to apply own repositories and plugins,
+        root project is responsible for that. */
+    if (rootProject.buildDir == project.buildDir) {
+        repositories {
+            google()
+            jcenter()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.4.1'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion safeExtGet('compileSdkVersion', 28)
+    buildToolsVersion safeExtGet('buildToolsVersion', '28.0.3')
+
+    defaultConfig {
+        minSdkVersion safeExtGet('minSdkVersion', 16)
+        targetSdkVersion safeExtGet('targetSdkVersion', 28)
+
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    google()
+    jcenter()
+    mavenLocal()
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        url "$rootDir/../node_modules/react-native/android"
+    }
+}
+
+def rootScriptClassPathFiles = rootProject.buildscript.getScriptClassPath().getAsFiles()
+String searchString = 'gradle-plugin-local-'
+String fsDetectedVersion = null
+for (File file : rootScriptClassPathFiles) {
+    int lastIndex = file.name.lastIndexOf(searchString)
+    if (lastIndex < 0) {
+        continue
+    }
+
+    if (!file.name.endsWith('.jar')) {
+        continue
+    }
+
+    int endIndex = file.name.length() - 4
+    int startIndex = lastIndex + searchString.length()
+    fsDetectedVersion = file.name.substring(startIndex, endIndex)
+    break
+}
+
+if (fsDetectedVersion == null) {
+    throw new GradleException('Unable to determine FullStory version, please verify your root build file is properly configured')
+}
+
+dependencies {
+    implementation "com.android.support:support-v4:${safeExtGet('supportLibVersion', '27.+')}"
+    api "com.facebook.react:react-native:${safeExtGet('reactNative', '+')}"
+    implementation "com.fullstory:instrumentation-full:$fsDetectedVersion@aar"
+}
