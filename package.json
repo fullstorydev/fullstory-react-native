@@ -11,6 +11,9 @@
     "react-native",
     "fullstory"
   ],
+  "dependencies": {
+    "@fullstory/babel-plugin-react-native": "*"
+  },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
