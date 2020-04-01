@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/fullstorydev/fullstory-react-native.svg?style=svg)](https://circleci.com/gh/fullstorydev/fullstory-react-native)
 
+## Note: This is a Work in Progress and has yet to be published to NPM.
+
 FullStory's React Native plugin exposes access to the FullStory Native Mobile SDK from within a React Native app. More information about the FullStory API can be found at https://developer.fullstory.com.
 
 
@@ -17,6 +19,9 @@ npm i @fullstory/react-native --save
 ```
 yarn add @fullstory/react-native
 ```
+
+## Configuring the babel plugin
+`@fullstory/babel-plugin-react-native` is automatically included as a dependency to the FullStory React Native plugin. Please refer to the babel plugin's [README.md](https://github.com/fullstorydev/fullstory-babel-plugin-react-native/blob/master/README.md) for information on how to configure it.
 
 ## Importing the React Native plugin
 
