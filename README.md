@@ -2,8 +2,6 @@
 
 [![CircleCI](https://circleci.com/gh/fullstorydev/fullstory-react-native.svg?style=svg)](https://circleci.com/gh/fullstorydev/fullstory-react-native)
 
-## Note: This is a Work in Progress and has yet to be published to NPM.
-
 FullStory's React Native plugin exposes access to the FullStory Native Mobile SDK from within a React Native app. More information about the FullStory API can be found at https://developer.fullstory.com.
 
 
