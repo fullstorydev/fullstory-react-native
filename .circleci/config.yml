@@ -1,0 +1,53 @@
+version: 2.1
+executors:
+  browser-executor:
+    docker:
+      - image: circleci/node:12-browsers
+    working_directory: ~/repo
+jobs:
+  build-react-native:
+    executor: browser-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Install
+          command: npm ci
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Audit
+          command: npm audit --audit-level=low
+      - persist_to_workspace:
+          root: .
+          paths: .
+  deploy-react-native:
+    executor: browser-executor
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
+      - run:
+          name: Publish package
+          command: npm publish --access public
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - build-react-native
+      - hold:
+          type: approval
+          requires:
+            - build-react-native
+          filters:
+            branches:
+              only: "master"
+      - deploy-react-native:
+          requires:
+            - hold
