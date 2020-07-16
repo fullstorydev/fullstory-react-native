@@ -15,6 +15,7 @@ public class FullStoryNativeProps {
         // prevent instantiation
     }
 
+    @NativeProp(name="fsAttribute")
     public static void set_fsAttribute(View view, ReadableMap fsAttributes) {
         // TODO: remove any attributes that were previously added
 
@@ -39,6 +40,7 @@ public class FullStoryNativeProps {
         }
     }
 
+    @NativeProp(name="fsClass")
     public static void set_fsClass(View view, String fsClass) {
         // TODO: remove any classes that were previously added
 
@@ -61,18 +63,22 @@ public class FullStoryNativeProps {
         }
     }
 
+    @NativeProp(name="fsTagName")
     public static void set_fsTagName(View view, String fsTagName) {
         FS.setTagName(view, fsTagName);
     }
 
+    @NativeProp(name="dataComponent")
     public static void set_dataComponent(View view, String value) {
         setElementIdentity(view, "data-component", value);
     }
 
+    @NativeProp(name="dataElement")
     public static void set_dataElement(View view, String value) {
         setElementIdentity(view, "data-element", value);
     }
 
+    @NativeProp(name="dataSourceFile")
     public static void set_dataSourceFile(View view, String value) {
         setElementIdentity(view, "data-source-file", value);
     }
