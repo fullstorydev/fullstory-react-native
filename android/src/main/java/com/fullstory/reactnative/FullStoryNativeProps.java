@@ -17,8 +17,6 @@ public class FullStoryNativeProps {
 
     @NativeProp(name="fsAttribute")
     public static void set_fsAttribute(View view, ReadableMap fsAttributes) {
-        // TODO: remove any attributes that were previously added
-
         if (fsAttributes == null) {
             return;
         }
@@ -42,8 +40,6 @@ public class FullStoryNativeProps {
 
     @NativeProp(name="fsClass")
     public static void set_fsClass(View view, String fsClass) {
-        // TODO: remove any classes that were previously added
-
         if (fsClass == null) {
             // nothing to do
             return;
