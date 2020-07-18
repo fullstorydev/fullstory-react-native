@@ -1,7 +1,9 @@
 #import "FullStory.h"
 
 
-@implementation FullStory
+@implementation FullStory {
+	RCTPromiseResolveBlock onReadyPromise;
+}
 
 RCT_EXPORT_MODULE()
 
@@ -67,4 +69,30 @@ RCT_EXPORT_METHOD(restart)
 		[FS restart];
 	});
 }
+
+- (void) fullstoryDidStartSession:(NSString *)sessionUrl {
+	if (!onReadyPromise)
+		return;
+
+	NSMutableDictionary *dict = [NSMutableDictionary new];
+	dict[@"replayStartUrl"] = sessionUrl;
+	dict[@"replayNowUrl"] = [FS currentSessionURL: true];
+	dict[@"sessionId"] = FS.currentSession;
+	onReadyPromise(dict);
+
+	onReadyPromise = nil;
+}
+
+RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+	onReadyPromise = resolve;
+	FS.delegate = self;
+
+	if (FS.currentSessionURL) {
+		/* If we already have a session running, fire the promise
+		 * immediately. */
+		[self fullstoryDidStartSession:FS.currentSessionURL];
+	}
+}
+
 @end
