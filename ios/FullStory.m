@@ -1,5 +1,6 @@
 #import "FullStory.h"
-
+#import <React/RCTView.h>
+#import <React/RCTViewManager.h>
 
 @implementation FullStory {
 	RCTPromiseResolveBlock onReadyPromise;
@@ -93,6 +94,44 @@ RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve re
 		 * immediately. */
 		[self fullstoryDidStartSession:FS.currentSessionURL];
 	}
+}
+
+@end
+
+@implementation RCTViewManager (FullStory)
+
++ (NSArray<NSString *> *) propConfig_fsClass {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_fsClass:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	NSArray <NSString *>* classes = [(NSString *)json componentsSeparatedByString: @","];
+	[FS removeAllClasses:view];
+	[FS addClasses:view classNames:classes];
+}
+
++ (NSArray<NSString *> *) propConfig_dataComponent {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_dataComponent:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setAttribute:view attributeName:@"data-component" attributeValue:(NSString *)json];
+}
+
++ (NSArray<NSString *> *) propConfig_dataElement {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_dataElement:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setAttribute:view attributeName:@"data-element" attributeValue:(NSString *)json];
+}
+
++ (NSArray<NSString *> *) propConfig_dataSourceFile {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_dataSourceFile:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setAttribute:view attributeName:@"data-source-file" attributeValue:(NSString *)json];
 }
 
 @end
