@@ -1,5 +1,9 @@
 #import "FullStory.h"
 
+#import <objc/runtime.h>
+
+#import <React/RCTView.h>
+#import <React/RCTViewManager.h>
 
 @implementation FullStory {
 	RCTPromiseResolveBlock onReadyPromise;
@@ -93,6 +97,82 @@ RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve re
 		 * immediately. */
 		[self fullstoryDidStartSession:FS.currentSessionURL];
 	}
+}
+
+@end
+
+static const char *_rctview_previous_attributes_key = "associated_object_rctview_previous_attributes_key";
+
+@implementation RCTViewManager (FullStory)
+
++ (NSArray<NSString *> *) propConfig_fsClass {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_fsClass:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	NSArray <NSString *>* classes = [(NSString *)json componentsSeparatedByString: @","];
+	[FS removeAllClasses:view];
+	[FS addClasses:view classNames:classes];
+}
+
++ (NSArray<NSString *> *) propConfig_dataComponent {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_dataComponent:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setAttribute:view attributeName:@"data-component" attributeValue:(NSString *)json];
+}
+
++ (NSArray<NSString *> *) propConfig_dataElement {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_dataElement:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setAttribute:view attributeName:@"data-element" attributeValue:(NSString *)json];
+}
+
++ (NSArray<NSString *> *) propConfig_dataSourceFile {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_dataSourceFile:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setAttribute:view attributeName:@"data-source-file" attributeValue:(NSString *)json];
+}
+
++ (NSArray<NSString *> *) propConfig_fsTagName {
+	return @[@"NSString *", @"__custom__"];
+}
+
+- (void) set_fsTagName:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	[FS setTagName:view tagName:(NSString *)json];
+}
+
++ (NSArray<NSString *> *) propConfig_fsAttribute {
+	return @[@"NSDictionary *", @"__custom__"];
+}
+
+- (void) set_fsAttribute:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
+	NSDictionary *newAttrs = (NSDictionary *)json;
+	
+	/* Clear up all the old attributes first, if they exist. */
+	NSSet *oldAttrs = objc_getAssociatedObject(view, _rctview_previous_attributes_key);
+	if (oldAttrs) {
+		for (NSString *attr in oldAttrs) {
+			[FS removeAttribute:view attributeName:attr];
+		}
+	}
+	
+	/* Load in the new attributes. */
+	NSMutableSet *newAttrSet = [NSMutableSet new];
+	if (newAttrs) {
+		for (NSString *attr in newAttrs) {
+			[FS setAttribute:view attributeName:attr attributeValue:(NSString *)newAttrs[attr]];
+			[newAttrSet addObject:attr];
+		}
+	}
+	
+	/* And set them up for cleanup next time. */
+	objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
 }
 
 @end
