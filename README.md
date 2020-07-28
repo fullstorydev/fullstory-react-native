@@ -56,10 +56,53 @@ FullStory.event('Subscribed', {
 });
 ```
 
+### Getting a callback once a session is created
+
+```JavaScript
+FullStory.onReady().then(function(result) {
+    const replayStartUrl = result.replayStartUrl;
+    const replayNowUrl = result.replayNowUrl;
+    const sessionId = result.sessionId;
+  });
+```
+
 ### Generating a session replay link
 
 ```JavaScript
 FullStory.getCurrentSessionURL().then(function(result) {
   const startOfPlayback = result;
 });
+```
+
+### Using the `fsAttribute` property
+Instead of setting attributes via an FS API method, use the `fsAttribute` property that FullStory's babel plugin adds to every React Native `View`.
+
+More information can be found [here](https://help.fullstory.com/hc/en-us/articles/360043356573-FullStory-for-Mobile-Apps-Privacy-Rules#fs-setattribute).
+
+```JavaScript
+<Text fsAttribute={{custom_attr1: 'custom_value1', custom_attr2: 'custom_value2'}}>Text element with custom attributes</Text>
+```
+
+### Using the `fsClass` property
+Instead of adding and removing classes via an FS API method, use the `fsClass` property that FullStory's babel plugin adds to every React Native `View`.
+
+The 6 built-in `fsClass` string values are:
+* "fs-exclude"
+* "fs-exclude-without-consent"
+* "fs-mask"
+* "fs-mask-without-consent"
+* "fs-unmask"
+* "fs-unmask-with-consent"
+
+More information can be found in the table at the end of [this section](https://help.fullstory.com/hc/en-us/articles/360043356573-FullStory-for-Mobile-Apps-Privacy-Rules#fs-setattribute).
+
+```JavaScript
+<Text fsClass="fs-unmask">Text element that is unmasked</Text>
+```
+
+### Using the `fsTagName` property
+Instead of setting the tag name via an FS API method, use the `fsTagName` property that FullStory's babel plugin adds to every React Native `View`.
+
+```JavaScript
+<Text fsTagName="custom-tag-name">Text element with a custom tag name</Text>
 ```
