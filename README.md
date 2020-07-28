@@ -77,8 +77,6 @@ FullStory.getCurrentSessionURL().then(function(result) {
 ### Using the `fsAttribute` property
 Instead of setting attributes via an FS API method, use the `fsAttribute` property that FullStory's babel plugin adds to every React Native `View`.
 
-More information can be found [here](https://help.fullstory.com/hc/en-us/articles/360043356573-FullStory-for-Mobile-Apps-Privacy-Rules#fs-setattribute).
-
 ```JavaScript
 <Text fsAttribute={{custom_attr1: 'custom_value1', custom_attr2: 'custom_value2'}}>Text element with custom attributes</Text>
 ```
@@ -93,8 +91,6 @@ The 6 built-in `fsClass` string values are:
 * "fs-mask-without-consent"
 * "fs-unmask"
 * "fs-unmask-with-consent"
-
-More information can be found in the table at the end of [this section](https://help.fullstory.com/hc/en-us/articles/360043356573-FullStory-for-Mobile-Apps-Privacy-Rules#fs-setattribute).
 
 ```JavaScript
 <Text fsClass="fs-unmask">Text element that is unmasked</Text>
