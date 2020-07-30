@@ -1,9 +1,15 @@
 # Changelog
 
+## 0.9.4
+
+Added support for the `onReady` method
+Added support for `fsAttribute`, `fsTagName`, `data-component`, `data-element`, and `data-source-file`
+Move the NativeProps hooking to this plug-in
+
 ## 0.9.3
 
-Adds README information about the private beta
-Requires at least `react-native` version `0.61.0`
+Added README information about the private beta
+Require at least `react-native` version `0.61.0`
 
 ## 0.9.2
 
