@@ -4,6 +4,9 @@
 
 #import <React/RCTView.h>
 #import <React/RCTViewManager.h>
+#import <React/RCTComponentData.h>
+
+#import "FSReactSwizzle.h"
 
 @implementation FullStory {
 	RCTPromiseResolveBlock onReadyPromise;
@@ -175,4 +178,27 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 	objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
 }
 
+@end
+
+@interface FSReactSwizzleBootstrap : NSObject
+@end
+
+@implementation FSReactSwizzleBootstrap
++ (void) load {
+	/* class_copyMethodList in RCTComponentData's lookup of NativeProps
+	 * can't see the propConfigs that we create in the superclass.  So
+	 * we swizzle that to inject our NativeProps directly in there, so
+	 * UniModules knows to pass them through.
+	 */
+	SWIZZLE_BEGIN_INSTANCE(RCTComponentData, @selector(viewConfig), NSDictionary *) {
+		NSDictionary<NSString *, id> *r = SWIZZLED_METHOD();
+		r[@"propTypes"][@"fsClass"] = @"NSString *";
+		r[@"propTypes"][@"dataComponent"] = @"NSString *";
+		r[@"propTypes"][@"dataElement"] = @"NSString *";
+		r[@"propTypes"][@"dataSourceFile"] = @"NSString *";
+		r[@"propTypes"][@"fsTagName"] = @"NSString *";
+		r[@"propTypes"][@"fsAttribute"] = @"NSDictionary *";
+		return r;
+	} SWIZZLE_END;
+}
 @end
