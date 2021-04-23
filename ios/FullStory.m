@@ -113,6 +113,13 @@ RCT_EXPORT_METHOD(log:(nonnull NSNumber *)level message:(NSString *)message)
 	});
 }
 
+RCT_EXPORT_METHOD(resetIdleTimer)
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[FS resetIdleTimer];
+	});
+}
+
 - (void) fullstoryDidStartSession:(NSString *)sessionUrl {
 	if (!onReadyPromise)
 		return;
