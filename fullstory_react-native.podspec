@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "FullStory"
+  s.dependency "FullStory", "~> 1.14"
   # ...
   # s.dependency "..."
 end

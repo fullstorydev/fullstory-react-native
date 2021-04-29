@@ -115,6 +115,11 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
         FS.restart();
     }
 
+    @ReactMethod
+    public static void resetIdleTimer() {
+        FS.resetIdleTimer();
+    }
+
     private static Map toMap(ReadableMap map) {
         if (map == null) {
             return null;
