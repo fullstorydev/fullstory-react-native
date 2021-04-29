@@ -70,6 +70,18 @@ if (fsDetectedVersion == null) {
     throw new GradleException('Unable to determine FullStory version, please verify your root build file is properly configured')
 }
 
+def versionRegex = /(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/
+def match = fsDetectedVersion =~ versionRegex
+if (match.matches()) {
+    def major = match.group('major') as Integer
+    def minor = match.group('minor') as Integer
+    if (major < 1 || (major == 1 && minor < 14)) {
+        throw new GradleException("FullStory SDK version 1.14.0 or later is required, but version $fsDetectedVersion was detected. Please update to a newer version of FullStory.")
+    }
+} else {
+    throw new GradleException('Unable to determine FullStory version, please verify your root build file is properly configured')
+}
+
 dependencies {
     implementation "com.android.support:support-v4:${safeExtGet('supportLibVersion', '27.+')}"
     api "com.facebook.react:react-native:${safeExtGet('reactNative', '+')}"
