@@ -12,8 +12,8 @@
     "fullstory"
   ],
   "dependencies": {
-    "@fullstory/babel-plugin-annotate-react": ">=2.0.0",
-    "@fullstory/babel-plugin-react-native": ">=1.0.0"
+    "@fullstory/babel-plugin-annotate-react": "^2.0.0",
+    "@fullstory/babel-plugin-react-native": "^1.0.0"
   },
   "peerDependencies": {
     "react": "*",
