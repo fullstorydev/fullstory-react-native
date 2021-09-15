@@ -1,6 +1,6 @@
 {
   "name": "@fullstory/react-native",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The official FullStory React Native plugin",
   "repository": "git://github.com/fullstorydev/fullstory-react-native.git",
   "homepage": "https://github.com/fullstorydev/fullstory-react-native",
@@ -17,6 +17,6 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "^0.61.0"
+    "react-native": ">=0.61.0"
   }
 }
