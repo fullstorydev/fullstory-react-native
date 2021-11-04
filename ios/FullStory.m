@@ -86,29 +86,27 @@ RCT_EXPORT_METHOD(log:(nonnull NSNumber *)level message:(NSString *)message)
 	// Warn   = 3,
 	// Error  = 4,
 	// Assert = 5, // Clamps to Error on Android
-	NSNumber *levelNumber;
+	FSEventLogLevel levelValue;
 	switch (level.intValue) {
 		case 0:
 		case 1:
-			levelNumber = @(FSLOG_DEBUG);
+			levelValue = FSLOG_DEBUG;
 			break;
 		case 3:
-			levelNumber = @(FSLOG_WARNING);
+			levelValue = FSLOG_WARNING;
 			break;
 		case 4:
-			levelNumber = @(FSLOG_ERROR);
+			levelValue = FSLOG_ERROR;
 			break;
 		case 5:
-			levelNumber = @(FSLOG_ASSERT);
+			levelValue = FSLOG_ASSERT;
 			break;
 		case 2:
 		default:
 			// default to INFO
-			levelNumber = @(FSLOG_INFO);
+			levelValue = FSLOG_INFO;
 		break;
 	}
-
-	FSEventLogLevel levelValue = (FSEventLogLevel)levelNumber.unsignedCharValue;
 
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[FS logWithLevel:levelValue message:message];
