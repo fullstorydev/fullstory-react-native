@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+Added the ability to invoke the `log` API from within React Native. See more information [here](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-FullStory-React-Native-Recording#01FM34C43RGW28NMC8PDWC7EZB)
+
 ## 1.0.2
 
 Changed how the peer dependency for React Native is declared to better handle strict dependency checking
