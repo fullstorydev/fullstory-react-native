@@ -77,6 +77,42 @@ RCT_EXPORT_METHOD(restart)
 	});
 }
 
+RCT_EXPORT_METHOD(log:(nonnull NSNumber *)level message:(NSString *)message)
+{
+	// React Native LogLevels:
+	// Log    = 0, // Clamps to Debug on iOS
+	// Debug  = 1,
+	// Info   = 2, // Default
+	// Warn   = 3,
+	// Error  = 4,
+	// Assert = 5, // Clamps to Error on Android
+	FSEventLogLevel levelValue;
+	switch (level.intValue) {
+		case 0:
+		case 1:
+			levelValue = FSLOG_DEBUG;
+			break;
+		case 3:
+			levelValue = FSLOG_WARNING;
+			break;
+		case 4:
+			levelValue = FSLOG_ERROR;
+			break;
+		case 5:
+			levelValue = FSLOG_ASSERT;
+			break;
+		case 2:
+		default:
+			// default to INFO
+			levelValue = FSLOG_INFO;
+		break;
+	}
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[FS logWithLevel:levelValue message:message];
+	});
+}
+
 - (void) fullstoryDidStartSession:(NSString *)sessionUrl {
 	if (!onReadyPromise)
 		return;

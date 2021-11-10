@@ -115,6 +115,43 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
         FS.restart();
     }
 
+    @ReactMethod
+    public static void log(double level, String message) {
+        // Convert the double to an int
+        int intLevel = Double.valueOf(level).intValue();
+        // React Native LogLevels:
+        // Log    = 0, // Clamps to Debug on iOS
+        // Debug  = 1,
+        // Info   = 2, // Default
+        // Warn   = 3,
+        // Error  = 4,
+        // Assert = 5, // Clamps to Error on Android
+        FS.LogLevel actualLevel;
+        switch (intLevel) {
+            case 0:
+                actualLevel = FS.LogLevel.LOG;
+                break;
+            case 1:
+                actualLevel = FS.LogLevel.DEBUG;
+                break;
+            case 3:
+                actualLevel = FS.LogLevel.WARN;
+                break;
+            case 4:
+            case 5:
+                actualLevel = FS.LogLevel.ERROR;
+                break;
+            case 2:
+            default:
+                // default to INFO
+                actualLevel = FS.LogLevel.INFO;
+            break;
+        }
+
+        // Call through to FS.log with the enum
+        FS.log(actualLevel, message);
+    }
+
     private static Map toMap(ReadableMap map) {
         if (map == null) {
             return null;
