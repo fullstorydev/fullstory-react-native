@@ -4,7 +4,7 @@
 
 FullStory's React Native plugin exposes access to the FullStory Native Mobile SDK from within a React Native app. More information about the FullStory API can be found at https://developer.fullstory.com.
 
-This plug-in is intended to be used in conjunction with [FullStory for Mobile Apps](https://www.fullstory.com/mobile-apps/). For more information, please see [this](https://help.fullstory.com/hc/en-us/articles/360052419133) getting started guide.
+This plug-in is intended to be used in conjunction with [FullStory for Mobile Apps](https://www.fullstory.com/mobile-apps/). For more information, please see [this](https://help.fullstory.com/hc/en-us/articles/360052419133) getting started guide. Email mobile-support@fullstory.com for additional help.
 
 ## Install the React Native plugin
 
