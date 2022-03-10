@@ -43,3 +43,6 @@ android/local.properties
 captures/
 .externalNativeBuild
 .project
+
+# Allow for types
+!index.d.ts
