@@ -18,7 +18,7 @@ export const LogLevel = {
 };
 
 interface FullStoryInterface {
-  LogLevel: LogLevel;
+  LogLevel: typeof LogLevel;
   anonymize(): void;
   identify(string, Object): void;
   setUserVars(Object): void;
