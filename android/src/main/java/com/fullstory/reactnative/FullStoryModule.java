@@ -36,7 +36,7 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void identify(String userId, ReadableMap userVars) {
+    public static void identify(String userId, ReadableMap userVars) {
         FS.identify(userId, toMap(userVars));
     }
 
