@@ -32,4 +32,14 @@ interface FullStoryInterface {
   log(number, string): void;
 }
 
+declare global {
+  namespace JSX {
+    interface IntrinsicAttributes {
+      fsAttribute?: {[key: string]: string};
+      fsClass?: string;
+      fsTagName?: string;
+    }
+  }
+}
+
 export default FullStory as FullStoryInterface;
