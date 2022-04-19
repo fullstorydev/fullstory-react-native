@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+Updated the minimum versions for the FullStory babel plugins. Added a Typescript declaration for the FullStory base attributes. Added Typescript declarations for the FullStory API.
+
 ## 1.0.3
 
 Added the ability to invoke the `log` API from within React Native. See more information [here](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-FullStory-React-Native-Recording#01FM34C43RGW28NMC8PDWC7EZB)
