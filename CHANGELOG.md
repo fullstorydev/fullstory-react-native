@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.5
+Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to 1.0.2, to better work around metro server issues.
+
 ## 1.0.4
 Updated the minimum versions for the FullStory babel plugins. Added a Typescript declaration for the FullStory base attributes. Added Typescript declarations for the FullStory API.
 
