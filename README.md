@@ -2,9 +2,13 @@
 
 [![CircleCI](https://circleci.com/gh/fullstorydev/fullstory-react-native.svg?style=svg)](https://circleci.com/gh/fullstorydev/fullstory-react-native)
 
-FullStory's React Native plugin exposes access to the FullStory Native Mobile SDK from within a React Native app. This plug-in is intended to be used in conjunction with [FullStory for Mobile Apps](https://www.fullstory.com/mobile-apps/) for iOS and/or Android.
+FullStory's React Native plugin exposes access to the FullStory Native Mobile SDK from within a React Native app. This plug-in is intended to be used in conjunction with [FullStory for Mobile Apps](https://www.fullstory.com/mobile-apps/).
 
-This plug-in is intended to be used in conjunction with [FullStory for Mobile Apps](https://www.fullstory.com/mobile-apps/). For more information, please see this [getting started guide](https://help.fullstory.com/hc/en-us/articles/360052419133). Email mobile-support@fullstory.com for additional help.
+## Quick Links
+
+- [FullStory API](https://developer.fullstory.com)
+- [Getting Started Guide](https://help.fullstory.com/hc/en-us/articles/360052419133)
+- [Email us](mailto:mobile-support@fullstory.com)
 
 ## Install the React Native plugin
 
