@@ -18,13 +18,8 @@ const withPermissionsDelegate = (config) => {
   ]);
 };
 
-const withProjectGradleDelegate = (config) => {
+const withProjectGradleDelegate = (config, { version }) => {
   const addFullStoryMavenRepo = (projectBuildGradle) => {
-    if (
-      projectBuildGradle.includes("maven { url 'https://maven.fullstory.com' }")
-    )
-      return projectBuildGradle;
-
     return mergeContents({
       tag: `@fullstory/react-native repositories`,
       src: projectBuildGradle,
@@ -36,13 +31,10 @@ const withProjectGradleDelegate = (config) => {
   };
 
   const addFullStoryProjectDependency = (projectBuildGradle) => {
-    if (projectBuildGradle.includes("com.fullstory:gradle-plugin-local:1.27.1"))
-      return projectBuildGradle;
-
     return mergeContents({
       tag: `@fullstory/react-native dependencies`,
       src: projectBuildGradle,
-      newSrc: "classpath 'com.fullstory:gradle-plugin-local:1.27.1'",
+      newSrc: `classpath 'com.fullstory:gradle-plugin-local:${version}'`,
       anchor: /dependencies/,
       offset: 1,
       comment: "//",
@@ -64,22 +56,21 @@ const withProjectGradleDelegate = (config) => {
   });
 };
 
-const withAppBuildGradleDelegate = (config) => {
+const withAppBuildGradleDelegate = (
+  config,
+  { org, host, logLevel, enabledVariants }
+) => {
   const addFullStoryGradlePlugin = (appBuildGradle) => {
-    if (appBuildGradle.includes("apply plugin: 'fullstory'"))
-      return appBuildGradle;
-
     return mergeContents({
       tag: `@fullstory/react-native plugin`,
       src: appBuildGradle,
       newSrc: `apply plugin: 'fullstory'
-        
-            fullstory {
-                org 'KWH'
-                server 'https://staging.fullstory.com'
-                logLevel 'log'
-                enabledVariants 'all'
-            }`,
+        fullstory {
+            org '${org}'
+            server ${host ? `'https://${host}'` : ""}
+            logLevel '${logLevel}'
+            enabledVariants '${enabledVariants}'
+        }`,
       anchor: /./,
       offset: 1,
       comment: "//",
@@ -100,10 +91,10 @@ const withAppBuildGradleDelegate = (config) => {
   });
 };
 
-module.exports = (config) => {
+module.exports = (config, pluginConfigs) => {
   return withPlugins(config, [
-    [withProjectGradleDelegate],
-    [withAppBuildGradleDelegate],
+    [withProjectGradleDelegate, pluginConfigs],
+    [withAppBuildGradleDelegate, pluginConfigs],
     [withPermissionsDelegate],
   ]);
 };

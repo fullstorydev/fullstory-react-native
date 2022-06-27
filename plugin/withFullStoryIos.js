@@ -18,11 +18,11 @@ async function saveFileAsync(path, content) {
   return fs.promises.writeFile(path, content, "utf8");
 }
 
-const withInfoPlistDelegate = (config) =>
+const withInfoPlistDelegate = (config, { org, host }) =>
   withInfoPlist(config, (config) => {
     config.modResults.FullStory = {
-      OrgId: "KWH",
-      Host: "staging.fullstory.com",
+      OrgId: org,
+      Host: host,
     };
     return config;
   });
@@ -54,7 +54,7 @@ const withBuildPhaseDelegate = (config) =>
     return config;
   });
 
-const withPodfileDelegate = (config) =>
+const withPodfileDelegate = (config, { version }) =>
   withDangerousMod(config, [
     "ios",
     async (config) => {
@@ -62,8 +62,7 @@ const withPodfileDelegate = (config) =>
         return mergeContents({
           tag: "@fullstory/react-native",
           src,
-          newSrc:
-            "pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-1.27.1-xcframework.tar.gz'",
+          newSrc: `pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-${version}-xcframework.tar.gz'`,
           anchor: /use_expo_modules!/,
           offset: 0,
           comment: "#",
@@ -77,10 +76,10 @@ const withPodfileDelegate = (config) =>
     },
   ]);
 
-module.exports = (config) => {
+module.exports = (config, pluginConfigs) => {
   return withPlugins(config, [
-    [withInfoPlistDelegate],
-    [withPodfileDelegate],
+    [withInfoPlistDelegate, pluginConfigs],
+    [withPodfileDelegate, pluginConfigs],
     [withBuildPhaseDelegate],
   ]);
 };
