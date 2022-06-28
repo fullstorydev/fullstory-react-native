@@ -43,11 +43,9 @@ const withProjectGradleDelegate = (config, { version }) => {
 
   return withProjectBuildGradle(config, ({ modResults, ...config }) => {
     if (modResults.language !== "groovy") {
-      WarningAggregator.addWarningAndroid(
-        "withFullStory",
-        "Cannot automatically configure app build.gradle if it's not groovy"
+      throw new Error(
+        "Cannot configure FullStory in the project gradle because the file is not groovy."
       );
-      return { modResults, ...config };
     }
 
     modResults.contents = addFullStoryProjectDependency(modResults.contents);
@@ -79,11 +77,9 @@ const withAppBuildGradleDelegate = (
 
   return withAppBuildGradle(config, ({ modResults, ...config }) => {
     if (modResults.language !== "groovy") {
-      WarningAggregator.addWarningAndroid(
-        "withFullStory",
-        `Cannot automatically configure app build.gradle if it's not groovy`
+      throw new Error(
+        "Cannot configure FullStory in the app gradle because the file is not groovy."
       );
-      return { modResults, ...config };
     }
 
     modResults.contents = addFullStoryGradlePlugin(modResults.contents);

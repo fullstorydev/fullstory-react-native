@@ -6,7 +6,7 @@ const { FULLSTORY_DEFAULT_VERSION } = require("./constants");
 
 const pkg = require("../package.json");
 
-const withFullStory = (config, pluginConfigs) => {
+const withFullStory = (config, pluginConfigs = {}) => {
   const { org, version } = pluginConfigs;
 
   if (!org) {
