@@ -1,24 +1,29 @@
-const {
+import {
   withDangerousMod,
   withPlugins,
   withXcodeProject,
   withInfoPlist,
-} = require("@expo/config-plugins");
-const {
-  mergeContents,
-} = require("@expo/config-plugins/build/utils/generateCode");
+  ConfigPlugin,
+} from "@expo/config-plugins";
+import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
+
+import { FullStoryPluginProps } from ".";
+
 const fs = require("fs");
 const path = require("path");
 
-async function readFileAsync(path) {
+async function readFileAsync(path: string) {
   return fs.promises.readFile(path, "utf8");
 }
 
-async function saveFileAsync(path, content) {
+async function saveFileAsync(path: string, content: string) {
   return fs.promises.writeFile(path, content, "utf8");
 }
 
-const withInfoPlistDelegate = (config, { org, host }) =>
+const withInfoPlistDelegate: ConfigPlugin<FullStoryPluginProps> = (
+  config,
+  { org, host }
+) =>
   withInfoPlist(config, (config) => {
     config.modResults.FullStory = {
       OrgId: org,
@@ -27,7 +32,7 @@ const withInfoPlistDelegate = (config, { org, host }) =>
     return config;
   });
 
-const withBuildPhaseDelegate = (config) =>
+const withBuildPhaseDelegate: ConfigPlugin = (config) =>
   withXcodeProject(config, (config) => {
     const xcodeProject = config.modResults;
 
@@ -54,11 +59,14 @@ const withBuildPhaseDelegate = (config) =>
     return config;
   });
 
-const withPodfileDelegate = (config, { version }) =>
+const withPodfileDelegate: ConfigPlugin<FullStoryPluginProps> = (
+  config,
+  { version }
+) =>
   withDangerousMod(config, [
     "ios",
     async (config) => {
-      function addFullStoryToPodfile(src) {
+      function addFullStoryToPodfile(src: string) {
         return mergeContents({
           tag: "@fullstory/react-native",
           src,
@@ -76,10 +84,15 @@ const withPodfileDelegate = (config, { version }) =>
     },
   ]);
 
-module.exports = (config, pluginConfigs) => {
+const withFullStoryIos: ConfigPlugin<FullStoryPluginProps> = (
+  config,
+  pluginConfigs
+) => {
   return withPlugins(config, [
     [withInfoPlistDelegate, pluginConfigs],
     [withPodfileDelegate, pluginConfigs],
-    [withBuildPhaseDelegate],
+    withBuildPhaseDelegate,
   ]);
 };
+
+export default withFullStoryIos;

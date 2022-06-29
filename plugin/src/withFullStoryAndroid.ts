@@ -1,25 +1,28 @@
-const {
+import {
   withPlugins,
   withProjectBuildGradle,
   withAppBuildGradle,
   AndroidConfig,
-} = require("@expo/config-plugins");
+  ConfigPlugin,
+} from "@expo/config-plugins";
+import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
 
-const {
-  mergeContents,
-} = require("@expo/config-plugins/build/utils/generateCode");
+import { FullStoryPluginProps } from ".";
 
 const { withPermissions } = AndroidConfig.Permissions;
 
-const withPermissionsDelegate = (config) => {
+const withPermissionsDelegate: ConfigPlugin = (config) => {
   return withPermissions(config, [
     "android.permission.INTERNET",
     "android.permission.ACCESS_NETWORK_STATE",
   ]);
 };
 
-const withProjectGradleDelegate = (config, { version }) => {
-  const addFullStoryMavenRepo = (projectBuildGradle) => {
+const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
+  config,
+  { version }
+) => {
+  const addFullStoryMavenRepo = (projectBuildGradle: string) => {
     return mergeContents({
       tag: `@fullstory/react-native repositories`,
       src: projectBuildGradle,
@@ -30,7 +33,7 @@ const withProjectGradleDelegate = (config, { version }) => {
     }).contents;
   };
 
-  const addFullStoryProjectDependency = (projectBuildGradle) => {
+  const addFullStoryProjectDependency = (projectBuildGradle: string) => {
     return mergeContents({
       tag: `@fullstory/react-native dependencies`,
       src: projectBuildGradle,
@@ -54,11 +57,11 @@ const withProjectGradleDelegate = (config, { version }) => {
   });
 };
 
-const withAppBuildGradleDelegate = (
+const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
   config,
   { org, host, logLevel, enabledVariants }
 ) => {
-  const addFullStoryGradlePlugin = (appBuildGradle) => {
+  const addFullStoryGradlePlugin = (appBuildGradle: string) => {
     return mergeContents({
       tag: `@fullstory/react-native plugin`,
       src: appBuildGradle,
@@ -66,8 +69,8 @@ const withAppBuildGradleDelegate = (
         fullstory {
             org '${org}'
             server ${host ? `'https://${host}'` : ""}
-            logLevel '${logLevel}'
-            enabledVariants '${enabledVariants}'
+            logLevel '${logLevel || ""}'
+            enabledVariants '${enabledVariants || ""}'
         }`,
       anchor: /./,
       offset: 1,
@@ -87,10 +90,15 @@ const withAppBuildGradleDelegate = (
   });
 };
 
-module.exports = (config, pluginConfigs) => {
+const withFullStoryAndroid: ConfigPlugin<FullStoryPluginProps> = (
+  config,
+  pluginConfigs
+) => {
   return withPlugins(config, [
     [withProjectGradleDelegate, pluginConfigs],
     [withAppBuildGradleDelegate, pluginConfigs],
-    [withPermissionsDelegate],
+    withPermissionsDelegate,
   ]);
 };
+
+export default withFullStoryAndroid;

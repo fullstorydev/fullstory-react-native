@@ -1,1 +1,1 @@
-module.exports = require("./plugin/withFullStory");
+module.exports = require("./plugin/build");
