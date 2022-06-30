@@ -8,6 +8,14 @@
   "license": "MIT",
   "main": "src/index.js",
   "types": "src/index.d.js",
+  "files": [
+    "android",
+    "ios",
+    "plugin/build",
+    "src",
+    "fullstory_react-native.podspec",
+    "app.plugin.js"
+  ],
   "keywords": [
     "react-native",
     "fullstory"
