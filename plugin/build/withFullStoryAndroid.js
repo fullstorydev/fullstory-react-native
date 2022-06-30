@@ -48,8 +48,8 @@ const withAppBuildGradleDelegate = (config, { org, host, logLevel, enabledVarian
         fullstory {
             org '${org}'
             server ${host ? `'https://${host}'` : ""}
-            logLevel '${logLevel || ""}'
-            enabledVariants '${enabledVariants || ""}'
+            logLevel ${logLevel ? `'${logLevel}'` : ""}
+            enabledVariants ${enabledVariants ? `'${enabledVariants}'` : ""}
         }`,
             anchor: /./,
             offset: 1,

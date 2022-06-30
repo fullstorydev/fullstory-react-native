@@ -69,8 +69,8 @@ const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
         fullstory {
             org '${org}'
             server ${host ? `'https://${host}'` : ""}
-            logLevel '${logLevel || ""}'
-            enabledVariants '${enabledVariants || ""}'
+            logLevel ${logLevel ? `'${logLevel}'` : ""}
+            enabledVariants ${enabledVariants ? `'${enabledVariants}'` : ""}
         }`,
       anchor: /./,
       offset: 1,
