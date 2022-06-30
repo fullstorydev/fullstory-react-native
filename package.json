@@ -13,9 +13,8 @@
     "fullstory"
   ],
   "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "test": "expo-module test"
+    "build": "tsc --build ./plugin",
+    "clean": "tsc --build --clean ./plugin"
   },
   "dependencies": {
     "@expo/config-plugins": "^4.1.5",
@@ -27,6 +26,7 @@
     "react-native": ">=0.61.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "@tsconfig/node10": "^1.0.9",
+    "eslint-config-universe": "^11.0.0"
   }
 }
