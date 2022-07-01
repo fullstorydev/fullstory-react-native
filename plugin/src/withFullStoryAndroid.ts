@@ -18,32 +18,35 @@ const withPermissionsDelegate: ConfigPlugin = (config) => {
   ]);
 };
 
+export const addFullStoryMavenRepo = (projectBuildGradle: string) => {
+  return mergeContents({
+    tag: `@fullstory/react-native repositories`,
+    src: projectBuildGradle,
+    newSrc: "maven { url 'https://maven.fullstory.com' }",
+    anchor: /repositories/,
+    offset: 1,
+    comment: "//",
+  }).contents;
+};
+
+export const addFullStoryProjectDependency = (
+  projectBuildGradle: string,
+  version: string
+) => {
+  return mergeContents({
+    tag: `@fullstory/react-native dependencies`,
+    src: projectBuildGradle,
+    newSrc: `classpath 'com.fullstory:gradle-plugin-local:${version}'`,
+    anchor: /dependencies/,
+    offset: 1,
+    comment: "//",
+  }).contents;
+};
+
 const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
   config,
   { version }
 ) => {
-  const addFullStoryMavenRepo = (projectBuildGradle: string) => {
-    return mergeContents({
-      tag: `@fullstory/react-native repositories`,
-      src: projectBuildGradle,
-      newSrc: "maven { url 'https://maven.fullstory.com' }",
-      anchor: /repositories/,
-      offset: 1,
-      comment: "//",
-    }).contents;
-  };
-
-  const addFullStoryProjectDependency = (projectBuildGradle: string) => {
-    return mergeContents({
-      tag: `@fullstory/react-native dependencies`,
-      src: projectBuildGradle,
-      newSrc: `classpath 'com.fullstory:gradle-plugin-local:${version}'`,
-      anchor: /dependencies/,
-      offset: 1,
-      comment: "//",
-    }).contents;
-  };
-
   return withProjectBuildGradle(config, ({ modResults, ...config }) => {
     if (modResults.language !== "groovy") {
       throw new Error(
@@ -51,33 +54,39 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
       );
     }
 
-    modResults.contents = addFullStoryProjectDependency(modResults.contents);
+    modResults.contents = addFullStoryProjectDependency(
+      modResults.contents,
+      version
+    );
     modResults.contents = addFullStoryMavenRepo(modResults.contents);
     return { modResults, ...config };
   });
 };
 
+export const addFullStoryGradlePlugin = (
+  appBuildGradle: string,
+  { org, host, logLevel, enabledVariants }: FullStoryPluginProps
+) => {
+  return mergeContents({
+    tag: `@fullstory/react-native plugin`,
+    src: appBuildGradle,
+    newSrc: `apply plugin: 'fullstory'
+      fullstory {
+          org '${org}'
+          server ${host ? `'https://${host}'` : ""}
+          logLevel ${logLevel ? `'${logLevel}'` : ""}
+          enabledVariants ${enabledVariants ? `'${enabledVariants}'` : ""}
+      }`,
+    anchor: /./,
+    offset: 1,
+    comment: "//",
+  }).contents;
+};
+
 const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
   config,
-  { org, host, logLevel, enabledVariants }
+  pluginConfigs
 ) => {
-  const addFullStoryGradlePlugin = (appBuildGradle: string) => {
-    return mergeContents({
-      tag: `@fullstory/react-native plugin`,
-      src: appBuildGradle,
-      newSrc: `apply plugin: 'fullstory'
-        fullstory {
-            org '${org}'
-            server ${host ? `'https://${host}'` : ""}
-            logLevel ${logLevel ? `'${logLevel}'` : ""}
-            enabledVariants ${enabledVariants ? `'${enabledVariants}'` : ""}
-        }`,
-      anchor: /./,
-      offset: 1,
-      comment: "//",
-    }).contents;
-  };
-
   return withAppBuildGradle(config, ({ modResults, ...config }) => {
     if (modResults.language !== "groovy") {
       throw new Error(
@@ -85,7 +94,10 @@ const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
       );
     }
 
-    modResults.contents = addFullStoryGradlePlugin(modResults.contents);
+    modResults.contents = addFullStoryGradlePlugin(
+      modResults.contents,
+      pluginConfigs
+    );
     return { modResults, ...config };
   });
 };

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.addFullStoryToPodfile = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
 const fs = require("fs");
@@ -29,22 +30,23 @@ const withBuildPhaseDelegate = (config) => (0, config_plugins_1.withXcodeProject
     }
     return config;
 });
+function addFullStoryToPodfile(src, version) {
+    return (0, generateCode_1.mergeContents)({
+        tag: "@fullstory/react-native podfile",
+        src,
+        newSrc: `pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-${version}-xcframework.tar.gz'`,
+        anchor: /use_expo_modules!/,
+        offset: 0,
+        comment: "#",
+    }).contents;
+}
+exports.addFullStoryToPodfile = addFullStoryToPodfile;
 const withPodfileDelegate = (config, { version }) => (0, config_plugins_1.withDangerousMod)(config, [
     "ios",
     async (config) => {
-        function addFullStoryToPodfile(src) {
-            return (0, generateCode_1.mergeContents)({
-                tag: "@fullstory/react-native",
-                src,
-                newSrc: `pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-${version}-xcframework.tar.gz'`,
-                anchor: /use_expo_modules!/,
-                offset: 0,
-                comment: "#",
-            }).contents;
-        }
         const file = path.join(config.modRequest.platformProjectRoot, "Podfile");
         const contents = await readFileAsync(file);
-        await saveFileAsync(file, addFullStoryToPodfile(contents));
+        await saveFileAsync(file, addFullStoryToPodfile(contents, version));
         return config;
     },
 ]);

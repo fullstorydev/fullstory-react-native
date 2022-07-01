@@ -7,5 +7,5 @@
     "declaration": true
   },
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "exclude": ["**/__tests__/*"]
 }

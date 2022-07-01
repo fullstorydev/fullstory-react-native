@@ -59,6 +59,17 @@ const withBuildPhaseDelegate: ConfigPlugin = (config) =>
     return config;
   });
 
+export function addFullStoryToPodfile(src: string, version: string) {
+  return mergeContents({
+    tag: "@fullstory/react-native podfile",
+    src,
+    newSrc: `pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-${version}-xcframework.tar.gz'`,
+    anchor: /use_expo_modules!/,
+    offset: 0,
+    comment: "#",
+  }).contents;
+}
+
 const withPodfileDelegate: ConfigPlugin<FullStoryPluginProps> = (
   config,
   { version }
@@ -66,20 +77,9 @@ const withPodfileDelegate: ConfigPlugin<FullStoryPluginProps> = (
   withDangerousMod(config, [
     "ios",
     async (config) => {
-      function addFullStoryToPodfile(src: string) {
-        return mergeContents({
-          tag: "@fullstory/react-native",
-          src,
-          newSrc: `pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-${version}-xcframework.tar.gz'`,
-          anchor: /use_expo_modules!/,
-          offset: 0,
-          comment: "#",
-        }).contents;
-      }
-
       const file = path.join(config.modRequest.platformProjectRoot, "Podfile");
       const contents = await readFileAsync(file);
-      await saveFileAsync(file, addFullStoryToPodfile(contents));
+      await saveFileAsync(file, addFullStoryToPodfile(contents, version));
       return config;
     },
   ]);
