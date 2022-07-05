@@ -49,9 +49,9 @@ const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, enabled
         newSrc: `apply plugin: 'fullstory'
       fullstory {
           org '${org}'
-          server ${host ? `'https://${host}'` : ""}
-          logLevel ${logLevel ? `'${logLevel}'` : ""}
-          enabledVariants ${enabledVariants ? `'${enabledVariants}'` : ""}
+          ${host ? `server 'https://${host}'` : ""}
+          ${logLevel ? `logLevel '${logLevel}'` : ""}
+          ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
       }`,
         anchor: /./,
         offset: 1,

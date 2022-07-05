@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
-const constants_1 = require("./constants");
 const withFullStoryAndroid_1 = __importDefault(require("./withFullStoryAndroid"));
 const withFullStoryIos_1 = __importDefault(require("./withFullStoryIos"));
 const pkg = require("../../package.json");
@@ -13,7 +12,7 @@ const withFullStory = (config, pluginConfigs) => {
         throw new Error("Please specify an 'org' in your plugin arguments.");
     }
     if (!pluginConfigs.version) {
-        pluginConfigs.version = constants_1.FULLSTORY_DEFAULT_VERSION;
+        throw new Error("Please specify a 'version' in your plugin arguments.");
     }
     return (0, config_plugins_1.withPlugins)(config, [
         [withFullStoryIos_1.default, pluginConfigs],

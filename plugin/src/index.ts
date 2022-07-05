@@ -4,7 +4,6 @@ import {
   createRunOncePlugin,
 } from "@expo/config-plugins";
 
-import { FULLSTORY_DEFAULT_VERSION } from "./constants";
 import withFullStoryAndroid from "./withFullStoryAndroid";
 import withFullStoryIos from "./withFullStoryIos";
 
