@@ -27,7 +27,7 @@ const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
   }
 
   if (!pluginConfigs.version) {
-    pluginConfigs.version = FULLSTORY_DEFAULT_VERSION;
+    throw new Error("Please specify a 'version' in your plugin arguments.");
   }
 
   return withPlugins(config, [

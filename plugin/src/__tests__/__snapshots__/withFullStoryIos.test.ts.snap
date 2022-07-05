@@ -11,9 +11,9 @@ require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 target 'HelloWorld' do
-# @generated begin @fullstory/react-native - expo prebuild (DO NOT MODIFY) sync-e0c5a00239acd8e9abee7fd89110259318af5457
+# @generated begin @fullstory/react-native podfile - expo prebuild (DO NOT MODIFY) sync-e0c5a00239acd8e9abee7fd89110259318af5457
 pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-1.27.1-xcframework.tar.gz'
-# @generated end @fullstory/react-native
+# @generated end @fullstory/react-native podfile
   use_expo_modules!
   config = use_native_modules!
 

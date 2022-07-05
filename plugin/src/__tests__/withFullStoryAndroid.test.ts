@@ -5,10 +5,9 @@ import {
   addFullStoryProjectDependency,
   addFullStoryGradlePlugin,
 } from "../withFullStoryAndroid";
-import { FULLSTORY_DEFAULT_VERSION } from "../constants";
 import { FullStoryPluginProps } from "..";
 
-const plugConfigs = require("./fixtures/fullstoryConfig.json");
+const pluginConfigs = require("./fixtures/fullstoryConfig.json");
 
 describe("Config Plugin Android Tests", function () {
   let appBuildGradle: string;
@@ -31,7 +30,7 @@ describe("Config Plugin Android Tests", function () {
   it("Adds FullStory module to project build.gradle", async function () {
     let result = projectBuildGradle;
     result = addFullStoryMavenRepo(result);
-    result = addFullStoryProjectDependency(result, FULLSTORY_DEFAULT_VERSION);
+    result = addFullStoryProjectDependency(result, pluginConfigs.version);
     expect(result).toMatchSnapshot();
   });
 
@@ -39,7 +38,7 @@ describe("Config Plugin Android Tests", function () {
     let result = appBuildGradle;
     result = addFullStoryGradlePlugin(
       result,
-      plugConfigs as FullStoryPluginProps
+      pluginConfigs as FullStoryPluginProps
     );
     expect(result).toMatchSnapshot();
   });

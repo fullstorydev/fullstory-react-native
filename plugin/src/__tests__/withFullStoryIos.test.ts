@@ -1,7 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
 import { addFullStoryToPodfile } from "../withFullStoryIos";
-import { FULLSTORY_DEFAULT_VERSION } from "../constants";
+
+const pluginConfigs = require("./fixtures/fullstoryConfig.json");
 
 describe("Config Plugin iOS Tests", function () {
   let podfile: string;
@@ -14,7 +15,7 @@ describe("Config Plugin iOS Tests", function () {
 
   it("Adds FullStory to Podfile", async function () {
     let result = podfile;
-    result = addFullStoryToPodfile(result, FULLSTORY_DEFAULT_VERSION);
+    result = addFullStoryToPodfile(result, pluginConfigs.version);
     expect(result).toMatchSnapshot();
   });
 });
