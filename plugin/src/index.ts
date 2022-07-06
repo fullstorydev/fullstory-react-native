@@ -9,13 +9,21 @@ import withFullStoryIos from "./withFullStoryIos";
 
 const pkg = require("../../package.json");
 
+type FullStoryAndroidProps = {
+  logLevel?: string;
+  enabledVariants?: string;
+};
+
+type FullStoryIosProps = {
+  // placeholder
+};
+
 export type FullStoryPluginProps = {
   org: string;
   version: string;
   host?: string;
-  logLevel?: string;
-  enabledVariants?: string;
-};
+} & FullStoryAndroidProps &
+  FullStoryIosProps;
 
 const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
   config,

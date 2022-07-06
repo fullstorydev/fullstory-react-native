@@ -1,56 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Config Plugin Android Tests Adds FullStory module to project build.gradle 1`] = `
-"// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
-buildscript {
-    ext {
-        buildToolsVersion = \\"30.0.2\\"
-        minSdkVersion = 21
-        compileSdkVersion = 30
-        targetSdkVersion = 30
-        ndkVersion = \\"21.4.7075529\\"
-    }
-    repositories {
-// @generated begin @fullstory/react-native repositories - expo prebuild (DO NOT MODIFY) sync-e9d20c521b016225eb51e3030e69288fa97e3950
-maven { url 'https://maven.fullstory.com' }
-// @generated end @fullstory/react-native repositories
-        google()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-// @generated begin @fullstory/react-native dependencies - expo prebuild (DO NOT MODIFY) sync-cec37541b39163b903cea447d84d523fb89303d4
-classpath 'com.fullstory:gradle-plugin-local:1.27.1'
-// @generated end @fullstory/react-native dependencies
-        classpath(\\"com.android.tools.build:gradle:4.2.2\\")
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        mavenLocal()
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url(new File([\\"node\\", \\"--print\\", \\"require.resolve('react-native/package.json')\\"].execute(null, rootDir).text.trim(), \\"../android\\"))
-        }
-        maven {
-            // Android JSC is installed from npm
-            url(new File([\\"node\\", \\"--print\\", \\"require.resolve('jsc-android/package.json')\\"].execute(null, rootDir).text.trim(), \\"../dist\\"))
-        }
-
-        google()
-        mavenCentral()
-        jcenter()
-        maven { url 'https://www.jitpack.io' }
-    }
-}"
-`;
-
-exports[`Config Plugin Android Tests Adds FullStory module to project build.gradle 2`] = `
+exports[`Config Plugin Android Tests Adds FullStory module to app build.gradle 1`] = `
 "apply plugin: \\"com.android.application\\"
 // @generated begin @fullstory/react-native plugin - expo prebuild (DO NOT MODIFY) sync-2eb13e57bc1c634f815fe0754c39516110ceb018
 apply plugin: 'fullstory'
@@ -332,4 +282,54 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply from: new File([\\"node\\", \\"--print\\", \\"require.resolve('@react-native-community/cli-platform-android/package.json')\\"].execute(null, rootDir).text.trim(), \\"../native_modules.gradle\\");
 applyNativeModulesAppBuildGradle(project)"
+`;
+
+exports[`Config Plugin Android Tests Adds FullStory module to project build.gradle 1`] = `
+"// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+        buildToolsVersion = \\"30.0.2\\"
+        minSdkVersion = 21
+        compileSdkVersion = 30
+        targetSdkVersion = 30
+        ndkVersion = \\"21.4.7075529\\"
+    }
+    repositories {
+// @generated begin @fullstory/react-native repositories - expo prebuild (DO NOT MODIFY) sync-e9d20c521b016225eb51e3030e69288fa97e3950
+maven { url 'https://maven.fullstory.com' }
+// @generated end @fullstory/react-native repositories
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+// @generated begin @fullstory/react-native dependencies - expo prebuild (DO NOT MODIFY) sync-cec37541b39163b903cea447d84d523fb89303d4
+classpath 'com.fullstory:gradle-plugin-local:1.27.1'
+// @generated end @fullstory/react-native dependencies
+        classpath(\\"com.android.tools.build:gradle:4.2.2\\")
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url(new File([\\"node\\", \\"--print\\", \\"require.resolve('react-native/package.json')\\"].execute(null, rootDir).text.trim(), \\"../android\\"))
+        }
+        maven {
+            // Android JSC is installed from npm
+            url(new File([\\"node\\", \\"--print\\", \\"require.resolve('jsc-android/package.json')\\"].execute(null, rootDir).text.trim(), \\"../dist\\"))
+        }
+
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://www.jitpack.io' }
+    }
+}"
 `;

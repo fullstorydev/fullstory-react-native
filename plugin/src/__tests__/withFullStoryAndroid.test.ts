@@ -34,7 +34,7 @@ describe("Config Plugin Android Tests", function () {
     expect(result).toMatchSnapshot();
   });
 
-  it("Adds FullStory module to project build.gradle", async function () {
+  it("Adds FullStory module to app build.gradle", async function () {
     let result = appBuildGradle;
     result = addFullStoryGradlePlugin(
       result,
