@@ -4,6 +4,7 @@
 
 # Xcode
 #
+build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -45,3 +46,4 @@ captures/
 
 # Allow for types
 !index.d.ts
+!plugin/build
