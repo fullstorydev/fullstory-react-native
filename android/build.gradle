@@ -79,7 +79,7 @@ if (match.matches()) {
         throw new GradleException("FullStory SDK version 1.14.0 or later is required, but version $fsDetectedVersion was detected. Please update to a newer version of FullStory.")
     }
 } else {
-    throw new GradleException('Unable to determine FullStory version, please verify your root build file is properly configured')
+    logger.warn('Unable to determine FullStory version, please verify your root build file is properly configured')
 }
 
 dependencies {
