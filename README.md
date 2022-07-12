@@ -62,8 +62,7 @@ Add the config plugin to the plugins array of your `app.json` or `app.config.jso
         "@fullstory/react-native",
         {
           "version": "1.28.0",
-          "org": "ABC",
-          "enabledVariants": "all"
+          "org": "ABC"
         }
       ]
     ]
