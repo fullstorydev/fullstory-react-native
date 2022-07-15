@@ -30,6 +30,7 @@ interface FullStoryInterface {
   shutdown(): void;
   restart(): void;
   log(number, string): void;
+  resetIdleTimer(): void;
 }
 
 declare global {

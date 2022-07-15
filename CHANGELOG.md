@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.7
+Added `FS.resetIdleTimer` to the TypeScript types.
+
 ## 1.0.6
 Added support for calling `FS.resetIdleTimer`. This release now requires a minimum FullStory plugin version of `1.14.0`.
 
