@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.6
+Added support for calling `FS.resetIdleTimer`. This release now requires a minimum FullStory plugin version of `1.14.0`.
+
 ## 1.0.5
 Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to 1.0.2, to better work around metro server issues.
 
