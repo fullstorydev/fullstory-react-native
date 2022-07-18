@@ -24,6 +24,12 @@ npm i @fullstory/react-native --save
 yarn add @fullstory/react-native
 ```
 
+#### with expo-cli
+
+```
+expo install @fullstory/react-native
+```
+
 ## Configuring the babel plugin
 
 `@fullstory/babel-plugin-react-native` is automatically included as a dependency to the FullStory React Native plugin. Please refer to the babel plugin's [README.md](https://github.com/fullstorydev/fullstory-babel-plugin-react-native/blob/master/README.md) for information on how to configure it.
@@ -41,3 +47,37 @@ Here's an example of importing the SDK in a React Native app.
 ```JSX
 import FullStory from '@fullstory/react-native';
 ```
+
+## Configuring for Expo
+
+> This package cannot be used in the "Expo Go" app because [it requires custom native code](https://docs.expo.io/workflow/customizing/).
+
+Add the config plugin to the plugins array of your `app.json` or `app.config.json`
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@fullstory/react-native",
+        {
+          "version": "1.28.0",
+          "org": "ABC"
+        }
+      ]
+    ]
+  }
+}
+```
+
+### Plugin Props
+
+Plugins allow for extra customization by passing in an object with properties. If no extra properties are added, defaults will be used. **Certain properties are required.**
+
+| Property        | Platform      | Required                               | Description                                                 |
+| --------------- | ------------- | -------------------------------------- | ----------------------------------------------------------- |
+| version         | Android & iOS | ✅                                     | FullStory for Mobile Apps plugin version                    |
+| org             | Android & iOS | ✅                                     | Your assigned organization ID                               |
+| host            | Android & iOS | Optional. Defaults to: `fullstory.com` | The server url your sessions are sent to                    |
+| enabledVariants | Android       | Optional. Defaults to: `release`       | Specifies which variants to apply FullStory instrumentation |
+| logLevel        | Android       | Optional. Defaults to: `info`          | Captures any log statements at or above the specified level |

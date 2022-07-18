@@ -46,3 +46,4 @@ captures/
 
 # Allow for types
 !index.d.ts
+!plugin/build
