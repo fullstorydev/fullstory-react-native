@@ -1,6 +1,6 @@
 {
   "name": "@fullstory/react-native",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "The official FullStory React Native plugin",
   "repository": "git://github.com/fullstorydev/fullstory-react-native.git",
   "homepage": "https://github.com/fullstorydev/fullstory-react-native",
@@ -37,7 +37,6 @@
   "devDependencies": {
     "@tsconfig/node10": "^1.0.9",
     "@types/jest": "^28.1.4",
-    "eslint-config-universe": "^11.0.0",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5"
   }

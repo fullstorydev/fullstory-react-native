@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.0
+Added support for [Expo Managed Workflows](https://docs.expo.dev/introduction/managed-vs-bare/).
+
 ## 1.0.7
 Added `FS.resetIdleTimer` to the TypeScript types.
 
