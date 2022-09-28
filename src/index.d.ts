@@ -1,46 +1,56 @@
-import {NativeModules} from 'react-native';
-
-declare const {FullStory} = NativeModules;
-
 export type OnReadyResponse = {
-  replayStartUrl: string;
-  replayNowUrl: string;
-  sessionId: string;
+    replayStartUrl: string;
+    replayNowUrl: string;
+    sessionId: string;
 };
 
-export const LogLevel = {
-  Log: 0, // Clamps to Debug on iOS
-  Debug: 1,
-  Info: 2, // Default
-  Warn: 3,
-  Error: 4,
-  Assert: 5, // Clamps to Error on Android
-};
-
-interface FullStoryInterface {
-  LogLevel: typeof LogLevel;
-  anonymize(): void;
-  identify(string, Object): void;
-  setUserVars(Object): void;
-  onReady(): Promise<OnReadyResponse>;
-  getCurrentSession(): Promise<string>;
-  getCurrentSessionURL(): Promise<string>;
-  consent(boolean): void;
-  event(string, Object);
-  shutdown(): void;
-  restart(): void;
-  log(number, string): void;
-  resetIdleTimer(): void;
+declare const LogLevel = {
+    Log: 0, // Clamps to Debug on iOS
+    Debug: 1,
+    Info: 2, // Default
+    Warn: 3,
+    Error: 4,
+    Assert: 5 // Clamps to Error on Android
 }
 
-declare global {
-  namespace JSX {
-    interface IntrinsicAttributes {
-      fsAttribute?: {[key: string]: string};
-      fsClass?: string;
-      fsTagName?: string;
-    }
-  }
+export interface UserVars {
+    /** Explicitly sets the unique identifier for the user */
+    uid?: string;
+    /** Displays nice-looking user names */
+    displayName?: string;
+    /** Activates "Email this user" */
+    email?: string;
+
+    /**  Other Simple key/value pairs you'd like to record. */
+    [property: string]: string | boolean | number | undefined;
 }
 
-export default FullStory as FullStoryInterface;
+declare namespace FullStory {
+    let LogLevel: typeof LogLevel;
+
+    function anonymize(): void;
+
+    function identify(string: string, Object: UserVars): void;
+
+    function setUserVars(Object: UserVars): void;
+
+    function onReady(): Promise<OnReadyResponse>;
+
+    function getCurrentSession(): Promise<string>;
+
+    function getCurrentSessionURL(): Promise<string>;
+
+    function consent(boolean: boolean): void;
+
+    function event(string: string, Object: UserVars): void;
+
+    function shutdown(): void;
+
+    function restart(): void;
+
+    function log(number: number, string: string): void;
+
+    function resetIdleTimer(): void;
+}
+
+export default FullStory
