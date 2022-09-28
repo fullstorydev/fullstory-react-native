@@ -4,13 +4,13 @@ export type OnReadyResponse = {
     sessionId: string;
 };
 
-declare const LogLevel = {
-    Log: 0, // Clamps to Debug on iOS
-    Debug: 1,
-    Info: 2, // Default
-    Warn: 3,
-    Error: 4,
-    Assert: 5 // Clamps to Error on Android
+export enum ILogLevel {
+    Log = 0, // Clamps to Debug on iOS
+    Debug = 1,
+    Info = 2, // Default
+    Warn = 3,
+    Error = 4,
+    Assert = 5 // Clamps to Error on Android
 }
 
 export interface UserVars {
@@ -26,7 +26,7 @@ export interface UserVars {
 }
 
 declare namespace FullStory {
-    let LogLevel: typeof LogLevel;
+    let LogLevel: ILogLevel;
 
     function anonymize(): void;
 
