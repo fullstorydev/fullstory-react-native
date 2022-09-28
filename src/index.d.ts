@@ -14,14 +14,8 @@ export enum ILogLevel {
 }
 
 export interface UserVars {
-    /** Explicitly sets the unique identifier for the user */
-    uid?: string;
-    /** Displays nice-looking user names */
     displayName?: string;
-    /** Activates "Email this user" */
     email?: string;
-
-    /**  Other Simple key/value pairs you'd like to record. */
     [property: string]: string | boolean | number | undefined;
 }
 
