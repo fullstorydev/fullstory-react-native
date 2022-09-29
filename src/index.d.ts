@@ -47,4 +47,14 @@ declare namespace FullStory {
     function resetIdleTimer(): void;
 }
 
+declare global {
+    namespace JSX {
+        interface IntrinsicAttributes {
+            fsAttribute?: {[key: string]: string};
+            fsClass?: string;
+            fsTagName?: string;
+        }
+    }
+}
+
 export default FullStory
