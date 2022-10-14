@@ -1,35 +1,37 @@
-import {NativeModules} from 'react-native';
-
-declare const {FullStory} = NativeModules;
-
 export type OnReadyResponse = {
   replayStartUrl: string;
   replayNowUrl: string;
   sessionId: string;
 };
 
-export const LogLevel = {
-  Log: 0, // Clamps to Debug on iOS
-  Debug: 1,
-  Info: 2, // Default
-  Warn: 3,
-  Error: 4,
-  Assert: 5, // Clamps to Error on Android
-};
+export enum LogLevel {
+  Log = 0, // Clamps to Debug on iOS
+  Debug = 1,
+  Info = 2, // Default
+  Warn = 3,
+  Error = 4,
+  Assert = 5, // Clamps to Error on Android
+}
 
-interface FullStoryInterface {
+interface UserVars {
+  displayName?: string;
+  email?: string;
+  [key: string]: any;
+}
+
+declare type FullStoryStatic = {
   LogLevel: typeof LogLevel;
   anonymize(): void;
-  identify(string, Object): void;
-  setUserVars(Object): void;
+  identify(uid: string, userVars?: UserVars): void;
+  setUserVars(userVars: UserVars): void;
   onReady(): Promise<OnReadyResponse>;
   getCurrentSession(): Promise<string>;
   getCurrentSessionURL(): Promise<string>;
-  consent(boolean): void;
-  event(string, Object);
+  consent(userConsents: boolean): void;
+  event(eventName: string, eventProperties: Object): void;
   shutdown(): void;
   restart(): void;
-  log(number, string): void;
+  log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
 }
 
@@ -43,4 +45,5 @@ declare global {
   }
 }
 
-export default FullStory as FullStoryInterface;
+declare const FullStory: FullStoryStatic;
+export default FullStory;
