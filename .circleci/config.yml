@@ -42,9 +42,9 @@ workflows:
     jobs:
       - build-react-native
           filters:
-             # test on branches and version tags (all branches are included by default)
+             # test on all branches and tags (all branches are included by default)
             tags:
-              only: /^v.*/
+              only: /.*/
       - hold:
           type: approval
           requires:
