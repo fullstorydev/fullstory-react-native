@@ -9,9 +9,14 @@ import withFullStoryIos from "./withFullStoryIos";
 
 const pkg = require("../../package.json");
 
-type FullStoryAndroidProps = {
-  logLevel?: string;
+type LogLevel = "off" | "error" | "warn" | "info" | "debug" | "log";
+
+export type FullStoryAndroidProps = {
+  logLevel?: LogLevel;
+  logcatLevel?: LogLevel;
   enabledVariants?: string;
+  recordOnStart?: boolean;
+  addDependencies?: boolean;
 };
 
 type FullStoryIosProps = {

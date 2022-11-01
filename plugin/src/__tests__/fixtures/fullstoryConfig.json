@@ -1,5 +1,9 @@
 {
   "version": "1.27.1",
   "org": "ABCDE",
-  "enabledVariants": "all"
+  "enabledVariants": "all",
+  "logLevel": "error",
+  "logcatLevel": "error",
+  "recordOnStart": true,
+  "addDependencies": true
 }

@@ -65,7 +65,15 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
 
 export const addFullStoryGradlePlugin = (
   appBuildGradle: string,
-  { org, host, logLevel, enabledVariants }: FullStoryPluginProps
+  {
+    org,
+    host,
+    logLevel,
+    logcatLevel,
+    enabledVariants,
+    recordOnStart,
+    addDependencies,
+  }: FullStoryPluginProps
 ) => {
   return mergeContents({
     tag: `@fullstory/react-native plugin`,
@@ -75,7 +83,10 @@ export const addFullStoryGradlePlugin = (
           org '${org}'
           ${host ? `server 'https://${host}'` : ""}
           ${logLevel ? `logLevel '${logLevel}'` : ""}
+          ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ""}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
+          ${recordOnStart ? `recordOnStart ${recordOnStart}` : ""}
+          ${addDependencies ? `addDependencies ${addDependencies}` : ""}
       }`,
     anchor: /./,
     offset: 1,
