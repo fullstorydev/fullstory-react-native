@@ -15,7 +15,6 @@ export type FullStoryAndroidProps = {
   logLevel?: LogLevel;
   logcatLevel?: LogLevel;
   enabledVariants?: string;
-  recordOnStart?: boolean;
   addDependencies?: boolean;
 };
 
@@ -27,6 +26,7 @@ export type FullStoryPluginProps = {
   org: string;
   version: string;
   host?: string;
+  recordOnStart?: boolean;
 } & FullStoryAndroidProps &
   FullStoryIosProps;
 

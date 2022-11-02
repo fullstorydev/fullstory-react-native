@@ -22,12 +22,13 @@ async function saveFileAsync(path: string, content: string) {
 
 const withInfoPlistDelegate: ConfigPlugin<FullStoryPluginProps> = (
   config,
-  { org, host }
+  { org, host, recordOnStart }
 ) =>
   withInfoPlist(config, (config) => {
     config.modResults.FullStory = {
       OrgId: org,
       Host: host,
+      RecordOnStart: recordOnStart,
     };
     return config;
   });
