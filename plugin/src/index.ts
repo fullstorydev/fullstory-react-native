@@ -11,24 +11,24 @@ const pkg = require("../../package.json");
 
 type LogLevel = "off" | "error" | "warn" | "info" | "debug" | "log";
 
-export type FullStoryAndroidProps = {
-  logLevel?: LogLevel;
-  logcatLevel?: LogLevel;
-  enabledVariants?: string;
-  addDependencies?: boolean;
-};
-
-type FullStoryIosProps = {
-  // placeholder
-};
-
-export type FullStoryPluginProps = {
+type FullStoryCrossPlatformProps = {
   org: string;
   version: string;
   host?: string;
   recordOnStart?: boolean;
-} & FullStoryAndroidProps &
-  FullStoryIosProps;
+};
+
+export type FullStoryAndroidProps = {
+  logLevel?: LogLevel;
+  logcatLevel?: LogLevel;
+  enabledVariants?: string;
+} & FullStoryCrossPlatformProps;
+
+export type FullStoryIosProps = {
+  // placeholder
+} & FullStoryCrossPlatformProps;
+
+type FullStoryPluginProps = FullStoryAndroidProps & FullStoryIosProps;
 
 const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
   config,
@@ -48,4 +48,4 @@ const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
   ]);
 };
 
-module.exports = createRunOncePlugin(withFullStory, pkg.name, pkg.version);
+export default createRunOncePlugin(withFullStory, pkg.name, pkg.version);

@@ -7,7 +7,7 @@ import {
 } from "@expo/config-plugins";
 import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
 
-import { FullStoryPluginProps } from ".";
+import { FullStoryIosProps } from ".";
 
 const fs = require("fs");
 const path = require("path");
@@ -20,7 +20,7 @@ async function saveFileAsync(path: string, content: string) {
   return fs.promises.writeFile(path, content, "utf8");
 }
 
-const withInfoPlistDelegate: ConfigPlugin<FullStoryPluginProps> = (
+const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
   config,
   { org, host, recordOnStart }
 ) =>
@@ -71,7 +71,7 @@ export function addFullStoryToPodfile(src: string, version: string) {
   }).contents;
 }
 
-const withPodfileDelegate: ConfigPlugin<FullStoryPluginProps> = (
+const withPodfileDelegate: ConfigPlugin<FullStoryIosProps> = (
   config,
   { version }
 ) =>
@@ -85,7 +85,7 @@ const withPodfileDelegate: ConfigPlugin<FullStoryPluginProps> = (
     },
   ]);
 
-const withFullStoryIos: ConfigPlugin<FullStoryPluginProps> = (
+const withFullStoryIos: ConfigPlugin<FullStoryIosProps> = (
   config,
   pluginConfigs
 ) => {

@@ -4,6 +4,5 @@
   "enabledVariants": "all",
   "logLevel": "error",
   "logcatLevel": "error",
-  "recordOnStart": true,
-  "addDependencies": true
+  "recordOnStart": true
 }

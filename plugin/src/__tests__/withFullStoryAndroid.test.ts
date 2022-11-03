@@ -5,7 +5,7 @@ import {
   addFullStoryProjectDependency,
   addFullStoryGradlePlugin,
 } from "../withFullStoryAndroid";
-import { FullStoryPluginProps } from "..";
+import { FullStoryAndroidProps } from "..";
 
 const pluginConfigs = require("./fixtures/fullstoryConfig.json");
 
@@ -38,7 +38,7 @@ describe("Config Plugin Android Tests", function () {
     let result = appBuildGradle;
     result = addFullStoryGradlePlugin(
       result,
-      pluginConfigs as FullStoryPluginProps
+      pluginConfigs as FullStoryAndroidProps
     );
     expect(result).toMatchSnapshot();
   });

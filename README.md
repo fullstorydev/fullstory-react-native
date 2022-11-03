@@ -83,4 +83,3 @@ Plugins allow for extra customization by passing in an object with properties. I
 | enabledVariants | Android       | Optional. Defaults to: `release`       | Specifies which variants to apply FullStory instrumentation                                                |
 | logLevel        | Android       | Optional. Defaults to: `info`          | Captures any log statements at or above the specified level                                                |
 | logcatLevel     | Android       | Optional. Defaults to: `off`           | Captures any Logcat messages at or above the specified level                                               |
-| addDependencies | Android       | Optional. Defaults to: `true`          | Used to prevent FullStory from auto-adding gradle dependencies                                             |

@@ -7,7 +7,7 @@ import {
 } from "@expo/config-plugins";
 import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
 
-import { FullStoryPluginProps } from ".";
+import { FullStoryAndroidProps } from ".";
 
 const { withPermissions } = AndroidConfig.Permissions;
 
@@ -43,7 +43,7 @@ export const addFullStoryProjectDependency = (
   }).contents;
 };
 
-const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
+const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   config,
   { version }
 ) => {
@@ -72,8 +72,7 @@ export const addFullStoryGradlePlugin = (
     logcatLevel,
     enabledVariants,
     recordOnStart,
-    addDependencies,
-  }: FullStoryPluginProps
+  }: FullStoryAndroidProps
 ) => {
   return mergeContents({
     tag: `@fullstory/react-native plugin`,
@@ -86,7 +85,6 @@ export const addFullStoryGradlePlugin = (
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ""}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
           ${recordOnStart ? `recordOnStart ${recordOnStart}` : ""}
-          ${addDependencies ? `addDependencies ${addDependencies}` : ""}
       }`,
     anchor: /./,
     offset: 1,
@@ -94,7 +92,7 @@ export const addFullStoryGradlePlugin = (
   }).contents;
 };
 
-const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
+const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   config,
   pluginConfigs
 ) => {
@@ -113,7 +111,7 @@ const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
   });
 };
 
-const withFullStoryAndroid: ConfigPlugin<FullStoryPluginProps> = (
+const withFullStoryAndroid: ConfigPlugin<FullStoryAndroidProps> = (
   config,
   pluginConfigs
 ) => {

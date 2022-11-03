@@ -42,7 +42,7 @@ const withProjectGradleDelegate = (config, { version }) => {
         return { modResults, ...config };
     });
 };
-const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatLevel, enabledVariants, recordOnStart, addDependencies, }) => {
+const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatLevel, enabledVariants, recordOnStart, }) => {
     return (0, generateCode_1.mergeContents)({
         tag: `@fullstory/react-native plugin`,
         src: appBuildGradle,
@@ -54,7 +54,6 @@ const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatL
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ""}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
           ${recordOnStart ? `recordOnStart ${recordOnStart}` : ""}
-          ${addDependencies ? `addDependencies ${addDependencies}` : ""}
       }`,
         anchor: /./,
         offset: 1,
