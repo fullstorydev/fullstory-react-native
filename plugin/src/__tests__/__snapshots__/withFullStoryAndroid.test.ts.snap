@@ -2,13 +2,15 @@
 
 exports[`Config Plugin Android Tests Adds FullStory module to app build.gradle 1`] = `
 "apply plugin: \\"com.android.application\\"
-// @generated begin @fullstory/react-native plugin - expo prebuild (DO NOT MODIFY) sync-2eb13e57bc1c634f815fe0754c39516110ceb018
+// @generated begin @fullstory/react-native plugin - expo prebuild (DO NOT MODIFY) sync-bb646efbc963bea134722dca84206580df424525
 apply plugin: 'fullstory'
       fullstory {
           org 'ABCDE'
           
-          
+          logLevel 'error'
+          logcatLevel 'error'
           enabledVariants 'all'
+          recordOnStart true
       }
 // @generated end @fullstory/react-native plugin
 

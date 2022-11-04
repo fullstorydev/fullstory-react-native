@@ -74,10 +74,12 @@ Add the config plugin to the plugins array of your `app.json` or `app.config.jso
 
 Plugins allow for extra customization by passing in an object with properties. If no extra properties are added, defaults will be used. **Certain properties are required.**
 
-| Property        | Platform      | Required                               | Description                                                 |
-| --------------- | ------------- | -------------------------------------- | ----------------------------------------------------------- |
-| version         | Android & iOS | ✅                                     | FullStory for Mobile Apps plugin version                    |
-| org             | Android & iOS | ✅                                     | Your assigned organization ID                               |
-| host            | Android & iOS | Optional. Defaults to: `fullstory.com` | The server url your sessions are sent to                    |
-| enabledVariants | Android       | Optional. Defaults to: `release`       | Specifies which variants to apply FullStory instrumentation |
-| logLevel        | Android       | Optional. Defaults to: `info`          | Captures any log statements at or above the specified level |
+| Property        | Platform      | Required                               | Description                                                                                                |
+| --------------- | ------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| version         | Android & iOS | ✅                                     | FullStory for Mobile Apps plugin version                                                                   |
+| org             | Android & iOS | ✅                                     | Your assigned organization ID                                                                              |
+| host            | Android & iOS | Optional. Defaults to: `fullstory.com` | The server url your sessions are sent to                                                                   |
+| recordOnStart   | Android & iOS | Optional. Defaults to: `true`          | Setting RecordOnStart to `false` will prevent data capture until you explicitly invoke `FS.restart()` API. |
+| enabledVariants | Android       | Optional. Defaults to: `release`       | Specifies which variants to apply FullStory instrumentation                                                |
+| logLevel        | Android       | Optional. Defaults to: `info`          | Captures any log statements at or above the specified level                                                |
+| logcatLevel     | Android       | Optional. Defaults to: `off`           | Captures any Logcat messages at or above the specified level                                               |

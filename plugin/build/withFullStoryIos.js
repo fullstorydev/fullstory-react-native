@@ -11,10 +11,11 @@ async function readFileAsync(path) {
 async function saveFileAsync(path, content) {
     return fs.promises.writeFile(path, content, "utf8");
 }
-const withInfoPlistDelegate = (config, { org, host }) => (0, config_plugins_1.withInfoPlist)(config, (config) => {
+const withInfoPlistDelegate = (config, { org, host, recordOnStart }) => (0, config_plugins_1.withInfoPlist)(config, (config) => {
     config.modResults.FullStory = {
         OrgId: org,
         Host: host,
+        RecordOnStart: recordOnStart,
     };
     return config;
 });

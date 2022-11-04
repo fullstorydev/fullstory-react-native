@@ -7,7 +7,7 @@ import {
 } from "@expo/config-plugins";
 import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
 
-import { FullStoryPluginProps } from ".";
+import { FullStoryAndroidProps } from ".";
 
 const { withPermissions } = AndroidConfig.Permissions;
 
@@ -43,7 +43,7 @@ export const addFullStoryProjectDependency = (
   }).contents;
 };
 
-const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
+const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   config,
   { version }
 ) => {
@@ -65,7 +65,14 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
 
 export const addFullStoryGradlePlugin = (
   appBuildGradle: string,
-  { org, host, logLevel, enabledVariants }: FullStoryPluginProps
+  {
+    org,
+    host,
+    logLevel,
+    logcatLevel,
+    enabledVariants,
+    recordOnStart,
+  }: FullStoryAndroidProps
 ) => {
   return mergeContents({
     tag: `@fullstory/react-native plugin`,
@@ -75,7 +82,9 @@ export const addFullStoryGradlePlugin = (
           org '${org}'
           ${host ? `server 'https://${host}'` : ""}
           ${logLevel ? `logLevel '${logLevel}'` : ""}
+          ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ""}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
+          ${recordOnStart ? `recordOnStart ${recordOnStart}` : ""}
       }`,
     anchor: /./,
     offset: 1,
@@ -83,7 +92,7 @@ export const addFullStoryGradlePlugin = (
   }).contents;
 };
 
-const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
+const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   config,
   pluginConfigs
 ) => {
@@ -102,7 +111,7 @@ const withAppBuildGradleDelegate: ConfigPlugin<FullStoryPluginProps> = (
   });
 };
 
-const withFullStoryAndroid: ConfigPlugin<FullStoryPluginProps> = (
+const withFullStoryAndroid: ConfigPlugin<FullStoryAndroidProps> = (
   config,
   pluginConfigs
 ) => {

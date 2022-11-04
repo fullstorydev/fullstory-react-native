@@ -9,21 +9,26 @@ import withFullStoryIos from "./withFullStoryIos";
 
 const pkg = require("../../package.json");
 
-type FullStoryAndroidProps = {
-  logLevel?: string;
-  enabledVariants?: string;
-};
+type LogLevel = "off" | "error" | "warn" | "info" | "debug" | "log";
 
-type FullStoryIosProps = {
-  // placeholder
-};
-
-export type FullStoryPluginProps = {
+type FullStoryCrossPlatformProps = {
   org: string;
   version: string;
   host?: string;
-} & FullStoryAndroidProps &
-  FullStoryIosProps;
+  recordOnStart?: boolean;
+};
+
+export type FullStoryAndroidProps = {
+  logLevel?: LogLevel;
+  logcatLevel?: LogLevel;
+  enabledVariants?: string;
+} & FullStoryCrossPlatformProps;
+
+export type FullStoryIosProps = {
+  // placeholder
+} & FullStoryCrossPlatformProps;
+
+type FullStoryPluginProps = FullStoryAndroidProps & FullStoryIosProps;
 
 const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
   config,
@@ -43,4 +48,4 @@ const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
   ]);
 };
 
-module.exports = createRunOncePlugin(withFullStory, pkg.name, pkg.version);
+export default createRunOncePlugin(withFullStory, pkg.name, pkg.version);

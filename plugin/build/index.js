@@ -19,4 +19,4 @@ const withFullStory = (config, pluginConfigs) => {
         [withFullStoryAndroid_1.default, pluginConfigs],
     ]);
 };
-module.exports = (0, config_plugins_1.createRunOncePlugin)(withFullStory, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withFullStory, pkg.name, pkg.version);
