@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1
+Fixed issues with TypeScript types. Thanks [devon94](https://github.com/devon94) for reporting and supplying a fix.
+
 ## 1.1.0
 Added support for [Expo Managed Workflows](https://docs.expo.dev/introduction/managed-vs-bare/).
 
