@@ -41,13 +41,26 @@ workflows:
   test-deploy:
     jobs:
       - build-react-native
+          filters:
+             # test on all branches and tags (all branches are included by default)
+            tags:
+              only: /.*/
       - hold:
           type: approval
           requires:
             - build-react-native
           filters:
+            # hold only on version tags
+            tags:
+              only: /^v.*/
             branches:
-              only: "master"
+              ignore: /.*/
       - deploy-react-native:
           requires:
             - hold
+          filters:
+            # deploy only on version tags
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
