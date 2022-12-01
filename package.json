@@ -54,5 +54,10 @@
       },
       "xml2js": "0.5.0"
     }
+  },
+  "codegenConfig": {
+    "name": "FullStorySpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
   }
 }
