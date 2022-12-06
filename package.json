@@ -58,6 +58,9 @@
   "codegenConfig": {
     "name": "FullStorySpec",
     "type": "modules",
-    "jsSrcsDir": "src"
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.fullstory.reactnative"
+    }
   }
 }

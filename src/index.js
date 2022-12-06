@@ -6,6 +6,21 @@ const FullStory = isTurboModuleEnabled
   ? require("./NativeFullStory").default
   : NativeModules.FullStory;
 
+const {
+  anonymize,
+  identify,
+  setUserVars,
+  onReady,
+  getCurrentSession,
+  getCurrentSessionURL,
+  consent,
+  event,
+  shutdown,
+  restart,
+  log,
+  resetIdleTimer,
+} = FullStory;
+
 const LogLevel = {
   Log: 0, // Clamps to Debug on iOS
   Debug: 1,
@@ -15,6 +30,18 @@ const LogLevel = {
   Assert: 5, // Clamps to Error on Android
 };
 
-FullStory.LogLevel = LogLevel;
-
-export default FullStory;
+export default {
+  anonymize,
+  identify,
+  setUserVars,
+  onReady,
+  getCurrentSession,
+  getCurrentSessionURL,
+  consent,
+  event,
+  shutdown,
+  restart,
+  log,
+  resetIdleTimer,
+  LogLevel,
+};

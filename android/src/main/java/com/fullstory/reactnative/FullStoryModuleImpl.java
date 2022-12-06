@@ -2,9 +2,6 @@ package com.fullstory.reactnative;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.fullstory.FS;
@@ -14,38 +11,22 @@ import com.fullstory.FSSessionData;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FullStoryModule extends ReactContextBaseJavaModule {
+public class FullStoryModuleImpl {
 
     public static final String NAME = "FullStory";
 
-    private final ReactApplicationContext reactContext;
-
-    public FullStoryModule(ReactApplicationContext reactContext) {
-        super(reactContext);
-        this.reactContext = reactContext;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @ReactMethod
     public static void anonymize() {
         FS.anonymize();
     }
 
-    @ReactMethod
     public static void identify(String userId, ReadableMap userVars) {
         FS.identify(userId, toMap(userVars));
     }
 
-    @ReactMethod
     public static void setUserVars(ReadableMap userVars) {
         FS.setUserVars(toMap(userVars));
     }
 
-    @ReactMethod
     public static void onReady(Promise promise) {
         if (promise == null) {
             return;
@@ -81,41 +62,34 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
         });
     }
 
-    @ReactMethod
     public static void getCurrentSession(Promise promise) {
         if (promise != null) {
             promise.resolve(FS.getCurrentSession());
         }
     }
 
-    @ReactMethod
     public static void getCurrentSessionURL(Promise promise) {
         if (promise != null) {
             promise.resolve(FS.getCurrentSessionURL());
         }
     }
 
-    @ReactMethod
     public static void consent(boolean consented) {
         FS.consent(consented);
     }
 
-    @ReactMethod
     public static void event(String name, ReadableMap properties) {
         FS.event(name, toMap(properties));
     }
 
-    @ReactMethod
     public static void shutdown() {
         FS.shutdown();
     }
 
-    @ReactMethod
     public static void restart() {
         FS.restart();
     }
 
-    @ReactMethod
     public static void log(double level, String message) {
         // Convert the double to an int
         int intLevel = Double.valueOf(level).intValue();
@@ -152,7 +126,6 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
         FS.log(actualLevel, message);
     }
 
-    @ReactMethod
     public static void resetIdleTimer() {
         FS.resetIdleTimer();
     }
