@@ -15,7 +15,7 @@ public class FullStoryPackage extends TurboReactPackage {
     @Nullable
     @Override
     public NativeModule getModule(String name, ReactApplicationContext reactContext) {
-        if (FullStoryModuleImpl.NAME.equals(name)) {
+        if (name.equals(FullStoryModuleImpl.NAME)) {
             return new FullStoryModule(reactContext);
         } else {
             return null;
