@@ -245,3 +245,33 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 	} SWIZZLE_END;
 }
 @end
+
+@interface LogCapture : NSObject
+@end
+
+@implementation LogCapture
++ (void) load {
+	RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+        FSEventLogLevel levelValue;
+        switch(level) {
+            case RCTLogLevelTrace:
+                levelValue = FSLOG_DEBUG;
+                break;
+            case RCTLogLevelInfo:
+                levelValue = FSLOG_INFO;
+                break;
+            case RCTLogLevelWarning:
+                levelValue = FSLOG_WARNING;
+                break;
+            case RCTLogLevelError:
+            case RCTLogLevelFatal:
+                levelValue = FSLOG_ERROR;
+                break;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [FS logWithLevel:levelValue message:message];
+        });
+  });
+}
+@end
