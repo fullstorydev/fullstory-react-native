@@ -251,7 +251,7 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 
 @implementation LogCapture
 + (void) load {
-	RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+	RCTAddLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
         FSEventLogLevel levelValue;
         switch(level) {
             case RCTLogLevelTrace:
