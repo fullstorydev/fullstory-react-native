@@ -40,7 +40,7 @@ workflows:
   version: 2
   test-deploy:
     jobs:
-      - build-react-native
+      - build-react-native:
           filters:
              # test on all branches and tags (all branches are included by default)
             tags:
