@@ -2,7 +2,7 @@ version: 2.1
 executors:
   browser-executor:
     docker:
-      - image: circleci/node:12-browsers
+      - image: circleci/node:16-browsers
     working_directory: ~/repo
 jobs:
   build-react-native:
@@ -45,7 +45,7 @@ workflows:
     jobs:
       - build-react-native:
           filters:
-             # test on all branches and tags (all branches are included by default)
+            # test on all branches and tags (all branches are included by default)
             tags:
               only: /.*/
       - hold:
