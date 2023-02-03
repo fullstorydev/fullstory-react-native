@@ -38,6 +38,7 @@
     "@tsconfig/node10": "^1.0.9",
     "@types/jest": "^28.1.4",
     "jest": "^28.1.2",
-    "ts-jest": "^28.0.5"
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.9.4"
   }
 }

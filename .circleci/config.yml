@@ -2,7 +2,7 @@ version: 2.1
 executors:
   browser-executor:
     docker:
-      - image: circleci/node:12-browsers
+      - image: circleci/node:16-browsers
     working_directory: ~/repo
 jobs:
   build-react-native:
@@ -22,9 +22,12 @@ jobs:
       - run:
           name: Audit
           command: npm audit --audit-level=low
+      - run:
+          name: Test
+          command: npm test
       - persist_to_workspace:
           root: .
-          paths: .
+          paths: [.]
   deploy-react-native:
     executor: browser-executor
     steps:
@@ -40,9 +43,9 @@ workflows:
   version: 2
   test-deploy:
     jobs:
-      - build-react-native
+      - build-react-native:
           filters:
-             # test on all branches and tags (all branches are included by default)
+            # test on all branches and tags (all branches are included by default)
             tags:
               only: /.*/
       - hold:
