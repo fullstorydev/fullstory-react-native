@@ -1,4 +1,5 @@
 import {NativeModules} from 'react-native';
+import withFSAttributes from './withFSAttributes';
 
 const {FullStory} = NativeModules;
 
@@ -14,3 +15,5 @@ const LogLevel = {
 FullStory.LogLevel = LogLevel;
 
 export default FullStory;
+
+export {withFSAttributes};
