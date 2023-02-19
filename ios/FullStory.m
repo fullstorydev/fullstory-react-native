@@ -42,7 +42,6 @@ RCT_REMAP_METHOD(getCurrentSession, getCurrentSessionWithResolver:(RCTPromiseRes
 	});
 }
 
-// Original
 RCT_REMAP_METHOD(getCurrentSessionURL, getCurrentSessionURLWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -50,7 +49,6 @@ RCT_REMAP_METHOD(getCurrentSessionURL, getCurrentSessionURLWithResolver:(RCTProm
 	});
 }
 
-// Added for current session URL at current time
 RCT_REMAP_METHOD(getCurrentSessionURLNow, getCurrentSessionURLNowWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
