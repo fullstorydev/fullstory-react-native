@@ -88,10 +88,19 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
         }
     }
 
+    // The original session URL call
     @ReactMethod
     public static void getCurrentSessionURL(Promise promise) {
         if (promise != null) {
             promise.resolve(FS.getCurrentSessionURL());
+        }
+    }
+
+    // The new session URL call - get the current time
+    @ReactMethod
+    public static void getCurrentSessionURLNow(Promise promise) {
+        if (promise != null) {
+            promise.resolve(FS.getCurrentSessionURL(true));
         }
     }
 

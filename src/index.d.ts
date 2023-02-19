@@ -27,6 +27,7 @@ declare type FullStoryStatic = {
   onReady(): Promise<OnReadyResponse>;
   getCurrentSession(): Promise<string>;
   getCurrentSessionURL(): Promise<string>;
+  getCurrentSessionURLNow(): Promise<string>;
   consent(userConsents: boolean): void;
   event(eventName: string, eventProperties: Object): void;
   shutdown(): void;
