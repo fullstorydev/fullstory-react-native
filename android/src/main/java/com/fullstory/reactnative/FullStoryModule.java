@@ -88,7 +88,6 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
         }
     }
 
-    // The original session URL call
     @ReactMethod
     public static void getCurrentSessionURL(Promise promise) {
         if (promise != null) {
