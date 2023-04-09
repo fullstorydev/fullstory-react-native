@@ -53,7 +53,7 @@ const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatL
           ${logLevel ? `logLevel '${logLevel}'` : ""}
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ""}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
-          ${recordOnStart ? `recordOnStart ${recordOnStart}` : ""}
+          ${typeof recordOnStart === 'boolean' ? `recordOnStart ${recordOnStart}` : ""}
       }`,
         anchor: /./,
         offset: 1,
