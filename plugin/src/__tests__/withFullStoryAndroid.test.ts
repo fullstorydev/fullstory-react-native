@@ -42,4 +42,13 @@ describe("Config Plugin Android Tests", function () {
     );
     expect(result).toMatchSnapshot();
   });
+
+  it("Sets recordOnStart to false when provided", async function () {
+    let result = appBuildGradle;
+    result = addFullStoryGradlePlugin(
+      result,
+      { ...pluginConfigs, recordOnStart: false } as FullStoryAndroidProps
+    );
+    expect(result).toContain('recordOnStart false');
+  });
 });
