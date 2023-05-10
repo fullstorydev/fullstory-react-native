@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.0.3` to fix attributes in RN 71.
+Add dependency overrides to fix `npm audit` warnings.
+
 ## 1.1.1
 Fixed issues with TypeScript types. Thanks [devon94](https://github.com/devon94) for reporting and supplying a fix.
 
