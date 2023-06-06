@@ -7,5 +7,9 @@
 #endif
 
 @interface FullStory : NSObject <RCTBridgeModule, FSDelegate>
-
 @end
+
+#ifdef RCT_NEW_ARCH_ENABLED
+@interface FullStory () <NativeFullStorySpec>
+@end
+#endif
