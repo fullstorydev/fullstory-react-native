@@ -26,14 +26,6 @@ if (isNewArchitectureEnabled()) {
   apply plugin: 'com.facebook.react'
 }
 
-if (isNewArchitectureEnabled()) {
-  react {
-    jsRootDir = file("../src/")
-    libraryName = "PlacePicker"
-    codegenJavaPackageName = "com.fullstory.reactnative"
-  }
-}
- 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 28)
     buildToolsVersion safeExtGet('buildToolsVersion', '28.0.3')
