@@ -19,6 +19,9 @@ const {
   restart,
   log,
   resetIdleTimer,
+  createPage,
+  startPage,
+  endPage,
 } = FullStory;
 
 const LogLevel = {
@@ -30,9 +33,13 @@ const LogLevel = {
   Assert: 5, // Clamps to Error on Android
 };
 
+const createPageWithProperties = (pageName, pageProperties = {}) => createPage(pageName, pageProperties);
+const startPageWithProperties = (pageProperties = {}) => startPage(pageProperties);
+const identifyWithProperties = (uid, userVars = {}) => identify(uid, userVars);
+
 export default {
   anonymize,
-  identify,
+  identify: identifyWithProperties,
   setUserVars,
   onReady,
   getCurrentSession,
@@ -44,4 +51,7 @@ export default {
   log,
   resetIdleTimer,
   LogLevel,
+  createPage: createPageWithProperties,
+  startPage: startPageWithProperties,
+  endPage
 };
