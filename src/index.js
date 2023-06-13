@@ -22,6 +22,7 @@ const {
   createPage,
   startPage,
   endPage,
+  updatePage,
 } = FullStory;
 
 const LogLevel = {
@@ -53,5 +54,6 @@ export default {
   LogLevel,
   createPage: createPageWithProperties,
   startPage: startPageWithProperties,
-  endPage
+  endPage,
+  updatePage,
 };

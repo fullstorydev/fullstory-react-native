@@ -156,6 +156,13 @@ RCT_EXPORT_METHOD(endPage)
 	});
 }
 
+RCT_EXPORT_METHOD(updatePage:(NSDictionary *)pageProperties)
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->_page updateProperties:pageProperties];
+	});
+}
+
 - (void) fullstoryDidStartSession:(NSString *)sessionUrl {
 	if (!onReadyPromise)
 		return;
