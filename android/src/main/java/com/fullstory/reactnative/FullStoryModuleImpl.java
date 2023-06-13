@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.fullstory.FS;
+import com.fullstory.FSPage;
 import com.fullstory.FSOnReadyListener;
 import com.fullstory.FSSessionData;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FullStoryModuleImpl {
 
     public static final String NAME = "FullStory";
+    private static FSPage page;
 
     public static void anonymize() {
         FS.anonymize();
@@ -136,5 +138,27 @@ public class FullStoryModuleImpl {
         }
 
         return map.toHashMap();
+    }
+
+    public static void createPage(String pageName, ReadableMap pageProperties) {
+        page = FS.page(pageName, toMap(pageProperties));
+    }
+
+    public static void startPage(ReadableMap pageProperties) {
+        if (page != null) {
+            page.start(toMap(pageProperties));
+        }
+    }
+
+    public static  void updatePage(ReadableMap pageProperties) {
+        if (page != null) {
+            page.updateProperties(toMap(pageProperties));
+        }
+    }
+
+    public static void endPage() {
+        if (page != null) {
+            page.end();
+        }
     }
 }
