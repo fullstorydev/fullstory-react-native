@@ -2,6 +2,14 @@
 #import <FullStory/FS.h>
 #import <FullStory/FSDelegate.h>
 
-@interface FullStory : NSObject <RCTBridgeModule, FSDelegate>
+#ifdef RCT_NEW_ARCH_ENABLED
+#import "FullStorySpec.h"
+#endif
 
+@interface FullStory : NSObject <RCTBridgeModule, FSDelegate>
 @end
+
+#ifdef RCT_NEW_ARCH_ENABLED
+@interface FullStory () <NativeFullStorySpec>
+@end
+#endif

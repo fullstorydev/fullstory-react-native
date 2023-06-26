@@ -1,22 +1,44 @@
 package com.fullstory.reactnative;
 
-import com.facebook.react.ReactPackage;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class FullStoryPackage implements ReactPackage {
+public class FullStoryPackage extends TurboReactPackage {
+    @Nullable
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.<NativeModule>asList(new FullStoryModule(reactContext));
+    public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+        if (FullStoryModuleImpl.NAME.equals(name)) {
+            return new FullStoryModule(reactContext);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return () -> {
+            final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
+            boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+            moduleInfos.put(
+                    FullStoryModuleImpl.NAME,
+                    new ReactModuleInfo(
+                            FullStoryModuleImpl.NAME,
+                            FullStoryModuleImpl.NAME,
+                            false, // canOverrideExistingModule
+                            false, // needsEagerInit
+                            true, // hasConstants
+                            false, // isCxxModule
+                            isTurboModule // isTurboModule
+            ));
+            return moduleInfos;
+        };
     }
 }

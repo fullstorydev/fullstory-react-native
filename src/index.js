@@ -1,6 +1,25 @@
-import {NativeModules} from 'react-native';
+import { NativeModules } from "react-native";
 
-const {FullStory} = NativeModules;
+const isTurboModuleEnabled = global.__turboModuleProxy != null;
+
+const FullStory = isTurboModuleEnabled
+  ? require("./NativeFullStory").default
+  : NativeModules.FullStory;
+
+const {
+  anonymize,
+  identify,
+  setUserVars,
+  onReady,
+  getCurrentSession,
+  getCurrentSessionURL,
+  consent,
+  event,
+  shutdown,
+  restart,
+  log,
+  resetIdleTimer,
+} = FullStory;
 
 const LogLevel = {
   Log: 0, // Clamps to Debug on iOS
@@ -9,8 +28,20 @@ const LogLevel = {
   Warn: 3,
   Error: 4,
   Assert: 5, // Clamps to Error on Android
-}
+};
 
-FullStory.LogLevel = LogLevel;
-
-export default FullStory;
+export default {
+  anonymize,
+  identify,
+  setUserVars,
+  onReady,
+  getCurrentSession,
+  getCurrentSessionURL,
+  consent,
+  event,
+  shutdown,
+  restart,
+  log,
+  resetIdleTimer,
+  LogLevel,
+};

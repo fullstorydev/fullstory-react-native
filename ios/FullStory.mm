@@ -35,18 +35,26 @@ RCT_EXPORT_METHOD(setUserVars:(NSDictionary *)userVars)
 	});
 }
 
+- (void) getCurrentSession:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  dispatch_async(dispatch_get_main_queue(), ^{
+        resolve(FS.currentSession);
+    });
+}
+
 RCT_REMAP_METHOD(getCurrentSession, getCurrentSessionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
+  [self getCurrentSession:resolve reject:reject];
+}
+
+- (void) getCurrentSessionURL:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   dispatch_async(dispatch_get_main_queue(), ^{
-		resolve(FS.currentSession);
-	});
+        resolve(FS.currentSessionURL);
+    });
 }
 
 RCT_REMAP_METHOD(getCurrentSessionURL, getCurrentSessionURLWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-		resolve(FS.currentSessionURL);
-	});
+  [self getCurrentSessionURL:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(consent:(BOOL)consented)
@@ -56,7 +64,7 @@ RCT_EXPORT_METHOD(consent:(BOOL)consented)
 	});
 }
 
-RCT_EXPORT_METHOD(event:(NSString *)name properties:(NSDictionary *)properties)
+RCT_EXPORT_METHOD(event:(NSString *)name eventProperties:(NSDictionary *)properties)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
 		[FS event:name properties:properties];
@@ -77,7 +85,7 @@ RCT_EXPORT_METHOD(restart)
 	});
 }
 
-RCT_EXPORT_METHOD(log:(nonnull NSNumber *)level message:(NSString *)message)
+RCT_EXPORT_METHOD(log:(nonnull NSNumber *)level str:(NSString *)str)
 {
 	// React Native LogLevels:
 	// Log    = 0, // Clamps to Debug on iOS
@@ -109,7 +117,7 @@ RCT_EXPORT_METHOD(log:(nonnull NSNumber *)level message:(NSString *)message)
 	}
 
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[FS logWithLevel:levelValue message:message];
+		[FS logWithLevel:levelValue message:str];
 	});
 }
 
@@ -133,9 +141,8 @@ RCT_EXPORT_METHOD(resetIdleTimer)
 	onReadyPromise = nil;
 }
 
-RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
-	onReadyPromise = resolve;
+- (void) onReady:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  	onReadyPromise = resolve;
 	FS.delegate = self;
 
 	if (FS.currentSessionURL) {
@@ -145,6 +152,24 @@ RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve re
 	}
 }
 
+RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+	[self onReady:resolve reject:reject];
+}
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)log:(double)logLevel message:(NSString *)message {
+    NSNumber* _Nonnull level = [NSNumber numberWithInt:logLevel];
+
+    [self log:level str:message];
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+	(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+	return std::make_shared<facebook::react::NativeFullStorySpecJSI>(params);
+}
+#endif
 @end
 
 static const char *_rctview_previous_attributes_key = "associated_object_rctview_previous_attributes_key";
@@ -220,7 +245,6 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 	/* And set them up for cleanup next time. */
 	objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
 }
-
 @end
 
 @interface FSReactSwizzleBootstrap : NSObject
