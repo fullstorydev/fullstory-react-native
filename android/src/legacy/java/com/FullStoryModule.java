@@ -86,4 +86,24 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
     public static void resetIdleTimer() {
         FullStoryModuleImpl.resetIdleTimer();
     }
+
+    @ReactMethod
+    public static void createPage(String pageName, ReadableMap pageProperties) {
+        FullStoryModuleImpl.createPage(pageName, pageProperties);
+    }
+
+    @ReactMethod
+    public static void startPage(ReadableMap pageProperties) {
+        FullStoryModuleImpl.startPage(pageProperties);
+    }
+
+    @ReactMethod
+    public static void updatePage(ReadableMap pageProperties) {
+        FullStoryModuleImpl.updatePage(pageProperties);
+    }
+
+    @ReactMethod
+    public static void endPage() {
+        FullStoryModuleImpl.endPage();
+    }
 }

@@ -87,4 +87,24 @@ public class FullStoryModule extends NativeFullStorySpec {
     public void resetIdleTimer() {
         FullStoryModuleImpl.resetIdleTimer();
     }
+
+    @Override
+    public void createPage(String pageName, ReadableMap pageProperties) {
+        FullStoryModuleImpl.createPage(pageName, pageProperties);
+    }
+
+    @Override
+    public void startPage(ReadableMap pageProperties) {
+        FullStoryModuleImpl.startPage(pageProperties);
+    }
+
+    @Override
+    public void updatePage(ReadableMap pageProperties) {
+        FullStoryModuleImpl.updatePage(pageProperties);
+    }
+
+    @Override
+    public void endPage() {
+        FullStoryModuleImpl.endPage();
+    }
 }
