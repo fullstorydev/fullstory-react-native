@@ -10,6 +10,7 @@
 
 @implementation FullStory {
 	RCTPromiseResolveBlock onReadyPromise;
+	id<FSPage> _page;
 }
 
 RCT_EXPORT_MODULE()
@@ -125,6 +126,40 @@ RCT_EXPORT_METHOD(resetIdleTimer)
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[FS resetIdleTimer];
+	});
+}
+
+RCT_EXPORT_METHOD(createPage:(NSString *)pageName pageProperties:(NSDictionary *)pageProperties)
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		self->_page = [FS pageWithName:pageName properties:pageProperties];
+	});
+}
+
+RCT_EXPORT_METHOD(startPage:(NSDictionary *)pageProperties)
+{
+	if ([pageProperties count] == 0) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self->_page start];
+		});
+	} else {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self->_page startWithPropertyUpdates:pageProperties];
+		});
+	}
+}
+
+RCT_EXPORT_METHOD(endPage)
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->_page end];
+	});
+}
+
+RCT_EXPORT_METHOD(updatePage:(NSDictionary *)pageProperties)
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->_page updateProperties:pageProperties];
 	});
 }
 
