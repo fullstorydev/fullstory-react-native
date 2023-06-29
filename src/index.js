@@ -1,5 +1,4 @@
 import { NativeModules } from 'react-native';
-
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const FullStory = isTurboModuleEnabled
@@ -19,7 +18,6 @@ const {
   restart,
   log,
   resetIdleTimer,
-  createPage,
   startPage,
   endPage,
   updatePage,
@@ -34,9 +32,11 @@ const LogLevel = {
   Assert: 5, // Clamps to Error on Android
 };
 
-const createPageWithProperties = (pageName, pageProperties = {}) => createPage(pageName, pageProperties);
-const startPageWithProperties = (pageProperties = {}) => startPage(pageProperties);
+const startPageWithProperties = (nonce, pageName, pageProperties = {}) =>
+  startPage(nonce, pageName, pageProperties);
 const identifyWithProperties = (uid, userVars = {}) => identify(uid, userVars);
+
+export { FSPage } from './FSPage';
 
 export default {
   anonymize,
@@ -52,7 +52,6 @@ export default {
   log,
   resetIdleTimer,
   LogLevel,
-  createPage: createPageWithProperties,
   startPage: startPageWithProperties,
   endPage,
   updatePage,

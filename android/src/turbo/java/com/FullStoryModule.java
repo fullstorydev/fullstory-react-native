@@ -29,6 +29,12 @@ public class FullStoryModule extends NativeFullStorySpec {
     }
 
     @Override
+    @NonNull
+    public String getUUID() {
+        return FullStoryModuleImpl.getUUID();
+    }
+
+    @Override
     public void anonymize() {
         FullStoryModuleImpl.anonymize();
     }
@@ -89,22 +95,17 @@ public class FullStoryModule extends NativeFullStorySpec {
     }
 
     @Override
-    public void createPage(String pageName, ReadableMap pageProperties) {
-        FullStoryModuleImpl.createPage(pageName, pageProperties);
+    public void startPage(String nonce, String pageName, ReadableMap pageProperties) {
+        FullStoryModuleImpl.startPage(nonce, pageName, pageProperties);
     }
 
     @Override
-    public void startPage(ReadableMap pageProperties) {
-        FullStoryModuleImpl.startPage(pageProperties);
+    public void updatePage(String uuid, ReadableMap pageProperties) {
+        FullStoryModuleImpl.updatePage(uuid, pageProperties);
     }
 
     @Override
-    public void updatePage(ReadableMap pageProperties) {
-        FullStoryModuleImpl.updatePage(pageProperties);
-    }
-
-    @Override
-    public void endPage() {
-        FullStoryModuleImpl.endPage();
+    public void endPage(String uuid) {
+        FullStoryModuleImpl.endPage(uuid);
     }
 }

@@ -33,8 +33,7 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
-  createPage(pageName: string, pageProperties?: Object): void;
-  startPage(pageProperties?: Object): void;
+  startPage(nonce: string, pageName: string, pageProperties?: Object): void;
   endPage(): void;
   updatePage(pageProperties: Object): void;
 };

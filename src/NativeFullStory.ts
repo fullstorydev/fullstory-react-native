@@ -15,9 +15,8 @@ export interface Spec extends TurboModule {
   restart(): void;
   log(logLevel: number, message: string): void;
   resetIdleTimer(): void;
-  createPage(pageName: string, pageProperties?: Object): void;
-  startPage(pageProperties?: Object): void;
-  endPage(): void;
+  startPage(nonce: string, pageName: string, pageProperties?: Object): void;
+  endPage(uuid: string): void;
   updatePage(pageProperties: Object): void;
 }
 
