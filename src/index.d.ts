@@ -33,6 +33,9 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
+  startPage(nonce: string, pageName: string, pageProperties?: Object): void;
+  endPage(): void;
+  updatePage(pageProperties: Object): void;
 };
 
 declare global {

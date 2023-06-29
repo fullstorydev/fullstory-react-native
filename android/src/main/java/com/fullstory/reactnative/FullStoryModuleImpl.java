@@ -1,6 +1,6 @@
 package com.fullstory.reactnative;
 
-import android.util.Log;
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -170,44 +170,42 @@ public class FullStoryModuleImpl {
         return map.toHashMap();
     }
 
+    @NonNull
+    public static String getUUID() {
+		UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+	}
+    
     public static void startPage(String uuid, String pageName, ReadableMap pageProperties) {
-        if (!reflectionSuccess) {
-            return;
-        }
-
         UUID nonce = UUID.fromString(uuid);
+
         try {
-            PAGE_VIEW.invoke(null, nonce, pageName, toMap(pageProperties));
+            Method getWebViewClientMethod = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
+            getWebViewClientMethod.invoke(null, nonce, pageName, toMap(pageProperties));
         } catch (Throwable t) {
-            // this should never happen
-            Log.e(TAG, "Unexpected error while calling startPage. Please contact FullStory Support.");
+            System.out.println("Unable to invoke __pageView via reflection, please contact FullStory Support.");
         }
     }
 
     public static void updatePage(String uuid, ReadableMap pageProperties) {
-        if (!reflectionSuccess) {
-            return;
-        }
         UUID nonce = UUID.fromString(uuid);
 
         try {
-            UPDATE_PAGE_PROPERTIES.invoke(null, nonce, toMap(pageProperties));
+            Method getWebViewClientMethod = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
+            getWebViewClientMethod.invoke(null, nonce, toMap(pageProperties));
         } catch (Throwable t) {
-            // this should never happen
-            Log.e(TAG, "Unexpected error while calling updatePage. Please contact FullStory Support.");
+            System.out.println("Unable to invoke __updatePageProperties, please contact FullStory Support. ");
         }
     }
 
     public static void endPage(String uuid) {
-        if (!reflectionSuccess) {
-            return;
-        }
         UUID nonce = UUID.fromString(uuid);
+
         try {
-            END_PAGE.invoke(null, nonce);
+            Method getWebViewClientMethod = FS.class.getMethod("__endPage", UUID.class);
+            getWebViewClientMethod.invoke(null, nonce);
         } catch (Throwable t) {
-            // this should never happen
-            Log.e(TAG, "Unexpected error while calling endPage. Please contact FullStory Support.");
+            System.out.println("Unable to invoke __endPage, please contact FullStory Support. ");
         }
     }
 }

@@ -17,7 +17,7 @@ export interface Spec extends TurboModule {
   resetIdleTimer(): void;
   startPage(nonce: string, pageName: string, pageProperties?: Object): void;
   endPage(uuid: string): void;
-  updatePage(uuid: string, pageProperties: Object): void;
+  updatePage(pageProperties: Object): void;
 }
 
 export default TurboModuleRegistry.get<Spec>('FullStory');
