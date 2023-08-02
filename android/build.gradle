@@ -2,20 +2,6 @@ def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-buildscript {
-    /* In case of submodule usage, do not try to apply own repositories and plugins,
-        root project is responsible for that. */
-    if (rootProject.buildDir == project.buildDir) {
-        repositories {
-            google()
-            jcenter()
-        }
-        dependencies {
-            classpath 'com.android.tools.build:gradle:3.4.1'
-        }
-    }
-}
-
 def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") &&  rootProject.getProperty("newArchEnabled") == "true"
 }
@@ -102,7 +88,9 @@ if (match.matches()) {
 }
 
 dependencies {
-    implementation "com.android.support:support-v4:${safeExtGet('supportLibVersion', '27.+')}"
-    api "com.facebook.react:react-native:${safeExtGet('reactNative', '+')}"
+    // For < 0.71, this will be from the local maven repo
+    // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
+    //noinspection GradleDynamicVersion
+    implementation 'com.facebook.react:react-native:+'
     implementation "com.fullstory:instrumentation-full:$fsDetectedVersion@aar"
 }
