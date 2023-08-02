@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+Add support for Turbo Native Modules with backward compatibility.
+Fix expo `recordOnStart` config.
+Update gradle configs.
+
 ## 1.1.2
 Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.0.3` to fix attributes in RN 71.
 Add dependency overrides to fix `npm audit` warnings.
