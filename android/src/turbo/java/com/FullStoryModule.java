@@ -18,8 +18,8 @@ public class FullStoryModule extends NativeFullStorySpec {
     }
 
     @Override
-    public void getUUID() {
-        return FullStoryModuleImpl.getUUID();
+    public void getUUID(Promise promise) {
+        FullStoryModuleImpl.getUUID(promise);
     }
 
     @Override
