@@ -13,7 +13,7 @@ const {
     getUUID,
   } = FullStory;
 
-export default class FSPage {
+export class FSPage {
     private pageName: string;
     private nonce: string;
     private properties: Object;
@@ -24,13 +24,13 @@ export default class FSPage {
         this.cleanProperties();
     }
 
-    static FS_PAGE_NAME_KEY = 'pageName';
+    private static FS_PAGE_NAME_KEY = 'pageName';
 
-    static isObject(value) {
+    private static isObject(value) {
         return (value && typeof value === 'object' && !Array.isArray(value));
     }
 
-    static merge(oldValue, newValue) {
+    private static merge(oldValue, newValue) {
         // We can only merge dictionaries and do not perform recursion whenever we
         // encounter a non-dictionary value
         // (see com.fullstory.instrumentation FSPageImpl.java)
@@ -40,22 +40,21 @@ export default class FSPage {
         return FSPage.mergeObjects(oldValue, newValue);
     }
 
-    static mergeObjects(oldObj, newObj) {
-        if (!newObj) return oldObj;
-
+    private static mergeObjects(oldObj, newObj) {
+        // return new object instance on immutable "old" object frozen by RN
+        const mergedObj = { ...oldObj };
         for (const key in newObj) {
             const oldInnerValue = oldObj[key];
             if (oldObj[key]) {
-                oldObj[key] = FSPage.merge(oldInnerValue, newObj[key]);
+                mergedObj[key] = FSPage.merge(oldInnerValue, newObj[key]);
             } else {
-                oldObj[key] = newObj[key];
+                mergedObj[key] = newObj[key];
             }
         }
-      
-        return oldObj;
+        return mergedObj;
     }
 
-    cleanProperties() {
+    private cleanProperties() {
         if (this.properties && this.properties[FSPage.FS_PAGE_NAME_KEY]) {
             delete this.properties[FSPage.FS_PAGE_NAME_KEY];
             console.warn(`${FSPage.FS_PAGE_NAME_KEY} is a reserved property and has been removed.`);
@@ -72,17 +71,17 @@ export default class FSPage {
             return;
         }
 
-        FSPage.merge(this.properties, properties);
+        this.properties = FSPage.merge(this.properties, properties);
         this.cleanProperties();
         updatePage(this.nonce, this.properties);
     }
 
-    start(properties?: Object) {
+    async start(properties?: Object) {
         if (properties) {
-            FSPage.merge(this.properties, properties);
+            this.properties = FSPage.merge(this.properties, properties);
             this.cleanProperties();
         }
-        this.nonce = getUUID();
+        this.nonce = await getUUID();
         startPage(this.nonce, this.pageName, this.properties);
     }
     
@@ -97,13 +96,5 @@ export default class FSPage {
         }
         endPage(this.nonce);
         this.nonce = '';
-    }
-
-    getPageName() {
-        return this.pageName;
-    }
-
-    getProperties() {
-        return this.properties;
     }
 }

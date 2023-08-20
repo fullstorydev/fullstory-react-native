@@ -48,5 +48,20 @@ declare global {
   }
 }
 
+export declare class FSPage {
+  private pageName;
+  private nonce;
+  private properties;
+  constructor(pageName: string, properties?: Object);
+  private static FS_PAGE_NAME_KEY;
+  private static isObject;
+  private static merge;
+  private static mergeObjects;
+  private cleanProperties;
+  update(properties: Object): void;
+  start(properties?: Object): Promise<void>;
+  end(): void;
+}
+
 declare const FullStory: FullStoryStatic;
 export default FullStory;

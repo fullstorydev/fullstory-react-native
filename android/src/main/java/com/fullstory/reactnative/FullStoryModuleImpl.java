@@ -1,13 +1,13 @@
 package com.fullstory.reactnative;
 
 import androidx.annotation.NonNull;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.fullstory.FS;
-import com.fullstory.FSPage;
 import com.fullstory.FSOnReadyListener;
 import com.fullstory.FSSessionData;
 
@@ -18,7 +18,34 @@ import java.lang.reflect.Method;
 public class FullStoryModuleImpl {
 
     public static final String NAME = "FullStory";
-    private static FSPage page;
+    public static final boolean reflectionSuccess;
+    private static final Method PAGE_VIEW;
+    private static final Method UPDATE_PAGE_PROPERTIES;
+    private static final Method END_PAGE;
+
+    static {
+        Method pageView;
+        Method updatePageProperties;
+        Method endPage;
+        try {
+            pageView = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
+            updatePageProperties = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
+            endPage = FS.class.getMethod("__endPage", UUID.class);
+        } catch (Throwable t) {
+            pageView = null;
+            updatePageProperties = null;
+            endPage = null;
+            Log.println(Log.ERROR, NAME, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
+                    "Make sure that your plugin is at least version 1.38; if the issue persists, please contact FullStory Support.");
+        }
+
+        PAGE_VIEW = pageView;
+        UPDATE_PAGE_PROPERTIES = updatePageProperties;
+        END_PAGE = endPage;
+
+        reflectionSuccess = PAGE_VIEW  != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
+    }
+
 
     public static void anonymize() {
         FS.anonymize();
@@ -144,41 +171,46 @@ public class FullStoryModuleImpl {
     }
 
     @NonNull
-    public static String getUUID() {
-		UUID uuid = UUID.randomUUID();
-        return uuid.toString();
-	}
-    
-    public static void startPage(String uuid, String pageName, ReadableMap pageProperties) {
-        UUID nonce = UUID.fromString(uuid);
+    public static void getUUID(Promise promise) {
+        UUID uuid = UUID.randomUUID();
+        promise.resolve(uuid.toString());
+    }
 
+    public static void startPage(String uuid, String pageName, ReadableMap pageProperties) {
+        if (!reflectionSuccess) {
+            return;
+        }
+
+        UUID nonce = UUID.fromString(uuid);
         try {
-            Method getWebViewClientMethod = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
-            getWebViewClientMethod.invoke(null, nonce, pageName, toMap(pageProperties));
+            PAGE_VIEW.invoke(null, nonce, pageName, toMap(pageProperties));
         } catch (Throwable t) {
-            System.out.println("Unable to invoke __pageView via reflection, please contact FullStory Support.");
+            // this should never happen
         }
     }
 
     public static void updatePage(String uuid, ReadableMap pageProperties) {
+        if (!reflectionSuccess) {
+            return;
+        }
         UUID nonce = UUID.fromString(uuid);
 
         try {
-            Method getWebViewClientMethod = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
-            getWebViewClientMethod.invoke(null, nonce, toMap(pageProperties));
+            UPDATE_PAGE_PROPERTIES.invoke(null, nonce, toMap(pageProperties));
         } catch (Throwable t) {
-            System.out.println("Unable to invoke __updatePageProperties, please contact FullStory Support. ");
+            // this should never happen
         }
     }
 
     public static void endPage(String uuid) {
+        if (!reflectionSuccess) {
+            return;
+        }
         UUID nonce = UUID.fromString(uuid);
-
         try {
-            Method getWebViewClientMethod = FS.class.getMethod("__endPage", UUID.class);
-            getWebViewClientMethod.invoke(null, nonce);
+            END_PAGE.invoke(null, nonce);
         } catch (Throwable t) {
-            System.out.println("Unable to invoke __endPage, please contact FullStory Support. ");
+            // this should never happen
         }
     }
 }
