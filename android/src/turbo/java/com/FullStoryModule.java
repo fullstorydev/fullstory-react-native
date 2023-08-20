@@ -18,8 +18,7 @@ public class FullStoryModule extends NativeFullStorySpec {
     }
 
     @Override
-    @NonNull
-    public String getUUID() {
+    public void getUUID() {
         return FullStoryModuleImpl.getUUID();
     }
 
