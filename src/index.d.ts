@@ -33,12 +33,12 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
-}
+};
 
 declare global {
   namespace JSX {
     interface IntrinsicAttributes {
-      fsAttribute?: {[key: string]: string};
+      fsAttribute?: { [key: string]: string };
       fsClass?: string;
       fsTagName?: string;
     }

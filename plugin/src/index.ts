@@ -1,15 +1,11 @@
-import {
-  ConfigPlugin,
-  withPlugins,
-  createRunOncePlugin,
-} from "@expo/config-plugins";
+import { ConfigPlugin, withPlugins, createRunOncePlugin } from '@expo/config-plugins';
 
-import withFullStoryAndroid from "./withFullStoryAndroid";
-import withFullStoryIos from "./withFullStoryIos";
+import withFullStoryAndroid from './withFullStoryAndroid';
+import withFullStoryIos from './withFullStoryIos';
 
-const pkg = require("../../package.json");
+const pkg = require('../../package.json');
 
-type LogLevel = "off" | "error" | "warn" | "info" | "debug" | "log";
+type LogLevel = 'off' | 'error' | 'warn' | 'info' | 'debug' | 'log';
 
 type FullStoryCrossPlatformProps = {
   org: string;
@@ -30,10 +26,7 @@ export type FullStoryIosProps = {
 
 type FullStoryPluginProps = FullStoryAndroidProps & FullStoryIosProps;
 
-const withFullStory: ConfigPlugin<FullStoryPluginProps> = (
-  config,
-  pluginConfigs
-) => {
+const withFullStory: ConfigPlugin<FullStoryPluginProps> = (config, pluginConfigs) => {
   if (!pluginConfigs.org) {
     throw new Error("Please specify an 'org' in your plugin arguments.");
   }

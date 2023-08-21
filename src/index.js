@@ -1,9 +1,9 @@
-import { NativeModules } from "react-native";
+import { NativeModules } from 'react-native';
 
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const FullStory = isTurboModuleEnabled
-  ? require("./NativeFullStory").default
+  ? require('./NativeFullStory').default
   : NativeModules.FullStory;
 
 const {

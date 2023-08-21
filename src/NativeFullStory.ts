@@ -1,6 +1,6 @@
-import type { TurboModule } from "react-native";
-import { TurboModuleRegistry } from "react-native";
-import { OnReadyResponse } from ".";
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
+import { OnReadyResponse } from '.';
 
 export interface Spec extends TurboModule {
   anonymize(): void;
@@ -17,4 +17,4 @@ export interface Spec extends TurboModule {
   resetIdleTimer(): void;
 }
 
-export default TurboModuleRegistry.get<Spec>("FullStory");
+export default TurboModuleRegistry.get<Spec>('FullStory');
