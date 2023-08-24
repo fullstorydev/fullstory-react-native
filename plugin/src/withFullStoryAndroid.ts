@@ -4,17 +4,17 @@ import {
   withAppBuildGradle,
   AndroidConfig,
   ConfigPlugin,
-} from "@expo/config-plugins";
-import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
+} from '@expo/config-plugins';
+import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 
-import { FullStoryAndroidProps } from ".";
+import { FullStoryAndroidProps } from '.';
 
 const { withPermissions } = AndroidConfig.Permissions;
 
-const withPermissionsDelegate: ConfigPlugin = (config) => {
+const withPermissionsDelegate: ConfigPlugin = config => {
   return withPermissions(config, [
-    "android.permission.INTERNET",
-    "android.permission.ACCESS_NETWORK_STATE",
+    'android.permission.INTERNET',
+    'android.permission.ACCESS_NETWORK_STATE',
   ]);
 };
 
@@ -25,39 +25,30 @@ export const addFullStoryMavenRepo = (projectBuildGradle: string) => {
     newSrc: "maven { url 'https://maven.fullstory.com' }",
     anchor: /repositories/,
     offset: 1,
-    comment: "//",
+    comment: '//',
   }).contents;
 };
 
-export const addFullStoryProjectDependency = (
-  projectBuildGradle: string,
-  version: string
-) => {
+export const addFullStoryProjectDependency = (projectBuildGradle: string, version: string) => {
   return mergeContents({
     tag: `@fullstory/react-native dependencies`,
     src: projectBuildGradle,
     newSrc: `classpath 'com.fullstory:gradle-plugin-local:${version}'`,
     anchor: /dependencies/,
     offset: 1,
-    comment: "//",
+    comment: '//',
   }).contents;
 };
 
-const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
-  config,
-  { version }
-) => {
+const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (config, { version }) => {
   return withProjectBuildGradle(config, ({ modResults, ...config }) => {
-    if (modResults.language !== "groovy") {
+    if (modResults.language !== 'groovy') {
       throw new Error(
-        "Cannot configure FullStory in the project gradle because the file is not groovy."
+        'Cannot configure FullStory in the project gradle because the file is not groovy.',
       );
     }
 
-    modResults.contents = addFullStoryProjectDependency(
-      modResults.contents,
-      version
-    );
+    modResults.contents = addFullStoryProjectDependency(modResults.contents, version);
     modResults.contents = addFullStoryMavenRepo(modResults.contents);
     return { modResults, ...config };
   });
@@ -65,14 +56,7 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
 
 export const addFullStoryGradlePlugin = (
   appBuildGradle: string,
-  {
-    org,
-    host,
-    logLevel,
-    logcatLevel,
-    enabledVariants,
-    recordOnStart,
-  }: FullStoryAndroidProps
+  { org, host, logLevel, logcatLevel, enabledVariants, recordOnStart }: FullStoryAndroidProps,
 ) => {
   return mergeContents({
     tag: `@fullstory/react-native plugin`,
@@ -80,41 +64,32 @@ export const addFullStoryGradlePlugin = (
     newSrc: `apply plugin: 'fullstory'
       fullstory {
           org '${org}'
-          ${host ? `server 'https://${host}'` : ""}
-          ${logLevel ? `logLevel '${logLevel}'` : ""}
-          ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ""}
-          ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ""}
-          ${typeof recordOnStart === 'boolean' ? `recordOnStart ${recordOnStart}` : ""}
+          ${host ? `server 'https://${host}'` : ''}
+          ${logLevel ? `logLevel '${logLevel}'` : ''}
+          ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ''}
+          ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ''}
+          ${typeof recordOnStart === 'boolean' ? `recordOnStart ${recordOnStart}` : ''}
       }`,
     anchor: /./,
     offset: 1,
-    comment: "//",
+    comment: '//',
   }).contents;
 };
 
-const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
-  config,
-  pluginConfigs
-) => {
+const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (config, pluginConfigs) => {
   return withAppBuildGradle(config, ({ modResults, ...config }) => {
-    if (modResults.language !== "groovy") {
+    if (modResults.language !== 'groovy') {
       throw new Error(
-        "Cannot configure FullStory in the app gradle because the file is not groovy."
+        'Cannot configure FullStory in the app gradle because the file is not groovy.',
       );
     }
 
-    modResults.contents = addFullStoryGradlePlugin(
-      modResults.contents,
-      pluginConfigs
-    );
+    modResults.contents = addFullStoryGradlePlugin(modResults.contents, pluginConfigs);
     return { modResults, ...config };
   });
 };
 
-const withFullStoryAndroid: ConfigPlugin<FullStoryAndroidProps> = (
-  config,
-  pluginConfigs
-) => {
+const withFullStoryAndroid: ConfigPlugin<FullStoryAndroidProps> = (config, pluginConfigs) => {
   return withPlugins(config, [
     [withProjectGradleDelegate, pluginConfigs],
     [withAppBuildGradleDelegate, pluginConfigs],
