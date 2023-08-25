@@ -78,7 +78,7 @@ export class FSPage {
     updatePage(this.nonce, this.properties);
   }
 
-  async start(properties?: Object) {
+  start(properties?: Object) {
     if (properties) {
       this.properties = FSPage.merge(this.properties, properties);
       this.cleanProperties();
