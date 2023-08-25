@@ -43,7 +43,7 @@ public class FullStoryModuleImpl {
         UPDATE_PAGE_PROPERTIES = updatePageProperties;
         END_PAGE = endPage;
 
-        reflectionSuccess = PAGE_VIEW  != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
+        reflectionSuccess = PAGE_VIEW != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
     }
 
 
@@ -186,6 +186,7 @@ public class FullStoryModuleImpl {
             PAGE_VIEW.invoke(null, nonce, pageName, toMap(pageProperties));
         } catch (Throwable t) {
             // this should never happen
+            Log.println(Log.ERROR, NAME, "Unexpected error while calling startPage. Please contact FullStory Support.");
         }
     }
 
@@ -199,6 +200,7 @@ public class FullStoryModuleImpl {
             UPDATE_PAGE_PROPERTIES.invoke(null, nonce, toMap(pageProperties));
         } catch (Throwable t) {
             // this should never happen
+            Log.println(Log.ERROR, NAME, "Unexpected error while calling updatePage. Please contact FullStory Support.");
         }
     }
 
@@ -211,6 +213,7 @@ public class FullStoryModuleImpl {
             END_PAGE.invoke(null, nonce);
         } catch (Throwable t) {
             // this should never happen
+            Log.println(Log.ERROR, NAME, "Unexpected error while calling endPage. Please contact FullStory Support.");
         }
     }
 }
