@@ -1,6 +1,5 @@
 package com.fullstory.reactnative;
 
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -168,12 +167,6 @@ public class FullStoryModuleImpl {
         }
 
         return map.toHashMap();
-    }
-
-    @NonNull
-    public static void getUUID(Promise promise) {
-        UUID uuid = UUID.randomUUID();
-        promise.resolve(uuid.toString());
     }
 
     public static void startPage(String uuid, String pageName, ReadableMap pageProperties) {

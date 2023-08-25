@@ -18,7 +18,6 @@ export interface Spec extends TurboModule {
   startPage(nonce: string, pageName: string, pageProperties?: Object): void;
   endPage(uuid: string): void;
   updatePage(uuid: string, pageProperties: Object): void;
-  getUUID(): Promise<string>;
 }
 
 export default TurboModuleRegistry.get<Spec>('FullStory');

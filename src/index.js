@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const FullStory = isTurboModuleEnabled

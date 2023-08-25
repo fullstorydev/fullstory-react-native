@@ -91,9 +91,4 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
     public static void endPage(String uuid) {
         FullStoryModuleImpl.endPage(uuid);
     }
-
-    @ReactMethod
-    public static void getUUID(Promise promise) {
-        FullStoryModuleImpl.getUUID(promise);
-    }
 }
