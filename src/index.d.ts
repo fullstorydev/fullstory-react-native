@@ -56,7 +56,7 @@ export declare class FSPage {
   private static mergeObjects;
   private cleanProperties;
   update(properties: Object): void;
-  start(properties?: Object): Promise<void>;
+  start(properties?: Object): void;
   end(): void;
 }
 
