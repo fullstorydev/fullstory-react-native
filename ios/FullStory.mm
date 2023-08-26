@@ -149,10 +149,10 @@ RCT_EXPORT_METHOD(endPage:(NSString *)nonce)
 	if (![FS respondsToSelector:@selector(_endPageWithNonce:)]) {
 		RCTLogError(PagesAPIError, @"endPage");
 	} else {
-    	NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
+		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
 
-    	dispatch_async(dispatch_get_main_queue(), ^{
-        	[FS _endPageWithNonce:uuid];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[FS _endPageWithNonce:uuid];
 		});
 	}
 }
@@ -162,11 +162,11 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
 	if (![FS respondsToSelector:@selector(_updatePageWithNonce:properties:)]) {
         RCTLogError(PagesAPIError, @"endPage");
 	} else {
-        NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
+		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
 
-    	dispatch_async(dispatch_get_main_queue(), ^{
-        	[FS _updatePageWithNonce:uuid properties:pageProperties];
-    	});
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[FS _updatePageWithNonce:uuid properties:pageProperties];
+		});
 	}
 }
 
