@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(endPage:(NSString *)nonce)
 RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pageProperties)
 {
 	if (![FS respondsToSelector:@selector(_updatePageWithNonce:properties:)]) {
-        RCTLogError(PagesAPIError, @"endPage");
+		RCTLogError(PagesAPIError, @"endPage");
 	} else {
 		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
 
