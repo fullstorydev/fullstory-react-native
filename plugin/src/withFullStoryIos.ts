@@ -12,19 +12,19 @@ import { FullStoryIosProps } from '.';
 const fs = require('fs');
 const path = require('path');
 
-async function readFileAsync(path: string) {
-  return fs.promises.readFile(path, 'utf8');
+async function readFileAsync(filePath: string) {
+  return fs.promises.readFile(filePath, 'utf8');
 }
 
-async function saveFileAsync(path: string, content: string) {
-  return fs.promises.writeFile(path, content, 'utf8');
+async function saveFileAsync(filePath: string, content: string) {
+  return fs.promises.writeFile(filePath, content, 'utf8');
 }
 
 const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
-  config,
+  expoConfig,
   { org, host, recordOnStart },
 ) =>
-  withInfoPlist(config, config => {
+  withInfoPlist(expoConfig, config => {
     config.modResults.FullStory = {
       OrgId: org,
       Host: host,
@@ -33,8 +33,8 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
     return config;
   });
 
-const withBuildPhaseDelegate: ConfigPlugin = config =>
-  withXcodeProject(config, config => {
+const withBuildPhaseDelegate: ConfigPlugin = expoConfig =>
+  withXcodeProject(expoConfig, config => {
     const xcodeProject = config.modResults;
 
     const fullStoryBuildPhase = xcodeProject.pbxItemByComment(
@@ -71,8 +71,8 @@ export function addFullStoryToPodfile(src: string, version: string) {
   }).contents;
 }
 
-const withPodfileDelegate: ConfigPlugin<FullStoryIosProps> = (config, { version }) =>
-  withDangerousMod(config, [
+const withPodfileDelegate: ConfigPlugin<FullStoryIosProps> = (expoConfig, { version }) =>
+  withDangerousMod(expoConfig, [
     'ios',
     async config => {
       const file = path.join(config.modRequest.platformProjectRoot, 'Podfile');
@@ -82,8 +82,8 @@ const withPodfileDelegate: ConfigPlugin<FullStoryIosProps> = (config, { version 
     },
   ]);
 
-const withFullStoryIos: ConfigPlugin<FullStoryIosProps> = (config, pluginConfigs) => {
-  return withPlugins(config, [
+const withFullStoryIos: ConfigPlugin<FullStoryIosProps> = (expoConfig, pluginConfigs) => {
+  return withPlugins(expoConfig, [
     [withInfoPlistDelegate, pluginConfigs],
     [withPodfileDelegate, pluginConfigs],
     withBuildPhaseDelegate,
