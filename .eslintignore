@@ -1,1 +1,4 @@
 plugin/build/
+
+# generated files by bob
+lib/
