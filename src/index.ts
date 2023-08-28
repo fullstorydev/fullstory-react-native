@@ -46,7 +46,7 @@ export type OnReadyResponse = {
 declare type FullStoryStatic = {
   LogLevel: typeof LogLevel;
   anonymize(): void;
-  identify(uid: string, userVars?: UserVars): void;
+  identify(uid: string, userVars: UserVars): void;
   setUserVars(userVars: UserVars): void;
   onReady(): Promise<OnReadyResponse>;
   getCurrentSession(): Promise<string>;
