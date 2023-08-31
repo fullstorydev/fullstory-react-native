@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 public class FullStoryModuleImpl {
 
     public static final String NAME = "FullStory";
+    private static final String TAG = "FullStoryModuleImpl";
     public static final boolean reflectionSuccess;
     private static final Method PAGE_VIEW;
     private static final Method UPDATE_PAGE_PROPERTIES;
@@ -34,7 +35,7 @@ public class FullStoryModuleImpl {
             pageView = null;
             updatePageProperties = null;
             endPage = null;
-            Log.println(Log.ERROR, NAME, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
+            Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
                     "Make sure that your plugin is at least version 1.38; if the issue persists, please contact FullStory Support.");
         }
 
@@ -179,7 +180,7 @@ public class FullStoryModuleImpl {
             PAGE_VIEW.invoke(null, nonce, pageName, toMap(pageProperties));
         } catch (Throwable t) {
             // this should never happen
-            Log.println(Log.ERROR, NAME, "Unexpected error while calling startPage. Please contact FullStory Support.");
+            Log.e(TAG, "Unexpected error while calling startPage. Please contact FullStory Support.");
         }
     }
 
@@ -193,7 +194,7 @@ public class FullStoryModuleImpl {
             UPDATE_PAGE_PROPERTIES.invoke(null, nonce, toMap(pageProperties));
         } catch (Throwable t) {
             // this should never happen
-            Log.println(Log.ERROR, NAME, "Unexpected error while calling updatePage. Please contact FullStory Support.");
+            Log.e(TAG, "Unexpected error while calling updatePage. Please contact FullStory Support.");
         }
     }
 
@@ -206,7 +207,7 @@ public class FullStoryModuleImpl {
             END_PAGE.invoke(null, nonce);
         } catch (Throwable t) {
             // this should never happen
-            Log.println(Log.ERROR, NAME, "Unexpected error while calling endPage. Please contact FullStory Support.");
+            Log.e(TAG, "Unexpected error while calling endPage. Please contact FullStory Support.");
         }
     }
 }
