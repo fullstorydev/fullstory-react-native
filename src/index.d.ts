@@ -33,10 +33,6 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
-  createPage(pageName: string, pageProperties?: Object): void;
-  startPage(pageProperties?: Object): void;
-  endPage(): void;
-  updatePage(pageProperties: Object): void;
 };
 
 declare global {
@@ -47,6 +43,21 @@ declare global {
       fsTagName?: string;
     }
   }
+}
+
+export declare class FSPage {
+  private pageName;
+  private nonce;
+  private properties;
+  constructor(pageName: string, properties?: Object);
+  private static FS_PAGE_NAME_KEY;
+  private static isObject;
+  private static merge;
+  private static mergeObjects;
+  private cleanProperties;
+  update(properties: Object): void;
+  start(properties?: Object): void;
+  end(): void;
 }
 
 declare const FullStory: FullStoryStatic;

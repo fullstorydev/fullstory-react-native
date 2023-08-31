@@ -1,21 +1,51 @@
 package com.fullstory.reactnative;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.fullstory.FS;
-import com.fullstory.FSPage;
 import com.fullstory.FSOnReadyListener;
 import com.fullstory.FSSessionData;
 
+import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
+import java.lang.reflect.Method;
 public class FullStoryModuleImpl {
 
     public static final String NAME = "FullStory";
-    private static FSPage page;
+    private static final String TAG = "FullStoryModuleImpl";
+    public static final boolean reflectionSuccess;
+    private static final Method PAGE_VIEW;
+    private static final Method UPDATE_PAGE_PROPERTIES;
+    private static final Method END_PAGE;
+
+    static {
+        Method pageView;
+        Method updatePageProperties;
+        Method endPage;
+        try {
+            pageView = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
+            updatePageProperties = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
+            endPage = FS.class.getMethod("__endPage", UUID.class);
+        } catch (Throwable t) {
+            pageView = null;
+            updatePageProperties = null;
+            endPage = null;
+            Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
+                    "Make sure that your plugin is at least version 1.38; if the issue persists, please contact FullStory Support.");
+        }
+
+        PAGE_VIEW = pageView;
+        UPDATE_PAGE_PROPERTIES = updatePageProperties;
+        END_PAGE = endPage;
+
+        reflectionSuccess = PAGE_VIEW != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
+    }
+
 
     public static void anonymize() {
         FS.anonymize();
@@ -140,25 +170,44 @@ public class FullStoryModuleImpl {
         return map.toHashMap();
     }
 
-    public static void createPage(String pageName, ReadableMap pageProperties) {
-        page = FS.page(pageName, toMap(pageProperties));
-    }
+    public static void startPage(String uuid, String pageName, ReadableMap pageProperties) {
+        if (!reflectionSuccess) {
+            return;
+        }
 
-    public static void startPage(ReadableMap pageProperties) {
-        if (page != null) {
-            page.start(toMap(pageProperties));
+        UUID nonce = UUID.fromString(uuid);
+        try {
+            PAGE_VIEW.invoke(null, nonce, pageName, toMap(pageProperties));
+        } catch (Throwable t) {
+            // this should never happen
+            Log.e(TAG, "Unexpected error while calling startPage. Please contact FullStory Support.");
         }
     }
 
-    public static  void updatePage(ReadableMap pageProperties) {
-        if (page != null) {
-            page.updateProperties(toMap(pageProperties));
+    public static void updatePage(String uuid, ReadableMap pageProperties) {
+        if (!reflectionSuccess) {
+            return;
+        }
+        UUID nonce = UUID.fromString(uuid);
+
+        try {
+            UPDATE_PAGE_PROPERTIES.invoke(null, nonce, toMap(pageProperties));
+        } catch (Throwable t) {
+            // this should never happen
+            Log.e(TAG, "Unexpected error while calling updatePage. Please contact FullStory Support.");
         }
     }
 
-    public static void endPage() {
-        if (page != null) {
-            page.end();
+    public static void endPage(String uuid) {
+        if (!reflectionSuccess) {
+            return;
+        }
+        UUID nonce = UUID.fromString(uuid);
+        try {
+            END_PAGE.invoke(null, nonce);
+        } catch (Throwable t) {
+            // this should never happen
+            Log.e(TAG, "Unexpected error while calling endPage. Please contact FullStory Support.");
         }
     }
 }
