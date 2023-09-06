@@ -13,7 +13,7 @@
 	RCTPromiseResolveBlock onReadyPromise;
 }
 
-NSString *const PagesAPIError = @"Unable to call %@. Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.";
+NSString *const PagesAPIError = @"Unable to access native FullStory pages API and call %@. Pages API will not function correctly. Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.";
 
 RCT_EXPORT_MODULE()
 
@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(endPage:(NSString *)nonce)
 RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pageProperties)
 {
 	if (![FS respondsToSelector:@selector(_updatePageWithNonce:properties:)]) {
-		RCTLogError(PagesAPIError, @"endPage");
+		RCTLogError(PagesAPIError, @"updatePage");
 	} else {
 		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
 
