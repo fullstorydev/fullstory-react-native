@@ -36,7 +36,7 @@ public class FullStoryModuleImpl {
             updatePageProperties = null;
             endPage = null;
             Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
-                    "Make sure that your plugin is at least version 1.38; if the issue persists, please contact FullStory Support.");
+                    "Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.");
         }
 
         PAGE_VIEW = pageView;
