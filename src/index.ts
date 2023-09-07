@@ -1,8 +1,26 @@
-export type OnReadyResponse = {
-  replayStartUrl: string;
-  replayNowUrl: string;
-  sessionId: string;
-};
+import { NativeModules } from 'react-native';
+
+// @ts-expect-error
+const isTurboModuleEnabled = global.__turboModuleProxy != null;
+
+const FullStory = isTurboModuleEnabled
+  ? require('./NativeFullStory').default
+  : NativeModules.FullStory;
+
+const {
+  anonymize,
+  identify,
+  setUserVars,
+  onReady,
+  getCurrentSession,
+  getCurrentSessionURL,
+  consent,
+  event,
+  shutdown,
+  restart,
+  log,
+  resetIdleTimer,
+} = FullStory;
 
 export enum LogLevel {
   Log = 0, // Clamps to Debug on iOS
@@ -18,6 +36,12 @@ interface UserVars {
   email?: string;
   [key: string]: any;
 }
+
+export type OnReadyResponse = {
+  replayStartUrl: string;
+  replayNowUrl: string;
+  sessionId: string;
+};
 
 declare type FullStoryStatic = {
   LogLevel: typeof LogLevel;
@@ -45,20 +69,24 @@ declare global {
   }
 }
 
-export declare class FSPage {
-  private pageName;
-  private nonce;
-  private properties;
-  constructor(pageName: string, properties?: Object);
-  private static FS_PAGE_NAME_KEY;
-  private static isObject;
-  private static merge;
-  private static mergeObjects;
-  private cleanProperties;
-  update(properties: Object): void;
-  start(properties?: Object): void;
-  end(): void;
-}
+const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
 
-declare const FullStory: FullStoryStatic;
-export default FullStory;
+export { FSPage } from './FSPage';
+
+const FullStoryAPI: FullStoryStatic = {
+  anonymize,
+  identify: identifyWithProperties,
+  setUserVars,
+  onReady,
+  getCurrentSession,
+  getCurrentSessionURL,
+  consent,
+  event,
+  shutdown,
+  restart,
+  log,
+  resetIdleTimer,
+  LogLevel,
+};
+
+export default FullStoryAPI;

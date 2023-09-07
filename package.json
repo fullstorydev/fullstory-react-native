@@ -6,15 +6,17 @@
   "homepage": "https://github.com/fullstorydev/fullstory-react-native",
   "author": "FullStory",
   "license": "MIT",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "main": "src/index.ts",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
   "files": [
     "android",
     "ios",
     "plugin/build",
     "src",
     "fullstory_react-native.podspec",
-    "app.plugin.js"
+    "app.plugin.js",
+    "lib"
   ],
   "keywords": [
     "react-native",
@@ -27,7 +29,8 @@
     "format": "prettier --write src plugin/src",
     "lint": "npm run lint:expo & npm run lint:project",
     "lint:expo": "eslint ./plugin",
-    "lint:project": "eslint ./src"
+    "lint:project": "eslint ./src",
+    "prepack": "bob build"
   },
   "dependencies": {
     "@fullstory/babel-plugin-annotate-react": "^2.2.0",
@@ -57,6 +60,7 @@
     "expo": "^49.0.0",
     "jest": "^28.1.2",
     "prettier": "3.0.2",
+    "react-native-builder-bob": "^0.21.3",
     "ts-jest": "^28.0.5",
     "typescript": "^4.9.5"
   },
@@ -70,5 +74,14 @@
     "android": {
       "javaPackageName": "com.fullstory.reactnative"
     }
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   }
 }

@@ -40,8 +40,11 @@ export const addFullStoryProjectDependency = (projectBuildGradle: string, versio
   }).contents;
 };
 
-const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (config, { version }) => {
-  return withProjectBuildGradle(config, ({ modResults, ...config }) => {
+const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
+  expoConfig,
+  { version },
+) => {
+  return withProjectBuildGradle(expoConfig, ({ modResults, ...config }) => {
     if (modResults.language !== 'groovy') {
       throw new Error(
         'Cannot configure FullStory in the project gradle because the file is not groovy.',
@@ -76,8 +79,11 @@ export const addFullStoryGradlePlugin = (
   }).contents;
 };
 
-const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (config, pluginConfigs) => {
-  return withAppBuildGradle(config, ({ modResults, ...config }) => {
+const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
+  expoConfig,
+  pluginConfigs,
+) => {
+  return withAppBuildGradle(expoConfig, ({ modResults, ...config }) => {
     if (modResults.language !== 'groovy') {
       throw new Error(
         'Cannot configure FullStory in the app gradle because the file is not groovy.',
