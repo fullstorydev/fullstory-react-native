@@ -25,7 +25,9 @@
   "scripts": {
     "build": "tsc --build ./plugin",
     "clean": "tsc --build --clean ./plugin",
-    "test": "jest --config ./plugin/jest.config.js",
+    "test": "npm run test:plugin & npm run test:src",
+    "test:plugin": "jest --config ./plugin/jest.config.js",
+    "test:src": "jest --config jest.config.js --silent",
     "format": "prettier --write src plugin/src",
     "lint": "npm run lint:expo & npm run lint:project",
     "lint:expo": "eslint ./plugin",
@@ -47,12 +49,14 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.22.15",
     "@react-native-community/eslint-config": "^3.2.0",
     "@react-native/eslint-plugin-specs": "^0.72.4",
     "@tsconfig/node10": "^1.0.9",
     "@types/jest": "^28.1.4",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
+    "babel-jest": "^29.6.4",
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-universe": "^12.0.0",
