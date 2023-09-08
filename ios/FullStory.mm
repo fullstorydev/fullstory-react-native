@@ -216,6 +216,38 @@ RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve re
 
 static const char *_rctview_previous_attributes_key = "associated_object_rctview_previous_attributes_key";
 
+static void set_fsClass(id json, RCTView *view) {
+    NSArray <NSString *>* classes = [(NSString *)json componentsSeparatedByString: @","];
+    [FS removeAllClasses:view];
+    [FS addClasses:view classNames:classes];
+}
+
+
+static void set_fsAttribute(id json, RCTView *view) {
+    NSDictionary *newAttrs = (NSDictionary *)json;
+
+    /* Clear up all the old attributes first, if they exist. */
+    NSSet *oldAttrs = objc_getAssociatedObject(view, _rctview_previous_attributes_key);
+    if (oldAttrs) {
+        for (NSString *attr in oldAttrs) {
+            [FS removeAttribute:view attributeName:attr];
+        }
+    }
+
+    /* Load in the new attributes. */
+    NSMutableSet *newAttrSet = [NSMutableSet new];
+    if (newAttrs) {
+        for (NSString *attr in newAttrs) {
+            [FS setAttribute:view attributeName:attr attributeValue:(NSString *)newAttrs[attr]];
+            [newAttrSet addObject:attr];
+        }
+    }
+
+    /* And set them up for cleanup next time. */
+    objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
+}
+
+
 @implementation RCTViewManager (FullStory)
 
 + (NSArray<NSString *> *) propConfig_fsClass {
@@ -223,9 +255,7 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 }
 
 - (void) set_fsClass:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
-	NSArray <NSString *>* classes = [(NSString *)json componentsSeparatedByString: @","];
-	[FS removeAllClasses:view];
-	[FS addClasses:view classNames:classes];
+    set_fsClass(json, view);
 }
 
 + (NSArray<NSString *> *) propConfig_dataComponent {
@@ -265,27 +295,7 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 }
 
 - (void) set_fsAttribute:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
-	NSDictionary *newAttrs = (NSDictionary *)json;
-	
-	/* Clear up all the old attributes first, if they exist. */
-	NSSet *oldAttrs = objc_getAssociatedObject(view, _rctview_previous_attributes_key);
-	if (oldAttrs) {
-		for (NSString *attr in oldAttrs) {
-			[FS removeAttribute:view attributeName:attr];
-		}
-	}
-	
-	/* Load in the new attributes. */
-	NSMutableSet *newAttrSet = [NSMutableSet new];
-	if (newAttrs) {
-		for (NSString *attr in newAttrs) {
-			[FS setAttribute:view attributeName:attr attributeValue:(NSString *)newAttrs[attr]];
-			[newAttrSet addObject:attr];
-		}
-	}
-	
-	/* And set them up for cleanup next time. */
-	objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
+    set_fsAttribute(json, view);
 }
 @end
 
@@ -309,5 +319,13 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 		r[@"propTypes"][@"fsAttribute"] = @"NSDictionary *";
 		return r;
 	} SWIZZLE_END;
+
+    SWIZZLE_BEGIN_INSTANCE(RCTViewComponentView, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) {
+            if ([commandName isEqual:@"fsAttribute"]) {
+                set_fsAttribute(args[0], self);
+            } else if ([commandName isEqualToString:@"fsClass"]) {
+                set_fsClass(args[0], self);
+            }
+        } SWIZZLE_END;
 }
 @end
