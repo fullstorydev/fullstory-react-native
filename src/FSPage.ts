@@ -34,7 +34,7 @@ export class FSPage {
   private static generateUUID() {
     return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, () => {
       const char = Math.floor(Math.random() * 16);
-      return char.toString(16);
+      return char.toString(16).toUpperCase();
     });
   }
 

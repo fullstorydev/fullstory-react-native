@@ -8,5 +8,5 @@ module.exports = {
     '\\.(ts|tsx)$': 'ts-jest',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/(?!(@react-native|react-native)/).*/'],
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/plugin'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/plugin', '<rootDir>/lib'],
 };
