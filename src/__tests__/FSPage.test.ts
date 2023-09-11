@@ -2,6 +2,12 @@ import { describe, it, expect, afterEach } from '@jest/globals';
 import { FSPage } from '../FSPage';
 import { NativeModules } from 'react-native';
 
+const SAMPLE_UUID = '64CB2E82-3002-E01B-B58A-E089B79F6223';
+
+jest.mock('../utils', () => ({
+  generateUUID: jest.fn().mockImplementation(() => SAMPLE_UUID),
+}));
+
 describe('FSPage', () => {
   const SAMPLE_PAGE_NAME = 'sample page name';
   const SAMPLE_PAGE_PROPS = {
@@ -30,8 +36,7 @@ describe('FSPage', () => {
 
     const startPage = NativeModules.FullStory.startPage;
     expect(startPage).toBeCalledTimes(1);
-    // @ts-expect-error nonce is a private property
-    expect(startPage).toBeCalledWith(page.nonce, SAMPLE_PAGE_NAME, SAMPLE_PAGE_PROPS);
+    expect(startPage).toBeCalledWith(SAMPLE_UUID, SAMPLE_PAGE_NAME, SAMPLE_PAGE_PROPS);
   });
 
   it('Page update calls updatePage with correct arguments', () => {
@@ -42,21 +47,18 @@ describe('FSPage', () => {
 
     const updatePage = NativeModules.FullStory.updatePage;
     expect(updatePage).toBeCalledTimes(1);
-    // @ts-expect-error nonce is a private property
-    expect(updatePage).toBeCalledWith(page.nonce, SAMPLE_PAGE_PROPS);
+    expect(updatePage).toBeCalledWith(SAMPLE_UUID, SAMPLE_PAGE_PROPS);
   });
 
   it('Page end calls endPage with correct arguments', () => {
     const page = new FSPage(SAMPLE_PAGE_NAME, SAMPLE_PAGE_PROPS);
 
     page.start();
-    // @ts-expect-error nonce is a private property
-    const nonceCopy = `${page.nonce}`;
     page.end();
 
     const endPage = NativeModules.FullStory.endPage;
     expect(endPage).toBeCalledTimes(1);
-    expect(endPage).toBeCalledWith(nonceCopy);
+    expect(endPage).toBeCalledWith(SAMPLE_UUID);
   });
 
   it('Page start will remove pageName key', () => {
@@ -66,8 +68,8 @@ describe('FSPage', () => {
     page.start(PAGE_PROPS_WITH_PAGE_NAME);
 
     const startPage = NativeModules.FullStory.startPage;
-    // @ts-expect-error nonce is a private property
-    expect(startPage).toBeCalledWith(page.nonce, SAMPLE_PAGE_NAME, SAMPLE_PAGE_PROPS);
+
+    expect(startPage).toBeCalledWith(SAMPLE_UUID, SAMPLE_PAGE_NAME, SAMPLE_PAGE_PROPS);
   });
 
   it('Unstarted page will not call update or end page', () => {
@@ -98,7 +100,6 @@ describe('FSPage', () => {
       code: 'tree',
     };
 
-    // @ts-expect-error nonce is a private property
-    expect(updatePage).toHaveBeenCalledWith(page.nonce, expectedMergedObj);
+    expect(updatePage).toHaveBeenCalledWith(SAMPLE_UUID, expectedMergedObj);
   });
 });

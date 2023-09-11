@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { generateUUID } from './utils';
 
 // @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
@@ -30,13 +31,6 @@ export class FSPage {
   }
 
   private static FS_PAGE_NAME_KEY = 'pageName';
-
-  private static generateUUID() {
-    return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, () => {
-      const char = Math.floor(Math.random() * 16);
-      return char.toString(16).toUpperCase();
-    });
-  }
 
   private static isObject(value: unknown) {
     return value && typeof value === 'object' && !Array.isArray(value);
@@ -93,7 +87,7 @@ export class FSPage {
       this.properties = FSPage.merge(this.properties, properties) as UnknownObj;
       this.cleanProperties();
     }
-    this.nonce = FSPage.generateUUID();
+    this.nonce = generateUUID();
     startPage(this.nonce, this.pageName, this.properties);
   }
 
