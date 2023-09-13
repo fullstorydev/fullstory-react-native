@@ -5,12 +5,15 @@
 #import <React/RCTView.h>
 #import <React/RCTViewManager.h>
 #import <React/RCTComponentData.h>
+#import <React/RCTLog.h>
 
 #import "FSReactSwizzle.h"
 
 @implementation FullStory {
 	RCTPromiseResolveBlock onReadyPromise;
 }
+
+NSString *const PagesAPIError = @"Unable to access native FullStory pages API and call %@. Pages API will not function correctly. Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.";
 
 RCT_EXPORT_MODULE()
 
@@ -126,6 +129,45 @@ RCT_EXPORT_METHOD(resetIdleTimer)
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[FS resetIdleTimer];
 	});
+}
+
+RCT_EXPORT_METHOD(startPage:(NSString *)nonce pageName:(NSString *)pageName pageProperties:(NSDictionary *)pageProperties)
+{
+	if (![FS respondsToSelector:@selector(_pageViewWithNonce:name:properties:)]) {
+		RCTLogError(PagesAPIError, @"startPage");
+	} else {
+		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];        
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[FS _pageViewWithNonce:uuid name:pageName properties:pageProperties];
+		});
+	}
+}
+
+RCT_EXPORT_METHOD(endPage:(NSString *)nonce)
+{
+	if (![FS respondsToSelector:@selector(_endPageWithNonce:)]) {
+		RCTLogError(PagesAPIError, @"endPage");
+	} else {
+		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[FS _endPageWithNonce:uuid];
+		});
+	}
+}
+
+RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pageProperties)
+{
+	if (![FS respondsToSelector:@selector(_updatePageWithNonce:properties:)]) {
+		RCTLogError(PagesAPIError, @"updatePage");
+	} else {
+		NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nonce];
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[FS _updatePageWithNonce:uuid properties:pageProperties];
+		});
+	}
 }
 
 - (void) fullstoryDidStartSession:(NSString *)sessionUrl {

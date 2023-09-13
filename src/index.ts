@@ -71,6 +71,8 @@ declare global {
 
 const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
 
+export { FSPage } from './FSPage';
+
 const FullStoryAPI: FullStoryStatic = {
   anonymize,
   identify: identifyWithProperties,
