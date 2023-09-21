@@ -1,30 +1,47 @@
 # Changelog
 
+## 1.3.0
+
+Add support for FullStory Pages API.
+Set up tsconfig and update TypeScript types.
+
+## 1.2.1
+
+Fix Android Turbomodule backward compatability with RN versions `<=0.64`.
+
 ## 1.2.0
+
 Add support for Turbo Native Modules with backward compatibility.
 Fix expo `recordOnStart` config.
 Update gradle configs.
 
 ## 1.1.2
+
 Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.0.3` to fix attributes in RN 71.
 Add dependency overrides to fix `npm audit` warnings.
 
 ## 1.1.1
+
 Fixed issues with TypeScript types. Thanks [devon94](https://github.com/devon94) for reporting and supplying a fix.
 
 ## 1.1.0
+
 Added support for [Expo Managed Workflows](https://docs.expo.dev/introduction/managed-vs-bare/).
 
 ## 1.0.7
+
 Added `FS.resetIdleTimer` to the TypeScript types.
 
 ## 1.0.6
+
 Added support for calling `FS.resetIdleTimer`. This release now requires a minimum FullStory plugin version of `1.14.0`.
 
 ## 1.0.5
+
 Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to 1.0.2, to better work around metro server issues.
 
 ## 1.0.4
+
 Updated the minimum versions for the FullStory babel plugins. Added a Typescript declaration for the FullStory base attributes. Added Typescript declarations for the FullStory API.
 
 ## 1.0.3
@@ -37,7 +54,7 @@ Changed how the peer dependency for React Native is declared to better handle st
 
 ## 1.0.1
 
-Link to a newer version of @fullstory/babel-plugin-annotate-react in order to fix React.Fragment and provide unimodules support 
+Link to a newer version of @fullstory/babel-plugin-annotate-react in order to fix React.Fragment and provide unimodules support
 
 ## 1.0.0
 
