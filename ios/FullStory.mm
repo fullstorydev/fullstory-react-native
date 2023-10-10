@@ -222,6 +222,21 @@ static void set_fsClass(id json, RCTView *view) {
     [FS addClasses:view classNames:classes];
 }
 
+static void set_fsTagName(id json, RCTView *view) {
+   [FS setTagName:view tagName:(NSString *)json];
+}
+
+static void set_dataComponent(id json, RCTView *view) {
+   [FS setAttribute:view attributeName:@"data-component" attributeValue:(NSString *)json];
+}
+
+static void set_dataElement(id json, RCTView *view) {
+    [FS setAttribute:view attributeName:@"data-element" attributeValue:(NSString *)json];
+}
+
+static void set_dataSourceFile(id json, RCTView *view) {
+    [FS setAttribute:view attributeName:@"data-source-file" attributeValue:(NSString *)json];
+}
 
 static void set_fsAttribute(id json, RCTView *view) {
     NSDictionary *newAttrs = (NSDictionary *)json;
@@ -287,7 +302,7 @@ static void set_fsAttribute(id json, RCTView *view) {
 }
 
 - (void) set_fsTagName:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
-	[FS setTagName:view tagName:(NSString *)json];
+	set_fsTagName(json, view);
 }
 
 + (NSArray<NSString *> *) propConfig_fsAttribute {
@@ -320,12 +335,32 @@ static void set_fsAttribute(id json, RCTView *view) {
 		return r;
 	} SWIZZLE_END;
 
-    SWIZZLE_BEGIN_INSTANCE(RCTViewComponentView, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) {
-            if ([commandName isEqual:@"fsAttribute"]) {
-                set_fsAttribute(args[0], self);
-            } else if ([commandName isEqualToString:@"fsClass"]) {
-                set_fsClass(args[0], self);
-            }
-        } SWIZZLE_END;
+    // SWIZZLE_BEGIN_INSTANCE(RCTViewComponentView, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) {
+    //         if ([commandName isEqual:@"fsAttribute"]) {
+    //             set_fsAttribute(args[0], self);
+    //         } else if ([commandName isEqualToString:@"fsClass"]) {
+    //             set_fsClass(args[0], self);
+    //         } else if ([commandName isEqual:@"dataElement"]) {
+    //             set_dataElement(args[0], self);
+    //         } else if ([commandName isEqualToString:@"dataSourceFile"]) {
+    //             set_dataSourceFile(args[0], self);
+    //         } else if ([commandName isEqualToString:@"fsTagName"]) {
+    //             set_fsTagName(args[0], self);
+    //         } else if ([commandName isEqualToString:@"dataComponent"]) {
+    //             set_dataComponent(args[0], self);
+    //         }
+    //     } SWIZZLE_END;
+
+	// SWIZZLE_BEGIN_INSTANCE(RCTTextInputComponentView, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) {
+	// 		if ([commandName isEqual:@"fsAttribute"]) {
+	// 			set_fsAttribute(args[0], self);
+	// 		} else if ([commandName isEqualToString:@"fsClass"]) {
+	// 			set_fsClass(args[0], self);
+	// 		} else if ([commandName isEqual:@"dataElement"]) {
+	// 			set_dataElement(args[0], self);
+	// 		} else if ([commandName isEqualToString:@"dataSourceFile"]) {
+	// 			set_dataSourceFile(args[0], self);
+	// 		}
+	// 	} SWIZZLE_END;
 }
 @end
