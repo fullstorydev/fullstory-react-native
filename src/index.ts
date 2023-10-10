@@ -69,6 +69,7 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
+  captureConsoleLogs(): void;
 };
 
 declare global {
@@ -160,6 +161,35 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   };
 }
 
+const captureConsoleLogs = () => {
+  const consoleLevelMap = {
+    log: LogLevel.Log,
+    trace: LogLevel.Debug,
+    debug: LogLevel.Debug,
+    info: LogLevel.Info,
+    warn: LogLevel.Warn,
+    error: LogLevel.Error,
+  };
+
+  type ConsoleLevels = keyof typeof consoleLevelMap;
+
+  for (const rnLogLevel in consoleLevelMap) {
+    if (!(rnLogLevel in console)) {
+      continue;
+    }
+
+    const originalLogger = console[rnLogLevel as ConsoleLevels];
+
+    console[rnLogLevel as ConsoleLevels] = function (message?: any, ...args: any[]) {
+      // call FS log with the mapped level
+      FullStory.log(consoleLevelMap[rnLogLevel as ConsoleLevels], [message, ...args].join(' '));
+
+      // call original logger
+      originalLogger.apply(console, [message, ...args]);
+    };
+  }
+};
+
 const FullStoryAPI: FullStoryStatic = {
   anonymize,
   identify: identifyWithProperties,
@@ -174,6 +204,7 @@ const FullStoryAPI: FullStoryStatic = {
   log,
   resetIdleTimer,
   LogLevel,
+  captureConsoleLogs,
 };
 
 export default FullStoryAPI;
