@@ -114,13 +114,11 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
       // @ts-expect-error `currentProps` is missing in `NativeMethods`
       const fsClass = element.currentProps['fsClass'];
       if (fsClass) {
-        // console.log('fsClass=' + fsClass);
         Commands.fsClass(element, fsClass);
       }
       // @ts-expect-error `currentProps` is missing in `NativeMethods`
       const fsAttribute = element.currentProps['fsAttribute'];
       if (fsAttribute) {
-        // console.log('fsAttribute=' + fsAttribute);
         Commands.fsAttribute(element, fsAttribute);
       }
       // @ts-expect-error `currentProps` is missing in `NativeMethods`
