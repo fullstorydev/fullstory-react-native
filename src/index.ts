@@ -1,7 +1,7 @@
 import { HostComponent, NativeModules } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
-import { MutableRefObject } from 'react';
+import { ForwardedRef } from 'react';
 
 // @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
@@ -106,7 +106,7 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-export function applyFSPropertiesWithRef(existingRef?: MutableRefObject<unknown>) {
+export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   return function (element: React.ElementRef<FSComponentType>) {
     // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
     // @ts-expect-error `currentProps` is missing in `NativeMethods`
