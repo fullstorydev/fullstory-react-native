@@ -1,4 +1,4 @@
-import { HostComponent, NativeModules } from 'react-native';
+import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
@@ -110,7 +110,7 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   return function (element: React.ElementRef<FSComponentType>) {
     // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
     // @ts-expect-error `currentProps` is missing in `NativeMethods`
-    if (element && element.currentProps) {
+    if (isTurboModuleEnabled && Platform.OS === 'ios' && element && element.currentProps) {
       // @ts-expect-error `currentProps` is missing in `NativeMethods`
       const fsClass = element.currentProps['fsClass'];
       if (fsClass) {
@@ -141,13 +141,13 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
       if (dataSourceFile) {
         Commands.dataSourceFile(element, dataSourceFile);
       }
+    }
 
-      if (existingRef) {
-        if (existingRef instanceof Function) {
-          existingRef(element);
-        } else {
-          existingRef.current = element;
-        }
+    if (existingRef) {
+      if (existingRef instanceof Function) {
+        existingRef(element);
+      } else {
+        existingRef.current = element;
       }
     }
   };
