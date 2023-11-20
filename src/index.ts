@@ -95,6 +95,11 @@ interface NativeCommands {
   dataComponent: (viewRef: React.ElementRef<FSComponentType>, dataElement: string) => void;
 }
 
+/* 
+  Calling these commands sequentially will *not* lead to an intermediate state where views
+  have incomplete attribute values. React's rendering phases protects against this race condition.
+  See DOC-1863 for more information.
+*/
 const SUPPORTED_FS_ATTRIBUTES = [
   'fsClass',
   'fsAttribute',
