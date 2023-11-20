@@ -397,7 +397,7 @@ static bool array_contains_string(const char **array, const char *string) {
         // so may not respond to retain messages. See:
         // https://gist.github.com/mikeash/1267596
         __unsafe_unretained Class classes[classCount];
-        // Install swizzle in all subclasses of RCTViewComponentView
+        // Verify swizzle in all subclasses of RCTViewComponentView
         objc_getClassList(classes, classCount);
         for (int i = 0; i < classCount; i++) {
             Class _Nullable __unsafe_unretained cls = classes[i];
