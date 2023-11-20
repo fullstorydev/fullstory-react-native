@@ -95,49 +95,51 @@ interface NativeCommands {
   dataComponent: (viewRef: React.ElementRef<FSComponentType>, dataElement: string) => void;
 }
 
+const SUPPORTED_FS_ATTRIBUTES = [
+  'fsClass',
+  'fsAttribute',
+  'fsTagName',
+  'dataElement',
+  'dataComponent',
+  'dataSourceFile',
+] as (keyof NativeCommands)[];
+
 const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: [
-    'fsClass',
-    'fsAttribute',
-    'fsTagName',
-    'dataElement',
-    'dataComponent',
-    'dataSourceFile',
-  ],
+  supportedCommands: SUPPORTED_FS_ATTRIBUTES,
 });
 
 export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   return function (element: React.ElementRef<FSComponentType>) {
     // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
     // @ts-expect-error `currentProps` is missing in `NativeMethods`
-    if (isTurboModuleEnabled && Platform.OS === 'ios' && element && element.currentProps) {
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
-      const fsClass = element.currentProps['fsClass'];
+    const currentProps = element?.currentProps as Record<keyof NativeCommands, string | object>;
+    if (isTurboModuleEnabled && Platform.OS === 'ios' && currentProps) {
+      const fsClass = currentProps.fsClass as string;
       if (fsClass) {
         Commands.fsClass(element, fsClass);
       }
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
-      const fsAttribute = element.currentProps['fsAttribute'];
+
+      const fsAttribute = currentProps.fsAttribute as object;
       if (fsAttribute) {
         Commands.fsAttribute(element, fsAttribute);
       }
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
-      const fsTagName = element.currentProps['fsTagName'];
+
+      const fsTagName = currentProps.fsTagName as string;
       if (fsTagName) {
         Commands.fsTagName(element, fsTagName);
       }
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
-      const dataElement = element.currentProps['dataElement'];
+
+      const dataElement = currentProps.dataElement as string;
       if (dataElement) {
         Commands.dataElement(element, dataElement);
       }
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
-      const dataComponent = element.currentProps['dataComponent'];
+
+      const dataComponent = currentProps.dataComponent as string;
       if (dataComponent) {
         Commands.dataComponent(element, dataComponent);
       }
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
-      const dataSourceFile = element.currentProps['dataSourceFile'];
+
+      const dataSourceFile = currentProps.dataSourceFile as string;
       if (dataSourceFile) {
         Commands.dataSourceFile(element, dataSourceFile);
       }
