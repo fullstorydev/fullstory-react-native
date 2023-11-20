@@ -216,6 +216,53 @@ RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve re
 
 static const char *_rctview_previous_attributes_key = "associated_object_rctview_previous_attributes_key";
 
+static void set_fsClass(id json, RCTView *view) {
+    NSArray <NSString *>* classes = [(NSString *)json componentsSeparatedByString: @","];
+    [FS removeAllClasses:view];
+    [FS addClasses:view classNames:classes];
+}
+
+static void set_fsTagName(id json, RCTView *view) {
+   [FS setTagName:view tagName:(NSString *)json];
+}
+
+static void set_dataComponent(id json, RCTView *view) {
+   [FS setAttribute:view attributeName:@"data-component" attributeValue:(NSString *)json];
+}
+
+static void set_dataElement(id json, RCTView *view) {
+    [FS setAttribute:view attributeName:@"data-element" attributeValue:(NSString *)json];
+}
+
+static void set_dataSourceFile(id json, RCTView *view) {
+    [FS setAttribute:view attributeName:@"data-source-file" attributeValue:(NSString *)json];
+}
+
+static void set_fsAttribute(id json, RCTView *view) {
+    NSDictionary *newAttrs = (NSDictionary *)json;
+
+    /* Clear up all the old attributes first, if they exist. */
+    NSSet *oldAttrs = objc_getAssociatedObject(view, _rctview_previous_attributes_key);
+    if (oldAttrs) {
+        for (NSString *attr in oldAttrs) {
+            [FS removeAttribute:view attributeName:attr];
+        }
+    }
+
+    /* Load in the new attributes. */
+    NSMutableSet *newAttrSet = [NSMutableSet new];
+    if (newAttrs) {
+        for (NSString *attr in newAttrs) {
+            [FS setAttribute:view attributeName:attr attributeValue:(NSString *)newAttrs[attr]];
+            [newAttrSet addObject:attr];
+        }
+    }
+
+    /* And set them up for cleanup next time. */
+    objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
+}
+
+
 @implementation RCTViewManager (FullStory)
 
 + (NSArray<NSString *> *) propConfig_fsClass {
@@ -223,9 +270,7 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 }
 
 - (void) set_fsClass:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
-	NSArray <NSString *>* classes = [(NSString *)json componentsSeparatedByString: @","];
-	[FS removeAllClasses:view];
-	[FS addClasses:view classNames:classes];
+    set_fsClass(json, view);
 }
 
 + (NSArray<NSString *> *) propConfig_dataComponent {
@@ -257,7 +302,7 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 }
 
 - (void) set_fsTagName:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
-	[FS setTagName:view tagName:(NSString *)json];
+	set_fsTagName(json, view);
 }
 
 + (NSArray<NSString *> *) propConfig_fsAttribute {
@@ -265,32 +310,38 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 }
 
 - (void) set_fsAttribute:(id)json forView:(RCTView*)view withDefaultView:(RCTView *)defaultView {
-	NSDictionary *newAttrs = (NSDictionary *)json;
-	
-	/* Clear up all the old attributes first, if they exist. */
-	NSSet *oldAttrs = objc_getAssociatedObject(view, _rctview_previous_attributes_key);
-	if (oldAttrs) {
-		for (NSString *attr in oldAttrs) {
-			[FS removeAttribute:view attributeName:attr];
-		}
-	}
-	
-	/* Load in the new attributes. */
-	NSMutableSet *newAttrSet = [NSMutableSet new];
-	if (newAttrs) {
-		for (NSString *attr in newAttrs) {
-			[FS setAttribute:view attributeName:attr attributeValue:(NSString *)newAttrs[attr]];
-			[newAttrSet addObject:attr];
-		}
-	}
-	
-	/* And set them up for cleanup next time. */
-	objc_setAssociatedObject(view, _rctview_previous_attributes_key, newAttrSet, OBJC_ASSOCIATION_RETAIN);
+    set_fsAttribute(json, view);
 }
 @end
 
 @interface FSReactSwizzleBootstrap : NSObject
 @end
+#define SWIZZLE_HANDLE_COMMAND(rct_clazz) \
+SWIZZLE_BEGIN_INSTANCE(rct_clazz, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) { \
+    if ([commandName isEqualToString:@"fsAttribute"]) { \
+        set_fsAttribute(args[0], self); \
+    } else if ([commandName isEqualToString:@"fsClass"]) { \
+        set_fsClass(args[0], self); \
+    } else if ([commandName isEqualToString:@"dataElement"]) { \
+        set_dataElement(args[0], self); \
+    } else if ([commandName isEqualToString:@"dataSourceFile"]) { \
+        set_dataSourceFile(args[0], self); \
+    } else if ([commandName isEqualToString:@"fsTagName"]) { \
+        set_fsTagName(args[0], self); \
+    } else if ([commandName isEqualToString:@"dataComponent"]) { \
+        set_dataComponent(args[0], self); \
+    } else { \
+        SWIZZLED_METHOD(commandName, args); \
+    } \
+} SWIZZLE_END
+
+static bool array_contains_string(const char **array, const char *string) {
+    if (string == nullptr || array == nullptr) return false;
+    for (; *array != nullptr; array++) {
+        if (strcmp(*array, string) == 0) return true;
+    }
+    return false;
+}
 
 @implementation FSReactSwizzleBootstrap
 + (void) load {
@@ -309,5 +360,71 @@ static const char *_rctview_previous_attributes_key = "associated_object_rctview
 		r[@"propTypes"][@"fsAttribute"] = @"NSDictionary *";
 		return r;
 	} SWIZZLE_END;
+
+    // To store each original method in its own separate location,
+    // we separately swizzle each class manually
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SWIZZLE_HANDLE_COMMAND(RCTViewComponentView);
+    SWIZZLE_HANDLE_COMMAND(RCTTextInputComponentView);
+    SWIZZLE_HANDLE_COMMAND(RCTSwitchComponentView);
+    SWIZZLE_HANDLE_COMMAND(RCTScrollViewComponentView);
+    SWIZZLE_HANDLE_COMMAND(RCTPullToRefreshViewComponentView);
+    SWIZZLE_HANDLE_COMMAND(RCTLegacyViewManagerInteropComponentView);
+#pragma clang pop
+#ifdef DEBUG
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+      // RCTViewComponentView subclasses don't tend to call their superclass implementations of handleCommand, so in debug mode, we want to make sure that we don't have any "straggler" classes (especially React core classes!) that don't have their implementations of handleCommand interposed.  We enumerate all the classes on the system, determine if any has a superclass of RCTViewComponentView, and if so, make sure that we have it covered.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+        SEL sel = @selector(handleCommand:args:);
+#pragma clang pop
+        const char* swizzled_classes[] = {
+            "RCTViewComponentView",
+            "RCTTextInputComponentView",
+            "RCTSwitchComponentView",
+            "RCTScrollViewComponentView",
+            "RCTPullToRefreshViewComponentView",
+            "RCTLegacyViewManagerInteropComponentView",
+            0};
+        // Grab the impl of RCTViewComponentView
+        Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
+        Method _Nullable swizzledViewComponentViewCommand = class_getInstanceMethod(viewComponentView, sel);
+        IMP swizzledViewComponentViewCommandImplementation = method_getImplementation(swizzledViewComponentViewCommand);
+
+        int classCount = objc_getClassList(NULL, 0);
+        // The classes stored in this array may not be NSObject classes,
+        // so may not respond to retain messages. See:
+        // https://gist.github.com/mikeash/1267596
+        __unsafe_unretained Class classes[classCount];
+        // Verify swizzle in all subclasses of RCTViewComponentView
+        objc_getClassList(classes, classCount);
+        for (int i = 0; i < classCount; i++) {
+            Class _Nullable __unsafe_unretained cls = classes[i];
+            while (cls && cls != viewComponentView) {
+                cls = class_getSuperclass(cls);
+            }
+            if (cls == viewComponentView && cls && !array_contains_string(swizzled_classes, class_getName(classes[i]))) {
+                cls = classes[i];
+                const char *className = class_getName(cls);
+                // Note that this will find the superclass's implementation,
+                // which informs us whether this class gets its implementation
+                // from the swizzle above.
+                // Since we skip the explicitly swizzled classes, each with
+                // its own implementation, the remaining classes should either
+                // have the superclass implementation, or their own, which is
+                // incapable of receiving FS properties.
+                Method _Nullable existingMethod = class_getInstanceMethod(cls, sel);
+                if (existingMethod) {
+                    IMP existingImplementation = method_getImplementation(existingMethod);
+                    if (existingImplementation != swizzledViewComponentViewCommandImplementation) {
+                        NSAssert(strncmp(className, "RCT", 3) != 0, @"React Native framework class %s needs handleCommand support! Please contact FullStory support with this message.", className);
+                        NSLog(@"RCTViewComponentView subclass %s cannot receive FullStory commands; FullStory attributes on such views may not function correctly.  If you need to attach FullStory attributes to such views, please contact FullStory support with this message.", className);
+                    }
+                }
+            }
+        }
+    });
+#endif
 }
 @end
