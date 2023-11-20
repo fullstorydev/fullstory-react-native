@@ -374,6 +374,7 @@ static bool array_contains_string(const char **array, const char *string) {
 #pragma clang pop
 #ifdef DEBUG
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+      // RCTViewComponentView subclasses don't tend to call their superclass implementations of handleCommand, so in debug mode, we want to make sure that we don't have any "straggler" classes (especially React core classes!) that don't have their implementations of handleCommand interposed.  We enumerate all the classes on the system, determine if any has a superclass of RCTViewComponentView, and if so, make sure that we have it covered.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
         SEL sel = @selector(handleCommand:args:);
