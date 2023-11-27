@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@fullstory/babel-plugin-annotate-react": "^2.2.0",
-    "@fullstory/babel-plugin-react-native": "^1.0.3"
+    "@fullstory/babel-plugin-react-native": "git+https://github.com/fullstorydev/fullstory-babel-plugin-react-native.git#ryanwang/swizzle-reactElement"
   },
   "peerDependencies": {
     "expo": ">=47.0.0",
