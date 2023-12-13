@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+Added support for the [React Native New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page) (this includes support for Fabric and Turbo Native Modules). Refer to the [New Architecture](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-FullStory-React-Native-Capture#01HHCXMMZQ970DRWFA0XC03ER4) section of the FullStory React Native Getting Started guide for more information about minimum SDK and plugin versions.
+
 ## 1.3.0
 
 Add support for FullStory Pages API.
