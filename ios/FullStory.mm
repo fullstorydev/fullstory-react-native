@@ -419,7 +419,7 @@ static bool array_contains_string(const char **array, const char *string) {
                     IMP existingImplementation = method_getImplementation(existingMethod);
                     if (existingImplementation != swizzledViewComponentViewCommandImplementation) {
                         NSAssert(strncmp(className, "RCT", 3) != 0, @"React Native framework class %s needs handleCommand support! Please contact FullStory support with this message.", className);
-                        NSLog(@"RCTViewComponentView subclass %s cannot receive FullStory commands; FullStory attributes on such views may not function correctly.  If you need to attach FullStory attributes to such views, please contact FullStory support with this message.", className);
+                        NSLog(@"RCTViewComponentView subclass %s cannot receive FullStory commands; FullStory attributes on such views may not function correctly.", className);
                     }
                 }
             }
