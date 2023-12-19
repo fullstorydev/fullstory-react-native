@@ -2,6 +2,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
+import { LogLevel, enableConsoleCapture } from './consoleCapture';
 
 // @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
@@ -34,15 +35,6 @@ const {
   resetIdleTimer,
 } = FullStory;
 
-export enum LogLevel {
-  Log = 0, // Clamps to Debug on iOS
-  Debug = 1,
-  Info = 2, // Default
-  Warn = 3,
-  Error = 4,
-  Assert = 5, // Clamps to Error on Android
-}
-
 interface UserVars {
   displayName?: string;
   email?: string;
@@ -69,7 +61,7 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
-  captureConsoleLogs(): void;
+  enableConsoleCapture(logLevel: LogLevel): void;
 };
 
 declare global {
@@ -84,7 +76,6 @@ declare global {
 
 const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
 
-export { FSPage } from './FSPage';
 type FSComponentType = HostComponent<NativeProps>;
 
 interface NativeCommands {
@@ -161,34 +152,8 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   };
 }
 
-const captureConsoleLogs = () => {
-  const consoleLevelMap = {
-    log: LogLevel.Log,
-    trace: LogLevel.Debug,
-    debug: LogLevel.Debug,
-    info: LogLevel.Info,
-    warn: LogLevel.Warn,
-    error: LogLevel.Error,
-  };
-
-  type ConsoleLevels = keyof typeof consoleLevelMap;
-
-  for (const rnLogLevel in consoleLevelMap) {
-    if (!(rnLogLevel in console)) {
-      continue;
-    }
-
-    const originalLogger = console[rnLogLevel as ConsoleLevels];
-
-    console[rnLogLevel as ConsoleLevels] = function (message?: any, ...args: any[]) {
-      // call FS log with the mapped level
-      FullStory.log(consoleLevelMap[rnLogLevel as ConsoleLevels], [message, ...args].join(' '));
-
-      // call original logger
-      originalLogger.apply(console, [message, ...args]);
-    };
-  }
-};
+export { LogLevel };
+export { FSPage } from './FSPage';
 
 const FullStoryAPI: FullStoryStatic = {
   anonymize,
@@ -204,7 +169,7 @@ const FullStoryAPI: FullStoryStatic = {
   log,
   resetIdleTimer,
   LogLevel,
-  captureConsoleLogs,
+  enableConsoleCapture,
 };
 
 export default FullStoryAPI;
