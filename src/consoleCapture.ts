@@ -25,22 +25,31 @@ const consoleLevelMap = {
   error: LogLevel.Error,
 };
 
-export const enableConsoleCapture = () => {
-  type ConsoleLevels = keyof typeof consoleLevelMap;
+export const enableConsoleCapture = (() => {
+  let enabled = false;
 
-  for (const rnLogLevel in consoleLevelMap) {
-    if (!(rnLogLevel in console)) {
-      continue;
+  return () => {
+    if (enabled) {
+      return;
+    }
+    type ConsoleLevels = keyof typeof consoleLevelMap;
+
+    for (const rnLogLevel in consoleLevelMap) {
+      if (!(rnLogLevel in console)) {
+        continue;
+      }
+
+      const originalLogger = console[rnLogLevel as ConsoleLevels];
+
+      console[rnLogLevel as ConsoleLevels] = function (message?: any, ...args: any[]) {
+        // call FS log with the mapped level
+        FullStory.log(consoleLevelMap[rnLogLevel as ConsoleLevels], [message, ...args].join(' '));
+
+        // call original logger
+        originalLogger.apply(console, [message, ...args]);
+      };
     }
 
-    const originalLogger = console[rnLogLevel as ConsoleLevels];
-
-    console[rnLogLevel as ConsoleLevels] = function (message?: any, ...args: any[]) {
-      // call FS log with the mapped level
-      FullStory.log(consoleLevelMap[rnLogLevel as ConsoleLevels], [message, ...args].join(' '));
-
-      // call original logger
-      originalLogger.apply(console, [message, ...args]);
-    };
-  }
-};
+    enabled = true;
+  };
+})();
