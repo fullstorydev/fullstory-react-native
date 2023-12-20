@@ -2,7 +2,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
-import { LogLevel, enableConsoleCapture } from './consoleCapture';
+import { LogLevel, enableConsoleCapture } from './logging/consoleCapture';
 
 // @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
@@ -61,7 +61,7 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
-  enableConsoleCapture(logLevel: LogLevel): void;
+  enableConsoleCapture(): void;
 };
 
 declare global {
