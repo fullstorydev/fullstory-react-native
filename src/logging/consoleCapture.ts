@@ -1,10 +1,11 @@
 import { NativeModules } from 'react-native';
+import { safeStringify } from './safeStringify';
 
 // @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const FullStory = isTurboModuleEnabled
-  ? require('./NativeFullStory').default
+  ? require('../NativeFullStory').default
   : NativeModules.FullStory;
 
 export enum LogLevel {
@@ -25,6 +26,16 @@ const consoleLevelMap = {
   error: LogLevel.Error,
 };
 
+const logEvent = (level: LogLevel, args: ArrayLike<unknown>) => {
+  const payload = [] as Array<string>;
+
+  for (let i = 0; i < args.length; ++i) {
+    payload.push(safeStringify(args[i], 1000));
+  }
+
+  FullStory.log(level, payload.join(' '));
+};
+
 export const enableConsoleCapture = (() => {
   let enabled = false;
 
@@ -41,12 +52,12 @@ export const enableConsoleCapture = (() => {
 
       const originalLogger = console[rnLogLevel as ConsoleLevels];
 
-      console[rnLogLevel as ConsoleLevels] = function (message?: any, ...args: any[]) {
+      console[rnLogLevel as ConsoleLevels] = function (...args: any[]) {
         // call FS log with the mapped level
-        FullStory.log(consoleLevelMap[rnLogLevel as ConsoleLevels], [message, ...args].join(' '));
+        logEvent(consoleLevelMap[rnLogLevel as ConsoleLevels], args);
 
         // call original logger
-        originalLogger.apply(console, [message, ...args]);
+        originalLogger.apply(console, [...args]);
       };
     }
 
