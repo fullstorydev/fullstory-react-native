@@ -2,7 +2,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
-import { LogLevel, enableConsoleCapture } from './logging/consoleCapture';
+import consoleWatcher, { LogLevel } from './logging/consoleCapture';
 
 // @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
@@ -61,7 +61,8 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
-  enableConsoleCapture(): void;
+  enableConsole(): void;
+  disableConsole(): void;
 };
 
 declare global {
@@ -155,6 +156,9 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
 export { LogLevel };
 export { FSPage } from './FSPage';
 
+// default ON
+consoleWatcher.enable();
+
 const FullStoryAPI: FullStoryStatic = {
   anonymize,
   identify: identifyWithProperties,
@@ -169,7 +173,8 @@ const FullStoryAPI: FullStoryStatic = {
   log,
   resetIdleTimer,
   LogLevel,
-  enableConsoleCapture,
+  enableConsole: consoleWatcher.enable,
+  disableConsole: consoleWatcher.disable,
 };
 
 export default FullStoryAPI;
