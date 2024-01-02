@@ -25,6 +25,13 @@ const consoleLevelMap = {
   warn: LogLevel.Warn,
   error: LogLevel.Error,
 };
+type ConsoleLevels = keyof typeof consoleLevelMap;
+
+type MethodShim = Record<'native' | 'override', Function>;
+
+type ConsoleShims = {
+  [K in keyof typeof consoleLevelMap]?: MethodShim | null;
+};
 
 const logEvent = (level: LogLevel, args: ArrayLike<unknown>) => {
   const payload = [] as Array<string>;
@@ -36,15 +43,41 @@ const logEvent = (level: LogLevel, args: ArrayLike<unknown>) => {
   FullStory.log(level, payload.join(' '));
 };
 
-export const enableConsoleCapture = (() => {
-  let enabled = false;
+// A naive version of ConsoleWatcher on web.
+// See https://github.com/cowpaths/mn/blob/865353f374b687e481d3b230e7eec8e1d7be2eb4/projects/fullstory/packages/recording/src/consolewatcher.ts
+class ConsoleWatcher {
+  private _isActive = false;
+  private _shims: ConsoleShims = {};
 
-  return () => {
-    if (enabled) {
+  enable() {
+    if (this._isActive) {
       return;
     }
-    type ConsoleLevels = keyof typeof consoleLevelMap;
 
+    this._makeShim();
+    this._isActive = true;
+  }
+
+  disable() {
+    if (this._isActive) {
+      this._isActive = false;
+      for (const logLevel in this._shims as ConsoleShims) {
+        if (!this._shims[logLevel as ConsoleLevels]) {
+          return;
+        }
+
+        // If possible, restore the original logger function
+        const { override, native } = this._shims[logLevel as ConsoleLevels] as MethodShim;
+        // If our override has not been replaced by a 3rd party, revert back to native function
+        if (console[logLevel as ConsoleLevels] === override) {
+          console[logLevel as ConsoleLevels] = native as any;
+          this._shims[logLevel as ConsoleLevels] = undefined;
+        }
+      }
+    }
+  }
+
+  private _makeShim() {
     for (const rnLogLevel in consoleLevelMap) {
       if (!(rnLogLevel in console)) {
         continue;
@@ -52,15 +85,20 @@ export const enableConsoleCapture = (() => {
 
       const originalLogger = console[rnLogLevel as ConsoleLevels];
 
-      console[rnLogLevel as ConsoleLevels] = function (...args: any[]) {
+      const override = (...args: any[]) => {
         // call FS log with the mapped level
-        logEvent(consoleLevelMap[rnLogLevel as ConsoleLevels], args);
+        if (this._isActive) {
+          logEvent(consoleLevelMap[rnLogLevel as ConsoleLevels], args);
+        }
 
         // call original logger
         originalLogger.apply(console, [...args]);
       };
-    }
 
-    enabled = true;
-  };
-})();
+      console[rnLogLevel as ConsoleLevels] = override;
+      this._shims[rnLogLevel as ConsoleLevels] = { override, native: originalLogger };
+    }
+  }
+}
+
+export default new ConsoleWatcher();
