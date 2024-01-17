@@ -1,8 +1,7 @@
 import { NativeModules } from 'react-native';
 import { safeStringify } from './safeStringify';
 
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+const isTurboModuleEnabled = __turboModuleProxy != null;
 
 const FullStory = isTurboModuleEnabled
   ? require('../NativeFullStory').default
@@ -30,7 +29,7 @@ type ConsoleLevels = keyof typeof consoleLevelMap;
 type MethodShim = Record<'native' | 'override', Function>;
 
 type ConsoleShims = {
-  [K in keyof typeof consoleLevelMap]?: MethodShim | null;
+  [key in ConsoleLevels]?: MethodShim;
 };
 
 const logEvent = (level: LogLevel, args: ArrayLike<unknown>) => {
@@ -44,7 +43,6 @@ const logEvent = (level: LogLevel, args: ArrayLike<unknown>) => {
 };
 
 // A naive version of ConsoleWatcher on web.
-// See https://github.com/cowpaths/mn/blob/865353f374b687e481d3b230e7eec8e1d7be2eb4/projects/fullstory/packages/recording/src/consolewatcher.ts
 class ConsoleWatcher {
   private _isActive = false;
   private _shims: ConsoleShims = {};
@@ -59,44 +57,48 @@ class ConsoleWatcher {
   }
 
   disable() {
-    if (this._isActive) {
-      this._isActive = false;
-      for (const logLevel in this._shims as ConsoleShims) {
-        if (!this._shims[logLevel as ConsoleLevels]) {
-          return;
-        }
+    if (!this._isActive) {
+      return
+    }
 
-        // If possible, restore the original logger function
-        const { override, native } = this._shims[logLevel as ConsoleLevels] as MethodShim;
-        // If our override has not been replaced by a 3rd party, revert back to native function
-        if (console[logLevel as ConsoleLevels] === override) {
-          console[logLevel as ConsoleLevels] = native as any;
-          this._shims[logLevel as ConsoleLevels] = undefined;
-        }
+    this._isActive = false;
+    let logLevel: ConsoleLevels;
+    for (logLevel in this._shims) {
+      if (!this._shims[logLevel]) {
+        return;
+      }
+
+      // If possible, restore the original logger function
+      const { override, native } = this._shims[logLevel] as MethodShim;
+      // If our override has not been replaced by a 3rd party, revert back to native function
+      if (console[logLevel] === override) {
+        console[logLevel] = native as any;
+        this._shims[logLevel] = undefined;
       }
     }
   }
 
   private _makeShim() {
-    for (const rnLogLevel in consoleLevelMap) {
+    let rnLogLevel: ConsoleLevels;
+    for (rnLogLevel in consoleLevelMap) {
       if (!(rnLogLevel in console)) {
         continue;
       }
 
-      const originalLogger = console[rnLogLevel as ConsoleLevels];
+      const originalLogger = console[rnLogLevel];
 
       const override = (...args: any[]) => {
         // call FS log with the mapped level
         if (this._isActive) {
-          logEvent(consoleLevelMap[rnLogLevel as ConsoleLevels], args);
+          logEvent(consoleLevelMap[rnLogLevel], args);
         }
 
         // call original logger
-        originalLogger.apply(console, [...args]);
+        originalLogger.apply(console, args);
       };
 
-      console[rnLogLevel as ConsoleLevels] = override;
-      this._shims[rnLogLevel as ConsoleLevels] = { override, native: originalLogger };
+      console[rnLogLevel] = override;
+      this._shims[rnLogLevel] = { override, native: originalLogger };
     }
   }
 }
