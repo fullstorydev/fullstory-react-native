@@ -372,7 +372,7 @@ static bool array_contains_string(const char **array, const char *string) {
     SWIZZLE_HANDLE_COMMAND(RCTPullToRefreshViewComponentView);
     SWIZZLE_HANDLE_COMMAND(RCTLegacyViewManagerInteropComponentView);
 #pragma clang pop
-#if defined(DEBUG_FS_RN_FABRIC_THIRD_PARTY)
+#if defined(DEBUG_FS_RN_FABRIC_THIRD_PARTY) && defined(DEBUG)
     // RCTViewComponentView subclasses don't tend to call their superclass
     // implementations of handleCommand, so in debug mode, we want to make sure
     // that we don't have any "straggler" classes (especially React core
