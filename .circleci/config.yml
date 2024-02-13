@@ -21,7 +21,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Audit
-          command: npm audit --audit-level=low
+          command: npm audit --audit-level=critical
       - run:
           name: Lint
           command: npm run lint
