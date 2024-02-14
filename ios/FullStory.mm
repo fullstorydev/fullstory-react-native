@@ -372,59 +372,65 @@ static bool array_contains_string(const char **array, const char *string) {
     SWIZZLE_HANDLE_COMMAND(RCTPullToRefreshViewComponentView);
     SWIZZLE_HANDLE_COMMAND(RCTLegacyViewManagerInteropComponentView);
 #pragma clang pop
-#ifdef DEBUG
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
-      // RCTViewComponentView subclasses don't tend to call their superclass implementations of handleCommand, so in debug mode, we want to make sure that we don't have any "straggler" classes (especially React core classes!) that don't have their implementations of handleCommand interposed.  We enumerate all the classes on the system, determine if any has a superclass of RCTViewComponentView, and if so, make sure that we have it covered.
+#if defined(DEBUG_FS_RN_FABRIC_THIRD_PARTY) && defined(DEBUG)
+    // RCTViewComponentView subclasses don't tend to call their superclass
+    // implementations of handleCommand, so in debug mode, we want to make sure
+    // that we don't have any "straggler" classes (especially React core
+    // classes!) that don't have their implementations of handleCommand
+    // interposed.  We enumerate all the classes on the system, determine if
+    // any has a superclass of RCTViewComponentView, and if so, make sure that
+    // we have it covered.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-        SEL sel = @selector(handleCommand:args:);
+    SEL sel = @selector(handleCommand:args:);
 #pragma clang pop
-        const char* swizzled_classes[] = {
-            "RCTViewComponentView",
-            "RCTTextInputComponentView",
-            "RCTSwitchComponentView",
-            "RCTScrollViewComponentView",
-            "RCTPullToRefreshViewComponentView",
-            "RCTLegacyViewManagerInteropComponentView",
-            0};
-        // Grab the impl of RCTViewComponentView
-        Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
-        Method _Nullable swizzledViewComponentViewCommand = class_getInstanceMethod(viewComponentView, sel);
-        IMP swizzledViewComponentViewCommandImplementation = method_getImplementation(swizzledViewComponentViewCommand);
+    const char* swizzled_classes[] = {
+        "RCTViewComponentView",
+        "RCTTextInputComponentView",
+        "RCTSwitchComponentView",
+        "RCTScrollViewComponentView",
+        "RCTPullToRefreshViewComponentView",
+        "RCTLegacyViewManagerInteropComponentView",
+        0};
+    // Grab the impl of RCTViewComponentView
+    Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
+    Method _Nullable swizzledViewComponentViewCommand = class_getInstanceMethod(viewComponentView, sel);
+    IMP swizzledViewComponentViewCommandImplementation = method_getImplementation(swizzledViewComponentViewCommand);
 
-        int classCount = objc_getClassList(NULL, 0);
-        // The classes stored in this array may not be NSObject classes,
-        // so may not respond to retain messages. See:
-        // https://gist.github.com/mikeash/1267596
-        __unsafe_unretained Class classes[classCount];
-        // Verify swizzle in all subclasses of RCTViewComponentView
-        objc_getClassList(classes, classCount);
-        for (int i = 0; i < classCount; i++) {
-            Class _Nullable __unsafe_unretained cls = classes[i];
-            while (cls && cls != viewComponentView) {
-                cls = class_getSuperclass(cls);
-            }
-            if (cls == viewComponentView && cls && !array_contains_string(swizzled_classes, class_getName(classes[i]))) {
-                cls = classes[i];
-                const char *className = class_getName(cls);
-                // Note that this will find the superclass's implementation,
-                // which informs us whether this class gets its implementation
-                // from the swizzle above.
-                // Since we skip the explicitly swizzled classes, each with
-                // its own implementation, the remaining classes should either
-                // have the superclass implementation, or their own, which is
-                // incapable of receiving FS properties.
-                Method _Nullable existingMethod = class_getInstanceMethod(cls, sel);
-                if (existingMethod) {
-                    IMP existingImplementation = method_getImplementation(existingMethod);
-                    if (existingImplementation != swizzledViewComponentViewCommandImplementation) {
-                        NSAssert(strncmp(className, "RCT", 3) != 0, @"React Native framework class %s needs handleCommand support! Please contact FullStory support with this message.", className);
-                        NSLog(@"RCTViewComponentView subclass %s cannot receive FullStory commands; FullStory attributes on such views may not function correctly.", className);
-                    }
+    int classCount = objc_getClassList(NULL, 0);
+    // The classes stored in this array may not be NSObject classes,
+    // so may not respond to retain messages. See:
+    // https://gist.github.com/mikeash/1267596
+    __unsafe_unretained Class classes[classCount];
+    // Verify swizzle in all subclasses of RCTViewComponentView
+    objc_getClassList(classes, classCount);
+    for (int i = 0; i < classCount; i++) {
+        Class _Nullable __unsafe_unretained cls = classes[i];
+        while (cls && cls != viewComponentView) {
+            cls = class_getSuperclass(cls);
+        }
+        if (cls == viewComponentView && cls && !array_contains_string(swizzled_classes, class_getName(classes[i]))) {
+            cls = classes[i];
+            const char *className = class_getName(cls);
+            // Note that this will find the superclass's implementation,
+            // which informs us whether this class gets its implementation
+            // from the swizzle above.
+            // Since we skip the explicitly swizzled classes, each with
+            // its own implementation, the remaining classes should either
+            // have the superclass implementation, or their own, which is
+            // incapable of receiving FS properties.
+            Method _Nullable existingMethod = class_getInstanceMethod(cls, sel);
+            if (existingMethod) {
+                IMP existingImplementation = method_getImplementation(existingMethod);
+                if (existingImplementation != swizzledViewComponentViewCommandImplementation) {
+                    NSAssert(strncmp(className, "RCT", 3) != 0, @"React Native framework class %s needs handleCommand support! Please contact FullStory support with this message.", className);
+                    NSLog(@"RCTViewComponentView subclass %s cannot receive FullStory commands; FullStory attributes on such views may not function correctly.", className);
                 }
             }
         }
-    });
+    }
+#elif defined(DEBUG)
+    NSLog(@"FullStory for React Native Fabric does not support FullStory properties on third-party components that contain custom implementations of handleCommand. Define the DEBUG_FS_RN_FABRIC_THIRD_PARTY preprocessor variable in debug builds to check your app for custom handleCommand implementations.");
 #endif
 }
 @end
