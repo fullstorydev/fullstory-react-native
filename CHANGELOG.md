@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2
+
+Place the `handleCommand` check under the `DEBUG_FS_RN_FABRIC_THIRD_PARTY` preprocessor variable to avoid runtime crashes experienced by some projects.
+
 ## 1.4.1
 
 Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.1.0` for New Architecture support.
