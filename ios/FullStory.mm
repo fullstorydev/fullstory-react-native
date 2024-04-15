@@ -384,7 +384,7 @@ static bool array_contains_string(const char **array, const char *string) {
         if ([self respondsToSelector:@selector(layoutInfo)]) {
             id layoutInfo = [self performSelector:@selector(layoutInfo)];
             if ([layoutInfo respondsToSelector:@selector(name)]) {
-                set_fsAttribute(@{@"screen-name": [[self performSelector:NSSelectorFromString(@"layoutInfo")] name]}, (RCTView *)viewController.view);
+                set_fsAttribute(@{@"screen-name": [layoutInfo name]}, (RCTView *)viewController.view);
             }
         } else {
             NSLog(@"RNNComponentViewController cannot communicate screen names to FullStory. Navigation events and screen selectors may not function correctly.");
