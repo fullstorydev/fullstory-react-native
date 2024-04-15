@@ -372,6 +372,26 @@ static bool array_contains_string(const char **array, const char *string) {
     SWIZZLE_HANDLE_COMMAND(RCTPullToRefreshViewComponentView);
     SWIZZLE_HANDLE_COMMAND(RCTLegacyViewManagerInteropComponentView);
 #pragma clang pop
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SWIZZLE_BEGIN_INSTANCE(RNNComponentViewController, @selector(renderReactViewIfNeeded), void) {
+        SWIZZLED_METHOD();
+        
+        UIViewController *viewController = self;
+        
+        if ([self respondsToSelector:@selector(layoutInfo)]) {
+            id layoutInfo = [self performSelector:@selector(layoutInfo)];
+            if ([layoutInfo respondsToSelector:@selector(name)]) {
+                set_fsAttribute(@{@"screen-name": [layoutInfo name]}, (RCTView *)viewController.view);
+            }
+        } else {
+            NSLog(@"RNNComponentViewController cannot communicate screen names to FullStory. Navigation events and screen selectors may not function correctly.");
+        }
+    } SWIZZLE_END;
+#pragma clang pop
+
 #if defined(DEBUG_FS_RN_FABRIC_THIRD_PARTY) && defined(DEBUG)
     // RCTViewComponentView subclasses don't tend to call their superclass
     // implementations of handleCommand, so in debug mode, we want to make sure
