@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0
+
+Add support for 'Select Entire Screen' for React Navigation & React Native Navigation
+
 ## 1.4.2
 
 Place the `handleCommand` check under the `DEBUG_FS_RN_FABRIC_THIRD_PARTY` preprocessor variable to avoid runtime crashes experienced by some projects.
