@@ -1,7 +1,6 @@
 import { NativeModules } from 'react-native';
 import { safeStringify } from './safeStringify';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+import { isTurboModuleEnabled } from '../utils';
 
 const FullStory = isTurboModuleEnabled
   ? require('../NativeFullStory').default

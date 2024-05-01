@@ -51,3 +51,7 @@ export const generateUUID = (function () {
 
   return f;
 })();
+
+declare const global: typeof globalThis & { __turboModuleProxy: unknown };
+
+export const isTurboModuleEnabled = global.__turboModuleProxy != null;

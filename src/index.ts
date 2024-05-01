@@ -3,8 +3,7 @@ import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativ
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
 import consoleWatcher, { LogLevel } from './logging/consoleCapture';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+import { isTurboModuleEnabled } from './utils';
 
 interface NativeProps extends ViewProps {
   fsClass?: string;
@@ -72,9 +71,6 @@ declare global {
       fsTagName?: string;
     }
   }
-  const global: typeof globalThis & {
-    __turboModuleProxy: unknown;
-  };
 }
 
 const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
