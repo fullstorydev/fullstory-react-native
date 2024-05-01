@@ -1,7 +1,6 @@
 import { NativeModules } from 'react-native';
 import { generateUUID } from './utils';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 type PropertiesWithoutPageName = {

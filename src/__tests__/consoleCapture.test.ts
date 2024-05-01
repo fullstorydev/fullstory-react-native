@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from '@jest/globals';
 import { NativeModules } from 'react-native';
 import consoleWatcher, { LogLevel } from '../logging/consoleCapture';
 
+// must run in 'silent' mode or console.trace will call into console.error
 describe('consoleCapture', () => {
   const oldConsoleLog = console.log;
   const oldConsoleTrace = console.trace;

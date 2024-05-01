@@ -4,7 +4,6 @@ import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropT
 import { ForwardedRef } from 'react';
 import consoleWatcher, { LogLevel } from './logging/consoleCapture';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 interface NativeProps extends ViewProps {
@@ -73,6 +72,9 @@ declare global {
       fsTagName?: string;
     }
   }
+  const global: typeof globalThis & {
+    __turboModuleProxy: unknown;
+  };
 }
 
 const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
