@@ -54,7 +54,7 @@
     "@react-native/eslint-plugin-specs": "^0.72.4",
     "@tsconfig/node10": "^1.0.9",
     "@types/jest": "^28.1.4",
-    "@types/react": "^18.2.21",
+    "@types/react": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "babel-jest": "^29.6.4",
