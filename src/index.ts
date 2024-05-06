@@ -115,38 +115,50 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 
 export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   return function (element: React.ElementRef<FSComponentType>) {
-    // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
-    // @ts-expect-error `currentProps` is missing in `NativeMethods`
-    const currentProps = element?.currentProps as Record<keyof NativeCommands, string | object>;
-    if (isTurboModuleEnabled && Platform.OS === 'ios' && currentProps) {
-      const fsClass = currentProps.fsClass as string;
-      if (fsClass) {
-        Commands.fsClass(element, fsClass);
-      }
+    if (isTurboModuleEnabled && Platform.OS === 'ios') {
+      let currentProps: Record<keyof NativeCommands, string | object>;
 
-      const fsAttribute = currentProps.fsAttribute as object;
-      if (fsAttribute) {
-        Commands.fsAttribute(element, fsAttribute);
-      }
+      const getInternalInstanceHandleFromPublicInstance =
+        require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
 
-      const fsTagName = currentProps.fsTagName as string;
-      if (fsTagName) {
-        Commands.fsTagName(element, fsTagName);
+      if (getInternalInstanceHandleFromPublicInstance && element) {
+        currentProps =
+          getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
+      } else {
+        // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
+        // @ts-expect-error `currentProps` is missing in `NativeMethods`
+        currentProps = element?.currentProps;
       }
+      if (currentProps) {
+        const fsClass = currentProps.fsClass as string;
+        if (fsClass) {
+          Commands.fsClass(element, fsClass);
+        }
 
-      const dataElement = currentProps.dataElement as string;
-      if (dataElement) {
-        Commands.dataElement(element, dataElement);
-      }
+        const fsAttribute = currentProps.fsAttribute as object;
+        if (fsAttribute) {
+          Commands.fsAttribute(element, fsAttribute);
+        }
 
-      const dataComponent = currentProps.dataComponent as string;
-      if (dataComponent) {
-        Commands.dataComponent(element, dataComponent);
-      }
+        const fsTagName = currentProps.fsTagName as string;
+        if (fsTagName) {
+          Commands.fsTagName(element, fsTagName);
+        }
 
-      const dataSourceFile = currentProps.dataSourceFile as string;
-      if (dataSourceFile) {
-        Commands.dataSourceFile(element, dataSourceFile);
+        const dataElement = currentProps.dataElement as string;
+        if (dataElement) {
+          Commands.dataElement(element, dataElement);
+        }
+
+        const dataComponent = currentProps.dataComponent as string;
+        if (dataComponent) {
+          Commands.dataComponent(element, dataComponent);
+        }
+
+        const dataSourceFile = currentProps.dataSourceFile as string;
+        if (dataSourceFile) {
+          Commands.dataSourceFile(element, dataSourceFile);
+        }
       }
     }
 
