@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0
+
+Add support for React Native `0.74.0` for iOS.
+
 ## 1.5.0
 
 Add support for 'Select Entire Screen' for React Navigation & React Native Navigation
