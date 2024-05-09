@@ -38,9 +38,7 @@ const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default
   : NativeModules.FullStoryPrivate;
 
-const {
-    onFSPressForward,
-  } = FullStoryPrivate;
+const { onFSPressForward } = FullStoryPrivate;
 
 export enum LogLevel {
   Log = 0, // Clamps to Debug on iOS
@@ -80,7 +78,12 @@ declare type FullStoryStatic = {
 };
 
 declare type FullStoryPrivateStatic = {
-  onFSPressForward(tag: number, isLongPress: boolean, hasPressHandler: boolean, hasLongPressHandler: boolean): void;
+  onFSPressForward(
+    tag: number,
+    isLongPress: boolean,
+    hasPressHandler: boolean,
+    hasLongPressHandler: boolean,
+  ): void;
 };
 
 declare global {
