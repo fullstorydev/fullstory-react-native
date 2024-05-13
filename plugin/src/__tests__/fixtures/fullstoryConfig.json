@@ -1,4 +1,5 @@
 {
+  "host": "staging.fullstory.com",
   "version": "1.27.1",
   "org": "ABCDE",
   "enabledVariants": "all",
