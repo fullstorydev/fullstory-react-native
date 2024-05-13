@@ -9,6 +9,9 @@
 @interface FullStory : NSObject <RCTBridgeModule, FSDelegate>
 @end
 
+@interface FullStoryPrivate : NSObject <RCTBridgeModule, FSDelegate>
+@end
+
 @interface FS(FSPrivate)
 + (void) _pageViewWithNonce:(NSUUID *)nonce name:(NSString *)pageName properties:(NSDictionary<NSString *, id> *)properties;
 + (void) _updatePageWithNonce:(NSUUID *)nonce properties:(NSDictionary<NSString *, id> *)properties;
@@ -17,5 +20,8 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @interface FullStory () <NativeFullStorySpec>
+@end
+
+@interface FullStoryPrivate () <NativeFullStoryPrivateSpec>
 @end
 #endif

@@ -78,7 +78,7 @@ declare type FullStoryStatic = {
 };
 
 declare type FullStoryPrivateStatic = {
-  onFSPressForward(
+  onFSPressForward?(
     tag: number,
     isLongPress: boolean,
     hasPressHandler: boolean,
@@ -207,8 +207,6 @@ const FullStoryAPI: FullStoryStatic = {
   LogLevel,
 };
 
-export const FullStoryPrivateAPI: FullStoryPrivateStatic = {
-  onFSPressForward,
-};
+export const PrivateInterface: FullStoryPrivateStatic = Platform.OS === 'android' ? { onFSPressForward } : {};
 
 export default FullStoryAPI;
