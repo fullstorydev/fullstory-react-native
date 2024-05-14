@@ -207,6 +207,7 @@ const FullStoryAPI: FullStoryStatic = {
   LogLevel,
 };
 
-export const PrivateInterface: FullStoryPrivateStatic = Platform.OS === 'android' ? { onFSPressForward } : {};
+export const PrivateInterface: FullStoryPrivateStatic =
+  Platform.OS === 'android' ? { onFSPressForward } : {};
 
 export default FullStoryAPI;
