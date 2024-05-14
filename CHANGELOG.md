@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.1
+
+Fixed an unresolved module issue in the React Native `0.74.0` support code.
+Fixed the `host` Expo configuration for newer Fullstory SDK versions.
+
 ## 1.6.0
 
 Add support for React Native `0.74.0` for iOS.
