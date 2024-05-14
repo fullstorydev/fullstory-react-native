@@ -6,6 +6,7 @@ import {
   ConfigPlugin,
 } from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
+import { valid, lt } from 'semver';
 
 import { FullStoryAndroidProps } from '.';
 
@@ -59,15 +60,33 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
 
 export const addFullStoryGradlePlugin = (
   appBuildGradle: string,
-  { org, host, logLevel, logcatLevel, enabledVariants, recordOnStart }: FullStoryAndroidProps,
+  {
+    org,
+    host,
+    logLevel,
+    logcatLevel,
+    enabledVariants,
+    recordOnStart,
+    version,
+  }: FullStoryAndroidProps,
 ) => {
+  if (!valid(version)) {
+    throw new Error(`Fullstory version is not valid. Version: ${version}`);
+  }
+
   return mergeContents({
     tag: `@fullstory/react-native plugin`,
     src: appBuildGradle,
     newSrc: `apply plugin: 'fullstory'
       fullstory {
           org '${org}'
-          ${host ? `server 'https://${host}'` : ''}
+          ${
+            host
+              ? lt(version, '1.37.0')
+                ? `server 'https://${host}'`
+                : `serverUrl 'https://${host}'`
+              : ''
+          }
           ${logLevel ? `logLevel '${logLevel}'` : ''}
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ''}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ''}

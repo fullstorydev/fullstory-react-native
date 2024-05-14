@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Config Plugin Android Tests Adds FullStory module to app build.gradle 1`] = `
-"apply plugin: \\"com.android.application\\"
-// @generated begin @fullstory/react-native plugin - expo prebuild (DO NOT MODIFY) sync-bb646efbc963bea134722dca84206580df424525
+exports[`Config Plugin Android Tests Adds Fullstory module to app build.gradle 1`] = `
+"apply plugin: "com.android.application"
+// @generated begin @fullstory/react-native plugin - expo prebuild (DO NOT MODIFY) sync-b67e025f91c1d73e6f978fc191555ccda8d3a739
 apply plugin: 'fullstory'
       fullstory {
           org 'ABCDE'
-          
+          server 'https://staging.fullstory.com'
           logLevel 'error'
           logcatLevel 'error'
           enabledVariants 'all'
@@ -23,19 +23,19 @@ import com.android.build.OutputFile
  * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
  * bundle directly from the development server. Below you can see all the possible configurations
  * and their defaults. If you decide to add a configuration block, make sure to add it before the
- * \`apply from: \\"../../node_modules/react-native/react.gradle\\"\` line.
+ * \`apply from: "../../node_modules/react-native/react.gradle"\` line.
  *
  * project.ext.react = [
  *   // the name of the generated asset file containing your JS bundle
- *   bundleAssetName: \\"index.android.bundle\\",
+ *   bundleAssetName: "index.android.bundle",
  *
  *   // the entry file for bundle generation. If none specified and
- *   // \\"index.android.js\\" exists, it will be used. Otherwise \\"index.js\\" is
+ *   // "index.android.js" exists, it will be used. Otherwise "index.js" is
  *   // default. Can be overridden with ENTRY_FILE environment variable.
- *   entryFile: \\"index.android.js\\",
+ *   entryFile: "index.android.js",
  *
  *   // https://reactnative.dev/docs/performance#enable-the-ram-format
- *   bundleCommand: \\"ram-bundle\\",
+ *   bundleCommand: "ram-bundle",
  *
  *   // whether to bundle JS and assets in debug mode
  *   bundleInDebug: false,
@@ -59,32 +59,32 @@ import com.android.build.OutputFile
  *   //         'devDisabledIn\${productFlavor}\${buildType}'
  *   //         'devDisabledIn\${buildType}'
  *
- *   // the root of your project, i.e. where \\"package.json\\" lives
- *   root: \\"../../\\",
+ *   // the root of your project, i.e. where "package.json" lives
+ *   root: "../../",
  *
  *   // where to put the JS bundle asset in debug mode
- *   jsBundleDirDebug: \\"$buildDir/intermediates/assets/debug\\",
+ *   jsBundleDirDebug: "$buildDir/intermediates/assets/debug",
  *
  *   // where to put the JS bundle asset in release mode
- *   jsBundleDirRelease: \\"$buildDir/intermediates/assets/release\\",
+ *   jsBundleDirRelease: "$buildDir/intermediates/assets/release",
  *
  *   // where to put drawable resources / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in debug mode
- *   resourcesDirDebug: \\"$buildDir/intermediates/res/merged/debug\\",
+ *   resourcesDirDebug: "$buildDir/intermediates/res/merged/debug",
  *
  *   // where to put drawable resources / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in release mode
- *   resourcesDirRelease: \\"$buildDir/intermediates/res/merged/release\\",
+ *   resourcesDirRelease: "$buildDir/intermediates/res/merged/release",
  *
  *   // by default the gradle tasks are skipped if none of the JS files or assets change; this means
  *   // that we don't look at files in android/ or ios/ to determine whether the tasks are up to
  *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
  *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
  *   // for example, you might want to remove it from here.
- *   inputExcludes: [\\"android/**\\", \\"ios/**\\"],
+ *   inputExcludes: ["android/**", "ios/**"],
  *
  *   // override which node gets called and with what additional arguments
- *   nodeExecutableAndArgs: [\\"node\\"],
+ *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
@@ -94,14 +94,14 @@ import com.android.build.OutputFile
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
 project.ext.react = [
-    entryFile: [\\"node\\", \\"-e\\", \\"require('expo/scripts/resolveAppEntry')\\", projectRoot, \\"android\\"].execute(null, rootDir).text.trim(),
-    enableHermes: (findProperty('expo.jsEngine') ?: \\"jsc\\") == \\"hermes\\",
-    cliPath: new File([\\"node\\", \\"--print\\", \\"require.resolve('react-native/package.json')\\"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + \\"/cli.js\\",
-    hermesCommand: new File([\\"node\\", \\"--print\\", \\"require.resolve('hermes-engine/package.json')\\"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + \\"/%OS-BIN%/hermesc\\",
-    composeSourceMapsPath: new File([\\"node\\", \\"--print\\", \\"require.resolve('react-native/package.json')\\"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + \\"/scripts/compose-source-maps.js\\",
+    entryFile: ["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android"].execute(null, rootDir).text.trim(),
+    enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
+    cliPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/cli.js",
+    hermesCommand: new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/%OS-BIN%/hermesc",
+    composeSourceMapsPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/scripts/compose-source-maps.js",
 ]
 
-apply from: new File([\\"node\\", \\"--print\\", \\"require.resolve('react-native/package.json')\\"].execute(null, rootDir).text.trim(), \\"../react.gradle\\")
+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -138,29 +138,29 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get(\\"enableHermes\\", false);
+def enableHermes = project.ext.react.get("enableHermes", false);
 
 /**
  * Architectures to build native code for in debug.
  */
-def nativeArchitectures = project.getProperties().get(\\"reactNativeDebugArchitectures\\")
+def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId \\"com.helloworld\\"
+        applicationId "com.helloworld"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName \\"1.0\\"
+        versionName "1.0"
     }
     splits {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
     signingConfigs {
@@ -185,7 +185,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile(\\"proguard-android.txt\\"), \\"proguard-rules.pro\\"
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 
@@ -194,7 +194,7 @@ android {
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // https://developer.android.com/studio/build/configure-apk-splits.html
-            def versionCodes = [\\"armeabi-v7a\\": 1, \\"x86\\": 2, \\"arm64-v8a\\": 3, \\"x86_64\\": 4]
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
@@ -208,16 +208,16 @@ android {
 // Apply static values from \`gradle.properties\` to the \`android.packagingOptions\`
 // Accepts values in comma delimited lists, example:
 // android.packagingOptions.pickFirsts=/LICENSE,**/picasa.ini
-[\\"pickFirsts\\", \\"excludes\\", \\"merges\\", \\"doNotStrip\\"].each { prop ->
+["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
     // Split option: 'foo,bar' -> ['foo', 'bar']
-    def options = (findProperty(\\"android.packagingOptions.$prop\\") ?: \\"\\").split(\\",\\");
+    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",");
     // Trim all elements in place.
     for (i in 0..<options.size()) options[i] = options[i].trim();
-    // \`[] - \\"\\"\` is essentially \`[\\"\\"].filter(Boolean)\` removing all empty strings.
-    options -= \\"\\"
+    // \`[] - ""\` is essentially \`[""].filter(Boolean)\` removing all empty strings.
+    options -= ""
 
     if (options.length > 0) {
-        println \\"android.packagingOptions.$prop += $options ($options.length)\\"
+        println "android.packagingOptions.$prop += $options ($options.length)"
         // Ex: android.packagingOptions.pickFirsts += '**/SCCS/**'
         options.each {
             android.packagingOptions[prop] += it
@@ -226,13 +226,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: \\"libs\\", include: [\\"*.jar\\"])
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation \\"com.facebook.react:react-native:+\\"  // From node_modules
+    implementation "com.facebook.react:react-native:+"  // From node_modules
 
-    def isGifEnabled = (findProperty('expo.gif.enabled') ?: \\"\\") == \\"true\\";
-    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: \\"\\") == \\"true\\";
-    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: \\"\\") == \\"true\\";
+    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
 
     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
     // All fresco packages should use the same version
@@ -255,21 +255,21 @@ dependencies {
         }
     }
     
-    implementation \\"androidx.swiperefreshlayout:swiperefreshlayout:1.0.0\\"
-    debugImplementation(\\"com.facebook.flipper:flipper:\${FLIPPER_VERSION}\\") {
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    debugImplementation("com.facebook.flipper:flipper:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
-    debugImplementation(\\"com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}\\") {
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
-    debugImplementation(\\"com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}\\") {
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
 
     if (enableHermes) {
-        debugImplementation files(new File([\\"node\\", \\"--print\\", \\"require.resolve('hermes-engine/package.json')\\"].execute(null, rootDir).text.trim(), \\"../android/hermes-debug.aar\\"))
-        releaseImplementation files(new File([\\"node\\", \\"--print\\", \\"require.resolve('hermes-engine/package.json')\\"].execute(null, rootDir).text.trim(), \\"../android/hermes-release.aar\\"))
+        debugImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-debug.aar"))
+        releaseImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-release.aar"))
     } else {
         implementation jscFlavor
     }
@@ -282,20 +282,20 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply from: new File([\\"node\\", \\"--print\\", \\"require.resolve('@react-native-community/cli-platform-android/package.json')\\"].execute(null, rootDir).text.trim(), \\"../native_modules.gradle\\");
+apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)"
 `;
 
-exports[`Config Plugin Android Tests Adds FullStory module to project build.gradle 1`] = `
+exports[`Config Plugin Android Tests Adds Fullstory module to project build.gradle 1`] = `
 "// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {
-        buildToolsVersion = \\"30.0.2\\"
+        buildToolsVersion = "30.0.2"
         minSdkVersion = 21
         compileSdkVersion = 30
         targetSdkVersion = 30
-        ndkVersion = \\"21.4.7075529\\"
+        ndkVersion = "21.4.7075529"
     }
     repositories {
 // @generated begin @fullstory/react-native repositories - expo prebuild (DO NOT MODIFY) sync-e9d20c521b016225eb51e3030e69288fa97e3950
@@ -309,7 +309,7 @@ maven { url 'https://maven.fullstory.com' }
 // @generated begin @fullstory/react-native dependencies - expo prebuild (DO NOT MODIFY) sync-cec37541b39163b903cea447d84d523fb89303d4
 classpath 'com.fullstory:gradle-plugin-local:1.27.1'
 // @generated end @fullstory/react-native dependencies
-        classpath(\\"com.android.tools.build:gradle:4.2.2\\")
+        classpath("com.android.tools.build:gradle:4.2.2")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -321,11 +321,11 @@ allprojects {
         mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url(new File([\\"node\\", \\"--print\\", \\"require.resolve('react-native/package.json')\\"].execute(null, rootDir).text.trim(), \\"../android\\"))
+            url(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../android"))
         }
         maven {
             // Android JSC is installed from npm
-            url(new File([\\"node\\", \\"--print\\", \\"require.resolve('jsc-android/package.json')\\"].execute(null, rootDir).text.trim(), \\"../dist\\"))
+            url(new File(["node", "--print", "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), "../dist"))
         }
 
         google()

@@ -25,14 +25,24 @@ describe('Config Plugin Android Tests', function () {
     });
   });
 
-  it('Adds FullStory module to project build.gradle', async function () {
+  it('Adds Fullstory module to project build.gradle', async function () {
     let result = projectBuildGradle;
     result = addFullStoryMavenRepo(result);
     result = addFullStoryProjectDependency(result, pluginConfigs.version);
     expect(result).toMatchSnapshot();
   });
 
-  it('Adds FullStory module to app build.gradle', async function () {
+  it('Newer Fullstory SDK contains serverUrl config', async function () {
+    let result = appBuildGradle;
+    result = addFullStoryGradlePlugin(result, {
+      ...pluginConfigs,
+      host: 'staging.fullstory.com',
+      version: '1.47.0',
+    } as FullStoryAndroidProps);
+    expect(result).toContain("serverUrl 'https://staging.fullstory.com'");
+  });
+
+  it('Adds Fullstory module to app build.gradle', async function () {
     let result = appBuildGradle;
     result = addFullStoryGradlePlugin(result, pluginConfigs as FullStoryAndroidProps);
     expect(result).toMatchSnapshot();
