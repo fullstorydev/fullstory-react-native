@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+
+Fixed an inline require issue for React Native versions <=`0.73.x` on New Architecture.
+
 ## 1.6.1
 
 Fixed an unresolved module issue in the React Native `0.74.0` support code.
