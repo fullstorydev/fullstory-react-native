@@ -113,14 +113,14 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: SUPPORTED_FS_ATTRIBUTES,
 });
 
+let getInternalInstanceHandleFromPublicInstance: Function | undefined;
+
+try {
+  getInternalInstanceHandleFromPublicInstance =
+    require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
+} catch (e) {}
+
 export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
-  let getInternalInstanceHandleFromPublicInstance: Function | undefined;
-
-  try {
-    getInternalInstanceHandleFromPublicInstance =
-      require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
-  } catch (e) {}
-
   return function (element: React.ElementRef<FSComponentType>) {
     if (isTurboModuleEnabled && Platform.OS === 'ios') {
       let currentProps: Record<keyof NativeCommands, string | object>;
