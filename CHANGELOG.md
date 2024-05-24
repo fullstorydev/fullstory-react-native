@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.3
+
+Support additional iOS configurations on Expo.
+
 ## 1.6.2
 
 Fixed an inline require issue for React Native versions <=`0.73.x` on New Architecture.
