@@ -22,7 +22,14 @@ async function saveFileAsync(filePath: string, content: string) {
 
 const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
   expoConfig,
-  { org, host, recordOnStart, includeAssets, workaroundRNSVGCapture, workaroundWKUserContentControllerRemoveAllUserScripts },
+  {
+    org,
+    host,
+    recordOnStart,
+    includeAssets,
+    workaroundRNSVGCapture,
+    workaroundWKUserContentControllerRemoveAllUserScripts,
+  },
 ) =>
   withInfoPlist(expoConfig, config => {
     config.modResults.FullStory = {
@@ -31,7 +38,8 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
       RecordOnStart: recordOnStart,
       IncludeAssets: includeAssets,
       NeedsWorkaroundRNSVGCapture: workaroundRNSVGCapture,
-      NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts: workaroundWKUserContentControllerRemoveAllUserScripts
+      NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts:
+        workaroundWKUserContentControllerRemoveAllUserScripts,
     };
     return config;
   });
