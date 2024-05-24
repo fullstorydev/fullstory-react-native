@@ -11,7 +11,13 @@ export type FullStoryAndroidProps = {
     logcatLevel?: LogLevel;
     enabledVariants?: string;
 } & FullStoryCrossPlatformProps;
-export type FullStoryIosProps = {} & FullStoryCrossPlatformProps;
+export type FullStoryIosProps = {
+    includeAssets?: {
+        [directory: string]: string[];
+    };
+    workaroundRNSVGCapture?: boolean;
+    workaroundWKUserContentControllerRemoveAllUserScripts?: boolean;
+} & FullStoryCrossPlatformProps;
 type FullStoryPluginProps = FullStoryAndroidProps & FullStoryIosProps;
 declare const _default: ConfigPlugin<FullStoryPluginProps>;
 export default _default;
