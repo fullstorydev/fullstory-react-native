@@ -29,9 +29,7 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
       OrgId: org,
       Host: host,
       RecordOnStart: recordOnStart,
-      IncludeAssets: {
-        assets: includeAssets
-      },
+      IncludeAssets: includeAssets,
       NeedsWorkaroundRNSVGCapture: workaroundRNSVGCapture,
       NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts: workaroundWKUserContentControllerRemoveAllUserScripts
     };
