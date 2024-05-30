@@ -56,4 +56,19 @@ describe('Config Plugin Android Tests', function () {
     } as FullStoryAndroidProps);
     expect(result).toContain('recordOnStart false');
   });
+
+  it('Supports custom configs', async function () {
+    let result = appBuildGradle;
+    result = addFullStoryGradlePlugin(result, {
+      ...pluginConfigs,
+      additionalConfigs: {
+        customBool: true,
+        anotherCustomConfig: '1.5.0',
+        anotherCustomNumberConfig: 3,
+      },
+    } as FullStoryAndroidProps);
+    expect(result).toContain('customBool true');
+    expect(result).toContain("anotherCustomConfig '1.5.0'");
+    expect(result).toContain('anotherCustomNumberConfig 3');
+  });
 });

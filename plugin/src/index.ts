@@ -12,6 +12,7 @@ type FullStoryCrossPlatformProps = {
   version: string;
   host?: string;
   recordOnStart?: boolean;
+  additionalConfigs?: { [configuration: string]: any };
 };
 
 export type FullStoryAndroidProps = {

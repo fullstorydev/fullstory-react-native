@@ -58,6 +58,22 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   });
 };
 
+function getCustomConfigs(additionalConfigs: FullStoryAndroidProps['additionalConfigs']) {
+  let customConfigs = '';
+
+  if (additionalConfigs) {
+    for (const key in additionalConfigs) {
+      customConfigs += `${key} ${
+        typeof additionalConfigs[key] === 'string'
+          ? `'${additionalConfigs[key]}'`
+          : `${additionalConfigs[key]}`
+      }\n`;
+    }
+  }
+
+  return customConfigs;
+}
+
 export const addFullStoryGradlePlugin = (
   appBuildGradle: string,
   {
@@ -68,6 +84,7 @@ export const addFullStoryGradlePlugin = (
     enabledVariants,
     recordOnStart,
     version,
+    additionalConfigs,
   }: FullStoryAndroidProps,
 ) => {
   if (!valid(version)) {
@@ -91,6 +108,7 @@ export const addFullStoryGradlePlugin = (
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ''}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ''}
           ${typeof recordOnStart === 'boolean' ? `recordOnStart ${recordOnStart}` : ''}
+          ${getCustomConfigs(additionalConfigs)}
       }`,
     anchor: /./,
     offset: 1,

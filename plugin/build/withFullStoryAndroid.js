@@ -43,7 +43,18 @@ const withProjectGradleDelegate = (expoConfig, { version }) => {
         return { modResults, ...config };
     });
 };
-const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatLevel, enabledVariants, recordOnStart, version, }) => {
+function getCustomConfigs(additionalConfigs) {
+    let customConfigs = '';
+    if (additionalConfigs) {
+        for (const key in additionalConfigs) {
+            customConfigs += `${key} ${typeof additionalConfigs[key] === 'string'
+                ? `'${additionalConfigs[key]}'`
+                : `${additionalConfigs[key]}`}\n`;
+        }
+    }
+    return customConfigs;
+}
+const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatLevel, enabledVariants, recordOnStart, version, additionalConfigs, }) => {
     if (!(0, semver_1.valid)(version)) {
         throw new Error(`Fullstory version is not valid. Version: ${version}`);
     }
@@ -62,6 +73,7 @@ const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatL
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ''}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ''}
           ${typeof recordOnStart === 'boolean' ? `recordOnStart ${recordOnStart}` : ''}
+          ${getCustomConfigs(additionalConfigs)}
       }`,
         anchor: /./,
         offset: 1,
