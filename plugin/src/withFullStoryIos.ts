@@ -29,6 +29,7 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
     includeAssets,
     workaroundRNSVGCapture,
     workaroundWKUserContentControllerRemoveAllUserScripts,
+    additionalConfigs,
   },
 ) =>
   withInfoPlist(expoConfig, config => {
@@ -40,6 +41,7 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
       NeedsWorkaroundRNSVGCapture: workaroundRNSVGCapture,
       NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts:
         workaroundWKUserContentControllerRemoveAllUserScripts,
+      ...additionalConfigs,
     };
     return config;
   });

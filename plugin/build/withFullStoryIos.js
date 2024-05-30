@@ -11,14 +11,15 @@ async function readFileAsync(filePath) {
 async function saveFileAsync(filePath, content) {
     return fs.promises.writeFile(filePath, content, 'utf8');
 }
-const withInfoPlistDelegate = (expoConfig, { org, host, recordOnStart, includeAssets, workaroundRNSVGCapture, workaroundWKUserContentControllerRemoveAllUserScripts }) => (0, config_plugins_1.withInfoPlist)(expoConfig, config => {
+const withInfoPlistDelegate = (expoConfig, { org, host, recordOnStart, includeAssets, workaroundRNSVGCapture, workaroundWKUserContentControllerRemoveAllUserScripts, additionalConfigs, }) => (0, config_plugins_1.withInfoPlist)(expoConfig, config => {
     config.modResults.FullStory = {
         OrgId: org,
         Host: host,
         RecordOnStart: recordOnStart,
         IncludeAssets: includeAssets,
         NeedsWorkaroundRNSVGCapture: workaroundRNSVGCapture,
-        NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts: workaroundWKUserContentControllerRemoveAllUserScripts
+        NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts: workaroundWKUserContentControllerRemoveAllUserScripts,
+        ...additionalConfigs,
     };
     return config;
 });
