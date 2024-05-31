@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+
+Updated README.
+
 ## 1.7.0
 
 Add Android click support for React Native 74.
