@@ -214,6 +214,19 @@ RCT_REMAP_METHOD(onReady, onReadyWithResolver:(RCTPromiseResolveBlock)resolve re
 #endif
 @end
 
+@implementation FullStoryPrivate {}
+
+RCT_EXPORT_MODULE()
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeFullStoryPrivateSpecJSI>(params);
+}
+#endif
+@end
+
 static const char *_rctview_previous_attributes_key = "associated_object_rctview_previous_attributes_key";
 
 static void set_fsClass(id json, RCTView *view) {

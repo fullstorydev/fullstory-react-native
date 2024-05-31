@@ -34,6 +34,10 @@ const {
   resetIdleTimer,
 } = FullStory;
 
+const FullStoryPrivate = isTurboModuleEnabled
+  ? require('./NativeFullStoryPrivate').default
+  : NativeModules.FullStoryPrivate;
+
 export enum LogLevel {
   Log = 0, // Clamps to Debug on iOS
   Debug = 1,
@@ -69,6 +73,15 @@ declare type FullStoryStatic = {
   restart(): void;
   log(logLevel: LogLevel, message: string): void;
   resetIdleTimer(): void;
+};
+
+declare type FullStoryPrivateStatic = {
+  onFSPressForward?(
+    tag: number,
+    isLongPress: boolean,
+    hasPressHandler: boolean,
+    hasLongPressHandler: boolean,
+  ): void;
 };
 
 declare global {
@@ -191,5 +204,8 @@ const FullStoryAPI: FullStoryStatic = {
   resetIdleTimer,
   LogLevel,
 };
+
+export const PrivateInterface: FullStoryPrivateStatic =
+  Platform.OS === 'android' ? { onFSPressForward: FullStoryPrivate.onFSPressForward } : {};
 
 export default FullStoryAPI;

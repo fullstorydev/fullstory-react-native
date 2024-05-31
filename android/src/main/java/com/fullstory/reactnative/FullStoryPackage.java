@@ -18,6 +18,8 @@ public class FullStoryPackage extends TurboReactPackage implements ReactPackage 
     public NativeModule getModule(String name, ReactApplicationContext reactContext) {
         if (FullStoryModuleImpl.NAME.equals(name)) {
             return new FullStoryModule(reactContext);
+        } else if (FullStoryPrivateModuleImpl.NAME.equals(name)) {
+            return new FullStoryPrivateModule(reactContext);
         } else {
             return null;
         }
@@ -32,6 +34,17 @@ public class FullStoryPackage extends TurboReactPackage implements ReactPackage 
                 new ReactModuleInfo(
                         FullStoryModuleImpl.NAME,
                         FullStoryModuleImpl.NAME,
+                        false, // canOverrideExistingModule
+                        false, // needsEagerInit
+                        true, // hasConstants
+                        false, // isCxxModule
+                        isTurboModule // isTurboModule
+        ));
+        moduleInfos.put(
+                FullStoryPrivateModuleImpl.NAME,
+                new ReactModuleInfo(
+                        FullStoryPrivateModuleImpl.NAME,
+                        FullStoryPrivateModuleImpl.NAME,
                         false, // canOverrideExistingModule
                         false, // needsEagerInit
                         true, // hasConstants
