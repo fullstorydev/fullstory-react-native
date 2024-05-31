@@ -62,9 +62,11 @@ describe('Config Plugin Android Tests', function () {
     result = addFullStoryGradlePlugin(result, {
       ...pluginConfigs,
       additionalConfigs: {
-        customBool: true,
-        anotherCustomConfig: '1.5.0',
-        anotherCustomNumberConfig: 3,
+        android: {
+          customBool: true,
+          anotherCustomConfig: '1.5.0',
+          anotherCustomNumberConfig: 3,
+        },
       },
     } as FullStoryAndroidProps);
     expect(result).toContain('customBool true');

@@ -41,7 +41,7 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
       NeedsWorkaroundRNSVGCapture: workaroundRNSVGCapture,
       NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts:
         workaroundWKUserContentControllerRemoveAllUserScripts,
-      ...additionalConfigs,
+      ...additionalConfigs?.ios,
     };
     return config;
   });

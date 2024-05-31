@@ -60,13 +60,14 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
 
 function getCustomConfigs(additionalConfigs: FullStoryAndroidProps['additionalConfigs']) {
   let customConfigs = '';
+  const androidConfigs = additionalConfigs?.android;
 
-  if (additionalConfigs) {
-    for (const key in additionalConfigs) {
+  if (androidConfigs) {
+    for (const key in androidConfigs) {
       customConfigs += `${key} ${
-        typeof additionalConfigs[key] === 'string'
-          ? `'${additionalConfigs[key]}'`
-          : `${additionalConfigs[key]}`
+        typeof androidConfigs[key] === 'string'
+          ? `'${androidConfigs[key]}'`
+          : `${androidConfigs[key]}`
       }\n`;
     }
   }

@@ -45,11 +45,12 @@ const withProjectGradleDelegate = (expoConfig, { version }) => {
 };
 function getCustomConfigs(additionalConfigs) {
     let customConfigs = '';
-    if (additionalConfigs) {
-        for (const key in additionalConfigs) {
-            customConfigs += `${key} ${typeof additionalConfigs[key] === 'string'
-                ? `'${additionalConfigs[key]}'`
-                : `${additionalConfigs[key]}`}\n`;
+    const androidConfigs = additionalConfigs === null || additionalConfigs === void 0 ? void 0 : additionalConfigs.android;
+    if (androidConfigs) {
+        for (const key in androidConfigs) {
+            customConfigs += `${key} ${typeof androidConfigs[key] === 'string'
+                ? `'${androidConfigs[key]}'`
+                : `${androidConfigs[key]}`}\n`;
         }
     }
     return customConfigs;

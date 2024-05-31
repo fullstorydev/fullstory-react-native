@@ -19,7 +19,7 @@ const withInfoPlistDelegate = (expoConfig, { org, host, recordOnStart, includeAs
         IncludeAssets: includeAssets,
         NeedsWorkaroundRNSVGCapture: workaroundRNSVGCapture,
         NeedsWorkaroundWKUserContentControllerRemoveAllUserScripts: workaroundWKUserContentControllerRemoveAllUserScripts,
-        ...additionalConfigs,
+        ...additionalConfigs === null || additionalConfigs === void 0 ? void 0 : additionalConfigs.ios,
     };
     return config;
 });
