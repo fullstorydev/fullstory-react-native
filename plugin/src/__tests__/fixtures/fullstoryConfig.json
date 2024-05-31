@@ -7,6 +7,8 @@
   "logcatLevel": "error",
   "recordOnStart": true,
   "additionalConfigs": {
-    "addDependencies": false
+    "android": {
+      "addDependencies": false
+    }
   }
 }
