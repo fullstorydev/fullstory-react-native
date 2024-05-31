@@ -38,8 +38,6 @@ const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default
   : NativeModules.FullStoryPrivate;
 
-const { onFSPressForward } = FullStoryPrivate;
-
 export enum LogLevel {
   Log = 0, // Clamps to Debug on iOS
   Debug = 1,
@@ -208,6 +206,6 @@ const FullStoryAPI: FullStoryStatic = {
 };
 
 export const PrivateInterface: FullStoryPrivateStatic =
-  Platform.OS === 'android' ? { onFSPressForward } : {};
+  Platform.OS === 'android' ? { onFSPressForward: FullStoryPrivate.onFSPressForward } : {};
 
 export default FullStoryAPI;
