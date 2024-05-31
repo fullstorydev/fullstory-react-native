@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0
+
+Add Android click support for React Native 74.
+Add additional configuration options for Expo.
+
 ## 1.6.3
 
 Support additional iOS configurations on Expo.
@@ -19,7 +24,7 @@ Add support for React Native `0.74.0` for iOS.
 
 ## 1.5.0
 
-Add support for 'Select Entire Screen' for React Navigation & React Native Navigation
+Add support for 'Select Entire Screen' for React Navigation & React Native Navigation.
 
 ## 1.4.2
 
