@@ -2,6 +2,7 @@ package com.fullstory.reactnative;
 
 import android.util.Log;
 import android.view.View;
+import com.facebook.react.bridge.UiThreadUtil;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
@@ -40,32 +41,37 @@ public class FullStoryPrivateModuleImpl {
             return;
         }
 
-        // This will throw if the view cannot be resolved, so try/catch it.
-        View view = null;
-        try {
-            int reactTag = (int) tag;
-            if (reactTag == -1) {
-                return;
-            }
-            UIManager uiManager = UIManagerHelper.getUIManager(context, ViewUtil.getUIManagerType(reactTag));
-            if (uiManager == null) {
-                return;
-            }
-            view = uiManager.resolveView(reactTag);
-        } catch (Throwable t) {
-            // Silently ignore.
+        int reactTag = (int) tag;
+        if (reactTag == -1) {
             return;
         }
-        
-        if (view == null) {
+        UIManager uiManager = UIManagerHelper.getUIManager(context, ViewUtil.getUIManagerType(reactTag));
+        if (uiManager == null) {
             return;
         }
 
-        try {
-            CLICK_HANDLER.invoke(null, view, isLongPress, hasPressHandler, hasLongPressHandler);
-        } catch (Throwable t) {
-            // This should never happen, so log the error.
-            Log.e(TAG, "Unexpected error while calling the click handler. Please contact FullStory Support.");
-        }
+        Runnable runnable = () -> {
+            // This will throw if the view cannot be resolved, so try/catch it.
+            View view = null;
+            try {
+                view = uiManager.resolveView(reactTag);
+            } catch (Throwable t) {
+                // Silently ignore.
+                return;
+            }
+
+            if (view == null) {
+                return;
+            }
+
+            try {
+                CLICK_HANDLER.invoke(null, view, isLongPress, hasPressHandler, hasLongPressHandler);
+            } catch (Throwable t) {
+                // This should never happen, so log the error.
+                Log.e(TAG, "Unexpected error while calling the click handler. Please contact FullStory Support.");
+            }
+
+        };
+        UiThreadUtil.runOnUiThread(runnable);
     }
 }
