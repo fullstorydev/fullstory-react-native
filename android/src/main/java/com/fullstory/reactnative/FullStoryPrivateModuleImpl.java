@@ -45,7 +45,16 @@ public class FullStoryPrivateModuleImpl {
         if (reactTag == -1) {
             return;
         }
-        UIManager uiManager = UIManagerHelper.getUIManager(context, ViewUtil.getUIManagerType(reactTag));
+
+        UIManager uiManager;
+
+        try {
+            uiManager = UIManagerHelper.getUIManager(context, ViewUtil.getUIManagerType(reactTag));
+        } catch (Throwable t) {
+            // Silently ignore.
+            return;
+        }
+
         if (uiManager == null) {
             return;
         }
