@@ -62,7 +62,15 @@ Add the config plugin to the plugins array of your `app.json` or `app.config.jso
         "@fullstory/react-native",
         {
           "version": "1.28.0",
-          "org": "ABC"
+          "org": "ABC",
+          "additionalConfigs": {
+            "ios": {
+              "PreviewMode": true
+            },
+            "android": {
+              "previewModeEnabled": false
+            }
+          }
         }
       ]
     ]
@@ -80,7 +88,7 @@ Plugins allow for extra customization by passing in an object with properties. I
 | org               | Android & iOS | ✅                                     | Your assigned organization ID.                                                                                     |
 | host              | Android & iOS | Optional. Defaults to: `fullstory.com` | The server url your sessions are sent to.                                                                          |
 | recordOnStart     | Android & iOS | Optional. Defaults to: `true`          | Setting RecordOnStart to `false` will prevent data capture until you explicitly invoke `FS.restart()` API.         |
-| additionalConfigs | Android & iOS | Optional. Defaults to: `nil`           | Pass additional configurations to Android or iOS.                                                                  |
+| additionalConfigs | Android & iOS | Optional. Defaults to: `nil`           | Pass additional configurations to [Android](https://help.fullstory.com/hc/en-us/articles/360040596093-Getting-Started-with-Android-Data-Capture#01F5E7XFMG19SNYS77NYETKDMQ) or [iOS](https://help.fullstory.com/hc/en-us/articles/360042772333-Getting-Started-with-iOS-Data-Capture#01FX61TBJ8FAD9CWBMY31DWSTH).                                                                  |
 | enabledVariants   | Android       | Optional. Defaults to: `release`       | Specifies which variants to apply FullStory instrumentation.                                                       |
 | logLevel          | Android       | Optional. Defaults to: `info`          | Captures any log statements at or above the specified level.                                                       |
 | logcatLevel       | Android       | Optional. Defaults to: `off`           | Captures any Logcat messages at or above the specified level.                                                      |
