@@ -8,7 +8,10 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.fullstory.FS;
 import com.fullstory.FSOnReadyListener;
+import com.fullstory.FSReason;
+import com.fullstory.FSStatusListener;
 import com.fullstory.FSSessionData;
+import com.fullstory.DefaultFSStatusListener;
 
 import java.util.UUID;
 import java.util.Map;
@@ -22,8 +25,11 @@ public class FullStoryModuleImpl {
     private static final Method PAGE_VIEW;
     private static final Method UPDATE_PAGE_PROPERTIES;
     private static final Method END_PAGE;
+    private static boolean isDisabled = false;
 
     static {
+        FSStatusListener listener = new StatusListener();
+        FS.registerStatusListener(listener);
         Method pageView;
         Method updatePageProperties;
         Method endPage;
@@ -35,8 +41,10 @@ public class FullStoryModuleImpl {
             pageView = null;
             updatePageProperties = null;
             endPage = null;
-            Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
+            if (!isDisabled) {
+                Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
                     "Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.");
+            }
         }
 
         PAGE_VIEW = pageView;
@@ -44,6 +52,14 @@ public class FullStoryModuleImpl {
         END_PAGE = endPage;
 
         reflectionSuccess = PAGE_VIEW != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
+        FS.unregisterStatusListener(listener);
+    }
+
+    private static class StatusListener extends DefaultFSStatusListener {
+        @Override
+        public void onFSDisabled(FSReason reason) {
+            isDisabled = true;
+        }
     }
 
 
@@ -109,6 +125,7 @@ public class FullStoryModuleImpl {
     public static void consent(boolean consented) {
         FS.consent(consented);
     }
+
 
     public static void event(String name, ReadableMap properties) {
         FS.event(name, toMap(properties));
