@@ -126,7 +126,6 @@ public class FullStoryModuleImpl {
         FS.consent(consented);
     }
 
-
     public static void event(String name, ReadableMap properties) {
         FS.event(name, toMap(properties));
     }
