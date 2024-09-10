@@ -1,12 +1,6 @@
-import { NativeModules } from 'react-native';
 import { safeStringify } from '@fullstory/safe-stringify';
 import { LogLevel } from './logging';
-
-const isTurboModuleEnabled = __turboModuleProxy != null;
-
-const FullStory = isTurboModuleEnabled
-  ? require('./NativeFullStory').default
-  : NativeModules.FullStory;
+import { FullStory } from './core';
 
 const parseJSStackTrace = (error: Error) => {
   if (!error || !error.stack) {
