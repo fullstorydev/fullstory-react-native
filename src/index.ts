@@ -2,9 +2,10 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
+import setupReactNativeErrorHandler from './errorHandler';
+import { LogLevel } from './logging';
 
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+const isTurboModuleEnabled = __turboModuleProxy != null;
 
 interface NativeProps extends ViewProps {
   fsClass?: string;
@@ -37,15 +38,6 @@ const {
 const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default
   : NativeModules.FullStoryPrivate;
-
-export enum LogLevel {
-  Log = 0, // Clamps to Debug on iOS
-  Debug = 1,
-  Info = 2, // Default
-  Warn = 3,
-  Error = 4,
-  Assert = 5, // Clamps to Error on Android
-}
 
 interface UserVars {
   displayName?: string;
@@ -92,6 +84,7 @@ declare global {
       fsTagName?: string;
     }
   }
+  let __turboModuleProxy: boolean;
 }
 
 const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
@@ -189,6 +182,8 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
   };
 }
 
+setupReactNativeErrorHandler();
+
 const FullStoryAPI: FullStoryStatic = {
   anonymize,
   identify: identifyWithProperties,
@@ -208,4 +203,5 @@ const FullStoryAPI: FullStoryStatic = {
 export const PrivateInterface: FullStoryPrivateStatic =
   Platform.OS === 'android' ? { onFSPressForward: FullStoryPrivate.onFSPressForward } : {};
 
+export { LogLevel } from './logging';
 export default FullStoryAPI;
