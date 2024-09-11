@@ -8,10 +8,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.fullstory.FS;
 import com.fullstory.FSOnReadyListener;
-import com.fullstory.FSReason;
-import com.fullstory.FSStatusListener;
 import com.fullstory.FSSessionData;
-import com.fullstory.DefaultFSStatusListener;
 
 import java.util.UUID;
 import java.util.Map;
@@ -28,20 +25,22 @@ public class FullStoryModuleImpl {
     private static boolean isDisabled = false;
 
     static {
-        FSStatusListener listener = new StatusListener();
-        FS.registerStatusListener(listener);
-        Method pageView;
-        Method updatePageProperties;
-        Method endPage;
         try {
-            pageView = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
-            updatePageProperties = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
-            endPage = FS.class.getMethod("__endPage", UUID.class);
-        } catch (Throwable t) {
-            pageView = null;
-            updatePageProperties = null;
-            endPage = null;
-            if (!isDisabled) {
+            Class.forName("com.fullstory.instrumentation.Bootstrap");
+        } catch (ClassNotFoundException ignored) {
+            isDisabled = true;
+        }
+
+        Method pageView = null;
+        Method updatePageProperties = null;
+        Method endPage = null;
+
+        if (!isDisabled) {
+            try {
+                pageView = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
+                updatePageProperties = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
+                endPage = FS.class.getMethod("__endPage", UUID.class);
+            } catch (Throwable t) {
                 Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
                     "Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.");
             }
@@ -52,16 +51,7 @@ public class FullStoryModuleImpl {
         END_PAGE = endPage;
 
         reflectionSuccess = PAGE_VIEW != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
-        FS.unregisterStatusListener(listener);
     }
-
-    private static class StatusListener extends DefaultFSStatusListener {
-        @Override
-        public void onFSDisabled(FSReason reason) {
-            isDisabled = true;
-        }
-    }
-
 
     public static void anonymize() {
         FS.anonymize();
@@ -167,7 +157,7 @@ public class FullStoryModuleImpl {
             default:
                 // default to INFO
                 actualLevel = FS.LogLevel.INFO;
-            break;
+                break;
         }
 
         // Call through to FS.log with the enum
