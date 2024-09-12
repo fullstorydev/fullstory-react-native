@@ -22,21 +22,28 @@ public class FullStoryModuleImpl {
     private static final Method PAGE_VIEW;
     private static final Method UPDATE_PAGE_PROPERTIES;
     private static final Method END_PAGE;
+    private static boolean isDisabled = false;
 
     static {
-        Method pageView;
-        Method updatePageProperties;
-        Method endPage;
         try {
-            pageView = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
-            updatePageProperties = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
-            endPage = FS.class.getMethod("__endPage", UUID.class);
-        } catch (Throwable t) {
-            pageView = null;
-            updatePageProperties = null;
-            endPage = null;
-            Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
+            Class.forName("com.fullstory.instrumentation.Bootstrap");
+        } catch (ClassNotFoundException ignored) {
+            isDisabled = true;
+        }
+
+        Method pageView = null;
+        Method updatePageProperties = null;
+        Method endPage = null;
+
+        if (!isDisabled) {
+            try {
+                pageView = FS.class.getMethod("__pageView", UUID.class, String.class, Map.class);
+                updatePageProperties = FS.class.getMethod("__updatePageProperties", UUID.class, Map.class);
+                endPage = FS.class.getMethod("__endPage", UUID.class);
+            } catch (Throwable t) {
+                Log.e(TAG, "Unable to access native FullStory pages API. Pages API will not function correctly. " +
                     "Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.");
+            }
         }
 
         PAGE_VIEW = pageView;
@@ -45,7 +52,6 @@ public class FullStoryModuleImpl {
 
         reflectionSuccess = PAGE_VIEW != null && UPDATE_PAGE_PROPERTIES != null && END_PAGE != null;
     }
-
 
     public static void anonymize() {
         FS.anonymize();
@@ -151,7 +157,7 @@ public class FullStoryModuleImpl {
             default:
                 // default to INFO
                 actualLevel = FS.LogLevel.INFO;
-            break;
+                break;
         }
 
         // Call through to FS.log with the enum
