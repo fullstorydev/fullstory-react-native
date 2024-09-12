@@ -1,16 +1,9 @@
-import { NativeModules } from 'react-native';
 import { generateUUID } from './utils';
-
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+import { FullStory } from './core';
 
 type PropertiesWithoutPageName = {
   [key: string]: unknown;
 } & { pageName?: never };
-
-const FullStory = isTurboModuleEnabled
-  ? require('./NativeFullStory').default
-  : NativeModules.FullStory;
 
 const { startPage, endPage, updatePage } = FullStory;
 
