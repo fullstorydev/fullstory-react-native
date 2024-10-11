@@ -393,11 +393,12 @@ static bool array_contains_string(const char **array, const char *string) {
         SWIZZLED_METHOD();
         
         UIViewController *viewController = self;
-        
+        RCTView *view = (RCTView *)[viewController viewIfLoaded];
+
         if ([self respondsToSelector:@selector(layoutInfo)]) {
             id layoutInfo = [self performSelector:@selector(layoutInfo)];
-            if ([layoutInfo respondsToSelector:@selector(name)]) {
-                set_fsAttribute(@{@"screen-name": [layoutInfo name]}, (RCTView *)viewController.view);
+            if (view && [layoutInfo respondsToSelector:@selector(name)]) {
+                set_fsAttribute(@{@"screen-name": [layoutInfo name]}, view);
             }
         } else {
             NSLog(@"RNNComponentViewController cannot communicate screen names to FullStory. Navigation events and screen selectors may not function correctly.");
