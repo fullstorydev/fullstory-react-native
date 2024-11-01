@@ -252,6 +252,9 @@ static void set_dataSourceFile(id json, RCTView *view) {
 }
 
 static void set_fsAttribute(id json, RCTView *view) {
+    if (!view)
+        return;
+
     NSDictionary *newAttrs = (NSDictionary *)json;
 
     /* Clear up all the old attributes first, if they exist. */
@@ -393,10 +396,18 @@ static bool array_contains_string(const char **array, const char *string) {
         SWIZZLED_METHOD();
         
         UIViewController *viewController = self;
-        RCTView *view = (RCTView *)[viewController viewIfLoaded];
-
         if ([self respondsToSelector:@selector(layoutInfo)]) {
             id layoutInfo = [self performSelector:@selector(layoutInfo)];
+            // accessing the view controller's view directly will load the view if it isn't already,
+            // which can cause an infinite loop as RNNComponentViewController's loadView calls the
+            // function we're swizzling here
+            RCTView *view = (RCTView *)[viewController viewIfLoaded];
+            if (!view && [self respondsToSelector:@selector(reactView)]) {
+                // the view controller's init also creates reactView as a child of the main view
+                RCTView *reactView = [self performSelector:@selector(reactView)];
+                if (reactView)
+                    view = reactView.superview;
+            }
             if (view && [layoutInfo respondsToSelector:@selector(name)]) {
                 set_fsAttribute(@{@"screen-name": [layoutInfo name]}, view);
             }
