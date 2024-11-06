@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.2
+
+Android: run click handler on UI thread.
+Android: do not log Pages API errors if Fullstory is disabled.
+iOS: fix a bug in React Native Navigation page detection that sometimes led to crashes.
+
 ## 1.7.1
 
 Updated README.
