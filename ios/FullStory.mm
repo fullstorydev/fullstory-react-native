@@ -330,12 +330,19 @@ static void set_fsAttribute(id json, RCTView *view) {
 }
 @end
 
+extern "C" {
+extern BOOL _FS_MOUNTED_REACT_NATIVE_COMPONENT;
+}
+
 @interface FSReactSwizzleBootstrap : NSObject
 @end
 #define SWIZZLE_HANDLE_COMMAND(rct_clazz) \
 SWIZZLE_BEGIN_INSTANCE(rct_clazz, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) { \
     if ([commandName isEqualToString:@"fsAttribute"]) { \
         set_fsAttribute(args[0], self); \
+    } else if ([commandName isEqualToString:@"fsMounted"]) {
+        // set associated obj
+        objc_setAssociatedObject(self, &_FS_MOUNTED_REACT_NATIVE_COMPONENT, @TRUE, OBJC_ASSOCIATION_RETAIN);
     } else if ([commandName isEqualToString:@"fsClass"]) { \
         set_fsClass(args[0], self); \
     } else if ([commandName isEqualToString:@"dataElement"]) { \
