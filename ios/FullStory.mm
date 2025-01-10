@@ -368,6 +368,7 @@ static bool array_contains_string(const char **array, const char *string) {
 
 @implementation FSReactSwizzleBootstrap
 + (void) load {
+	_FS_MOUNTED_REACT_NATIVE_COMPONENT = YES;
 	/* class_copyMethodList in RCTComponentData's lookup of NativeProps
 	 * can't see the propConfigs that we create in the superclass.  So
 	 * we swizzle that to inject our NativeProps directly in there, so
