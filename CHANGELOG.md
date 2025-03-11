@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.3
+
+Fixed an issue with New Architecture detection in React Native 77+.
+
 ## 1.7.2
 
 Android: run click handler on UI thread.
