@@ -2,9 +2,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
-
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+import { isTurboModuleEnabled } from './utils';
 
 interface NativeProps extends ViewProps {
   fsClass?: string;
