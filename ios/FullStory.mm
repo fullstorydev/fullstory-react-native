@@ -188,7 +188,9 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
 }
 
 - (void) onReady:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  	onReadyPromise = resolve;
+    @synchronized (self) {
+        onReadyPromise = [resolve copy];
+    }
 	FS.delegate = self;
 
 	if (FS.currentSessionURL) {
