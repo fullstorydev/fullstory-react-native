@@ -43,3 +43,15 @@ declare global {
     }
   }
 }
+
+// React 19+
+// https://react.dev/blog/2024/04/25/react-19-upgrade-guide#the-jsx-namespace-in-typescript
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicAttributes {
+      fsAttribute?: { [key: string]: string };
+      fsClass?: string;
+      fsTagName?: string;
+    }
+  }
+}
