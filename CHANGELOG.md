@@ -2,6 +2,10 @@
 
 ## 1.7.3
 
+Add memory access protection for the onReady API on iOS.
+
+## 1.7.3
+
 Fixed an issue with New Architecture detection in React Native 77+.
 
 ## 1.7.2
