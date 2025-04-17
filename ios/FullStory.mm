@@ -171,20 +171,26 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
 }
 
 - (void) fullstoryDidStartSession:(NSString *)sessionUrl {
-	if (!onReadyPromise)
-		return;
+    // this method can be executed both by onReady below and by the Fullstory SDK,
+    // because this object is a delegate, so avoid any possible race
+    @synchronized (self) {
+        if (!onReadyPromise)
+            return;
 
-	NSMutableDictionary *dict = [NSMutableDictionary new];
-	dict[@"replayStartUrl"] = sessionUrl;
-	dict[@"replayNowUrl"] = [FS currentSessionURL: true];
-	dict[@"sessionId"] = FS.currentSession;
-	onReadyPromise(dict);
+        NSMutableDictionary *dict = [NSMutableDictionary new];
+        dict[@"replayStartUrl"] = sessionUrl;
+        dict[@"replayNowUrl"] = [FS currentSessionURL: true];
+        dict[@"sessionId"] = FS.currentSession;
+        onReadyPromise(dict);
 
-	onReadyPromise = nil;
+        onReadyPromise = nil;
+    }
 }
 
 - (void) onReady:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  	onReadyPromise = resolve;
+    @synchronized (self) {
+        onReadyPromise = [resolve copy];
+    }
 	FS.delegate = self;
 
 	if (FS.currentSessionURL) {
