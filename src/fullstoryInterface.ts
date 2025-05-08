@@ -34,18 +34,6 @@ export declare type FullstoryStatic = {
   resetIdleTimer(): void;
 };
 
-declare global {
-  namespace JSX {
-    interface IntrinsicAttributes {
-      fsAttribute?: { [key: string]: string };
-      fsClass?: string;
-      fsTagName?: string;
-    }
-  }
-}
-
-// React 19+
-// https://react.dev/blog/2024/04/25/react-19-upgrade-guide#the-jsx-namespace-in-typescript
 declare module 'react' {
   namespace JSX {
     interface IntrinsicAttributes {
