@@ -34,7 +34,7 @@ export declare type FullstoryStatic = {
   resetIdleTimer(): void;
 };
 
-declare global {
+declare module 'react' {
   namespace JSX {
     interface IntrinsicAttributes {
       fsAttribute?: { [key: string]: string };
