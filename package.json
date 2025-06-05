@@ -1,6 +1,6 @@
 {
   "name": "@fullstory/react-native",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "The official FullStory React Native plugin",
   "repository": "git://github.com/fullstorydev/fullstory-react-native.git",
   "homepage": "https://github.com/fullstorydev/fullstory-react-native",
