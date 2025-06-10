@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.7.3
+## 1.7.5
+
+Add TypeScript support for React 19.
+
+## 1.7.4
 
 Add memory access protection for the onReady API on iOS.
 
