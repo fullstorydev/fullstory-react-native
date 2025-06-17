@@ -1,3 +1,10 @@
+declare const global: {
+  RN$Bridgeless?: boolean;
+  __turboModuleProxy?: unknown;
+};
+
+export const isTurboModuleEnabled = global.RN$Bridgeless || global.__turboModuleProxy != null;
+
 interface UserVars {
   displayName?: string;
   email?: string;

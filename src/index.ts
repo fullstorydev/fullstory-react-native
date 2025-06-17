@@ -2,8 +2,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
-import { isTurboModuleEnabled } from './utils';
-import { FullstoryStatic, LogLevel } from './fullstoryInterface';
+import { FullstoryStatic, isTurboModuleEnabled, LogLevel } from './fullstoryInterface';
 
 interface NativeProps extends ViewProps {
   fsClass?: string;
