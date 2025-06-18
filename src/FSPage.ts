@@ -1,5 +1,6 @@
 import { NativeModules } from 'react-native';
-import { generateUUID, isTurboModuleEnabled } from './utils';
+import { isTurboModuleEnabled } from './fullstoryInterface';
+import { generateUUID } from './utils';
 
 type PropertiesWithoutPageName = {
   [key: string]: unknown;

@@ -1,9 +1,9 @@
+// When adding new imports, please verify that they are not causing the metro resolver to fail in earlier versions of react-native.
 import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ForwardedRef } from 'react';
-import { isTurboModuleEnabled } from './utils';
-import { FullstoryStatic, LogLevel } from './fullstoryInterface';
+import { FullstoryStatic, isTurboModuleEnabled, LogLevel } from './fullstoryInterface';
 
 interface NativeProps extends ViewProps {
   fsClass?: string;
@@ -81,6 +81,7 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 let getInternalInstanceHandleFromPublicInstance: Function | undefined;
 
 try {
+  // This import confuses the metro resolver in earlier versions of react-native.
   getInternalInstanceHandleFromPublicInstance =
     require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
 } catch (e) {}

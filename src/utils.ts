@@ -1,12 +1,4 @@
 /* eslint-disable no-bitwise */
-
-declare const global: {
-  RN$Bridgeless?: boolean;
-  __turboModuleProxy?: unknown;
-};
-
-export const isTurboModuleEnabled = global.RN$Bridgeless || global.__turboModuleProxy != null;
-
 export const generateUUID = (function () {
   function hex8(n: number) {
     return ((n >>> 0) + 4294967296).toString(16).substring(1).toUpperCase();
