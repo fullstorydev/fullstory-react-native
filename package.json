@@ -35,7 +35,7 @@
     "prepack": "bob build"
   },
   "dependencies": {
-    "@fullstory/babel-plugin-annotate-react": "^2.2.0",
+    "@fullstory/babel-plugin-annotate-react": "^2.3.2",
     "@fullstory/babel-plugin-react-native": "^1.4.0"
   },
   "peerDependencies": {
