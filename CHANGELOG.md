@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.6
+
+Update Fullstory babel dependencies.
+
 ## 1.7.5
 
 Add TypeScript support for React 19.
