@@ -340,6 +340,17 @@ static void set_fsAttribute(id json, RCTView *view) {
 @end
 #define SWIZZLE_HANDLE_COMMAND(rct_clazz) \
 SWIZZLE_BEGIN_INSTANCE(rct_clazz, @selector(handleCommand:args:), void, const NSString *commandName, const NSArray *args) { \
+    /* Prevent EXC_BAD_ACCESS by validating view and parameters before use */ \
+    if (!self) { \
+        NSLog(@"FullStory: handleCommand called on nil view for command: %@", commandName); \
+        return; \
+    } \
+    \
+    if (!commandName || !args || args.count == 0 || args[0] == nil) { \
+        NSLog(@"FullStory: handleCommand called with invalid parameters - commandName: %@, args: %@", commandName, args); \
+        return; \
+    } \
+    \
     if ([commandName isEqualToString:@"fsAttribute"]) { \
         set_fsAttribute(args[0], self); \
     } else if ([commandName isEqualToString:@"fsClass"]) { \
