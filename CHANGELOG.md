@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.8.0
+## 1.7.7
 
 Optimize ref wrapping on New Architecture for iOS. Update Fullstory babel dependencies.
 
