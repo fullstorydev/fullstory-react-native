@@ -86,8 +86,17 @@ try {
     require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
 } catch (e) {}
 
-export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
-  return function (element: React.ElementRef<FSComponentType>) {
+const FS_REF_SYMBOL = Symbol('fullstory.ref');
+
+type MaybeFSForwardedRef<T> = ForwardedRef<T> & {
+  [FS_REF_SYMBOL]?: boolean;
+};
+
+export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<unknown>) {
+  if (existingRef && existingRef[FS_REF_SYMBOL]) {
+    return existingRef;
+  }
+  function refWrapper(element: React.ElementRef<FSComponentType>) {
     if (isTurboModuleEnabled && Platform.OS === 'ios') {
       let currentProps: Record<keyof NativeCommands, string | object>;
 
@@ -139,7 +148,16 @@ export function applyFSPropertiesWithRef(existingRef?: ForwardedRef<unknown>) {
         existingRef.current = element;
       }
     }
-  };
+  }
+
+  Object.defineProperty(refWrapper, FS_REF_SYMBOL, {
+    value: true,
+    enumerable: false,
+    writable: false,
+    configurable: false,
+  });
+
+  return refWrapper;
 }
 
 const FullstoryAPI: FullstoryStatic = {
