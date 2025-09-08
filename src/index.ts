@@ -142,7 +142,7 @@ export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<unkno
     }
 
     if (existingRef) {
-      if (existingRef instanceof Function) {
+      if (typeof existingRef === 'function') {
         existingRef(element);
       } else {
         existingRef.current = element;
