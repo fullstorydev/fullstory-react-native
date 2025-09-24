@@ -393,6 +393,7 @@ static bool array_contains_string(const char **array, const char *string) {
     SWIZZLE_HANDLE_COMMAND(RCTScrollViewComponentView);
     SWIZZLE_HANDLE_COMMAND(RCTPullToRefreshViewComponentView);
     SWIZZLE_HANDLE_COMMAND(RCTLegacyViewManagerInteropComponentView);
+    SWIZZLE_HANDLE_COMMAND(RNCPagerViewComponentView);
 #pragma clang pop
 
 #pragma clang diagnostic push
