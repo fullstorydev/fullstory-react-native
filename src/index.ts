@@ -86,7 +86,7 @@ try {
     require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
 } catch (e) {}
 
-const FS_REF_SYMBOL = Symbol('fullstory.ref');
+export const FS_REF_SYMBOL = Symbol('fullstory.ref');
 
 type MaybeFSForwardedRef<T> = ForwardedRef<T> & {
   [FS_REF_SYMBOL]?: boolean;

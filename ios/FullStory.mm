@@ -394,6 +394,8 @@ static bool array_contains_string(const char **array, const char *string) {
     SWIZZLE_HANDLE_COMMAND(RCTPullToRefreshViewComponentView);
     SWIZZLE_HANDLE_COMMAND(RCTLegacyViewManagerInteropComponentView);
     SWIZZLE_HANDLE_COMMAND(RNCPagerViewComponentView);
+    SWIZZLE_HANDLE_COMMAND(LottieAnimationViewComponentView);
+    SWIZZLE_HANDLE_COMMAND(RNCWebView);
 #pragma clang pop
 
 #pragma clang diagnostic push
@@ -443,6 +445,9 @@ static bool array_contains_string(const char **array, const char *string) {
         "RCTScrollViewComponentView",
         "RCTPullToRefreshViewComponentView",
         "RCTLegacyViewManagerInteropComponentView",
+        "RNCPagerViewComponentView",
+        "LottieAnimationViewComponentView",
+        "RNCWebView",
         0};
     // Grab the impl of RCTViewComponentView
     Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
