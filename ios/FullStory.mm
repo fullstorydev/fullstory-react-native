@@ -445,6 +445,9 @@ static bool array_contains_string(const char **array, const char *string) {
         "RCTScrollViewComponentView",
         "RCTPullToRefreshViewComponentView",
         "RCTLegacyViewManagerInteropComponentView",
+        "RNCPagerViewComponentView",
+        "LottieAnimationViewComponentView",
+        "RNCWebView",
         0};
     // Grab the impl of RCTViewComponentView
     Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
