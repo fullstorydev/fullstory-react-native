@@ -28,6 +28,7 @@ export type FullStoryIosProps = {
   includeAssets?: { [directory: string]: string[] };
   workaroundRNSVGCapture?: boolean;
   workaroundWKUserContentControllerRemoveAllUserScripts?: boolean;
+  infoPlistPath?: string;
 } & FullStoryCrossPlatformProps;
 
 type FullStoryPluginProps = FullStoryAndroidProps & FullStoryIosProps;

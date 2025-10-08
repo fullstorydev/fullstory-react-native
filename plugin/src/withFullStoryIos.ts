@@ -46,7 +46,7 @@ const withInfoPlistDelegate: ConfigPlugin<FullStoryIosProps> = (
     return config;
   });
 
-const withBuildPhaseDelegate: ConfigPlugin = expoConfig =>
+const withBuildPhaseDelegate: ConfigPlugin<FullStoryIosProps> = (expoConfig, { infoPlistPath }) =>
   withXcodeProject(expoConfig, config => {
     const xcodeProject = config.modResults;
 
@@ -56,6 +56,14 @@ const withBuildPhaseDelegate: ConfigPlugin = expoConfig =>
     );
 
     if (!fullStoryBuildPhase) {
+      let shellScript =
+        '${PODS_ROOT}/FullStory/tools/FullStoryCommandLine ' +
+        '${CONFIGURATION_BUILD_DIR}/${WRAPPER_NAME}';
+
+      if (infoPlistPath) {
+        shellScript += ` "${infoPlistPath}"`;
+      }
+
       xcodeProject.addBuildPhase(
         [],
         'PBXShellScriptBuildPhase',
@@ -63,9 +71,7 @@ const withBuildPhaseDelegate: ConfigPlugin = expoConfig =>
         null,
         {
           shellPath: '/bin/sh',
-          shellScript:
-            '${PODS_ROOT}/FullStory/tools/FullStoryCommandLine ' +
-            '${CONFIGURATION_BUILD_DIR}/${WRAPPER_NAME}',
+          shellScript,
         },
       );
     }
@@ -99,7 +105,7 @@ const withFullStoryIos: ConfigPlugin<FullStoryIosProps> = (expoConfig, pluginCon
   return withPlugins(expoConfig, [
     [withInfoPlistDelegate, pluginConfigs],
     [withPodfileDelegate, pluginConfigs],
-    withBuildPhaseDelegate,
+    [withBuildPhaseDelegate, pluginConfigs],
   ]);
 };
 
