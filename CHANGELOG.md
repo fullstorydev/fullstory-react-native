@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.8
+
+Add `infoPlistPath` as an Expo configuration. Add additional Swizzled classes for `handleCommand`.
+
 ## 1.7.7
 
 Optimize ref wrapping on New Architecture for iOS. Update Fullstory babel dependencies.
