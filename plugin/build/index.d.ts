@@ -25,6 +25,7 @@ export type FullStoryIosProps = {
     };
     workaroundRNSVGCapture?: boolean;
     workaroundWKUserContentControllerRemoveAllUserScripts?: boolean;
+    infoPlistPath?: string;
 } & FullStoryCrossPlatformProps;
 type FullStoryPluginProps = FullStoryAndroidProps & FullStoryIosProps;
 declare const _default: ConfigPlugin<FullStoryPluginProps>;

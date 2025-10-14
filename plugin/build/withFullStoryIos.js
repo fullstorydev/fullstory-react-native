@@ -23,14 +23,18 @@ const withInfoPlistDelegate = (expoConfig, { org, host, recordOnStart, includeAs
     };
     return config;
 });
-const withBuildPhaseDelegate = expoConfig => (0, config_plugins_1.withXcodeProject)(expoConfig, config => {
+const withBuildPhaseDelegate = (expoConfig, { infoPlistPath }) => (0, config_plugins_1.withXcodeProject)(expoConfig, config => {
     const xcodeProject = config.modResults;
     const fullStoryBuildPhase = xcodeProject.pbxItemByComment('Run FullStory Asset Uploader', 'PBXShellScriptBuildPhase');
     if (!fullStoryBuildPhase) {
+        let shellScript = '${PODS_ROOT}/FullStory/tools/FullStoryCommandLine ' +
+            '${CONFIGURATION_BUILD_DIR}/${WRAPPER_NAME}';
+        if (infoPlistPath) {
+            shellScript += ` "${infoPlistPath}"`;
+        }
         xcodeProject.addBuildPhase([], 'PBXShellScriptBuildPhase', 'Run FullStory Asset Uploader', null, {
             shellPath: '/bin/sh',
-            shellScript: '${PODS_ROOT}/FullStory/tools/FullStoryCommandLine ' +
-                '${CONFIGURATION_BUILD_DIR}/${WRAPPER_NAME}',
+            shellScript,
         });
     }
     return config;
@@ -59,7 +63,7 @@ const withFullStoryIos = (expoConfig, pluginConfigs) => {
     return (0, config_plugins_1.withPlugins)(expoConfig, [
         [withInfoPlistDelegate, pluginConfigs],
         [withPodfileDelegate, pluginConfigs],
-        withBuildPhaseDelegate,
+        [withBuildPhaseDelegate, pluginConfigs],
     ]);
 };
 exports.default = withFullStoryIos;
