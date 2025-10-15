@@ -431,12 +431,16 @@ static void swizzle_handleCommand_for_class(Class cls) {
             return;
         }
         
-        // Swizzle +initialize on RCTViewComponentView to catch all subclasses
+        // Check if RCTViewComponentView has its own +initialize method
         Method initializeMethod = class_getClassMethod(viewComponentView, @selector(initialize));
-        IMP originalInitializeIMP = initializeMethod ? method_getImplementation(initializeMethod) : NULL;
+        Method parentInitializeMethod = class_getClassMethod(class_getSuperclass(viewComponentView), @selector(initialize));
+        
+        // Only proceed if RCTViewComponentView has its own +initialize, or we can safely add one
+        BOOL hasOwnInitialize = (initializeMethod && initializeMethod != parentInitializeMethod);
+        IMP originalInitializeIMP = hasOwnInitialize ? method_getImplementation(initializeMethod) : NULL;
         
         IMP newInitializeIMP = imp_implementationWithBlock(^(Class cls) {
-            // Call original initialize first
+            // Call original initialize first if RCTViewComponentView had its own
             if (originalInitializeIMP) {
                 ((void(*)(Class, SEL))originalInitializeIMP)(cls, @selector(initialize));
             }
@@ -466,10 +470,11 @@ static void swizzle_handleCommand_for_class(Class cls) {
             }
         });
         
-        if (initializeMethod) {
+        if (hasOwnInitialize) {
+            // Replace RCTViewComponentView's own +initialize
             method_setImplementation(initializeMethod, newInitializeIMP);
         } else {
-            // Add +initialize method if it doesn't exist
+            // Add +initialize method specifically to RCTViewComponentView
             class_addMethod(object_getClass(viewComponentView), @selector(initialize), newInitializeIMP, "v@:");
         }
         
