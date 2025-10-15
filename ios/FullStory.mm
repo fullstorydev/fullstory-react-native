@@ -422,41 +422,61 @@ static void swizzle_handleCommand_for_class(Class cls) {
         return r;
     } SWIZZLE_END;
 
-    // Automatically swizzle all RCTViewComponentView subclasses
+    // Hook into RCTViewComponentView's +initialize to swizzle subclasses lazily
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
+        if (!viewComponentView) {
+            NSLog(@"FullStory: RCTViewComponentView not found, cannot set up lazy swizzling");
+            return;
+        }
+        
+        // Swizzle +initialize on RCTViewComponentView to catch all subclasses
+        Method initializeMethod = class_getClassMethod(viewComponentView, @selector(initialize));
+        IMP originalInitializeIMP = initializeMethod ? method_getImplementation(initializeMethod) : NULL;
+        
+        IMP newInitializeIMP = imp_implementationWithBlock(^(Class cls) {
+            // Call original initialize first
+            if (originalInitializeIMP) {
+                ((void(*)(Class, SEL))originalInitializeIMP)(cls, @selector(initialize));
+            }
+            
+            // Only swizzle direct subclasses of RCTViewComponentView that have handleCommand:args:
+            if (class_getSuperclass(cls) == viewComponentView && cls != viewComponentView) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    SEL handleCommandSel = @selector(handleCommand:args:);
-    Class viewComponentView = NSClassFromString(@"RCTViewComponentView");
-    
-    if (!viewComponentView) {
-        NSLog(@"FullStory: RCTViewComponentView not found, cannot swizzle handleCommand");
-    } else {
-        int classCount = objc_getClassList(NULL, 0);
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wvla-extension"
-        __unsafe_unretained Class classes[classCount];
-        #pragma clang diagnostic pop
-        objc_getClassList(classes, classCount);
+                SEL handleCommandSel = @selector(handleCommand:args:);
+#pragma clang diagnostic pop
+                Method handleMethod = class_getInstanceMethod(cls, handleCommandSel);
+                
+                if (handleMethod) {
+                    // Check if already swizzled using class pointer as unique key
+                    NSString *key = [NSString stringWithFormat:@"fs_swizzled_%p", cls];
+                    const char *keyStr = [key UTF8String];
+                    
+                    if (!objc_getAssociatedObject(cls, keyStr)) {
+                        swizzle_handleCommand_for_class(cls);
+                        objc_setAssociatedObject(cls, keyStr, @YES, OBJC_ASSOCIATION_RETAIN);
+                        
+#ifdef DEBUG
+                        NSLog(@"FullStory: Lazily swizzled handleCommand for %s", class_getName(cls));
+#endif
+                    }
+                }
+            }
+        });
         
-        for (int i = 0; i < classCount; i++) {
-            Class cls = classes[i];
-            
-            // Check if this class is a subclass of RCTViewComponentView
-            Class superClass = cls;
-            BOOL isSubclass = NO;
-            while (superClass && superClass != viewComponentView) {
-                superClass = class_getSuperclass(superClass);
-            }
-            if (superClass == viewComponentView) {
-                isSubclass = YES;
-            }
-            
-            if (isSubclass && cls != viewComponentView) {
-                swizzle_handleCommand_for_class(cls);
-            }
+        if (initializeMethod) {
+            method_setImplementation(initializeMethod, newInitializeIMP);
+        } else {
+            // Add +initialize method if it doesn't exist
+            class_addMethod(object_getClass(viewComponentView), @selector(initialize), newInitializeIMP, "v@:");
         }
-    }
-#pragma clang pop
+        
+#ifdef DEBUG
+        NSLog(@"FullStory: Set up lazy swizzling for RCTViewComponentView subclasses");
+#endif
+    });
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
