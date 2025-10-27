@@ -350,6 +350,12 @@ static const char *_fs_handleCommand_swizzled_key = "fs_handleCommand_swizzled";
 
 // Helper function to perform the swizzle dynamically for any class
 static void swizzle_handleCommand_for_class(Class cls) {
+    // Check if already swizzled using associated object on the Class
+    NSNumber *alreadySwizzled = objc_getAssociatedObject(cls, _fs_handleCommand_swizzled_key);
+    if (alreadySwizzled && [alreadySwizzled boolValue]) {
+        return;
+    }
+
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wundeclared-selector"
     SEL handleCommandSel = @selector(handleCommand:args:);
@@ -363,13 +369,7 @@ static void swizzle_handleCommand_for_class(Class cls) {
 #endif
         return; // Class doesn't implement handleCommand:args:
     }
-    
-    // Check if already swizzled using associated object on the Class
-    NSNumber *alreadySwizzled = objc_getAssociatedObject(cls, _fs_handleCommand_swizzled_key);
-    if (alreadySwizzled && [alreadySwizzled boolValue]) {
-        return;
-    }
-    
+       
     // Capture original implementation in block closure (similar to SWIZZLED_METHOD)
     IMP originalIMP = method_getImplementation(originalMethod);
     
@@ -454,18 +454,7 @@ static void swizzle_handleCommand_for_class(Class cls) {
                 Method handleMethod = class_getInstanceMethod(cls, handleCommandSel);
                 
                 if (handleMethod) {
-                    // Check if already swizzled using class pointer as unique key
-                    NSString *key = [NSString stringWithFormat:@"fs_swizzled_%p", cls];
-                    const char *keyStr = [key UTF8String];
-                    
-                    if (!objc_getAssociatedObject(cls, keyStr)) {
-                        swizzle_handleCommand_for_class(cls);
-                        objc_setAssociatedObject(cls, keyStr, @YES, OBJC_ASSOCIATION_RETAIN);
-                        
-#ifdef DEBUG
-                        NSLog(@"FullStory: Lazily swizzled handleCommand for %s", class_getName(cls));
-#endif
-                    }
+                    swizzle_handleCommand_for_class(cls);
                 }
             }
         });
