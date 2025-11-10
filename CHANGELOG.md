@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.0
+
+iOS: Dynamically swizzle view commands to RCTViewComponentView subclasses.
+Android: replace jcenter() with mavenCentral().
+
 ## 1.7.8
 
 Add `infoPlistPath` as an Expo configuration. Add additional Swizzled classes for `handleCommand`.
