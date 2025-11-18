@@ -62,6 +62,7 @@ describe('FSPage', () => {
   });
 
   it('Page start will remove pageName key', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     const page = new FSPage(SAMPLE_PAGE_NAME);
 
     // @ts-expect-error pageName is not allowed
@@ -70,9 +71,12 @@ describe('FSPage', () => {
     const startPage = NativeModules.FullStory.startPage;
 
     expect(startPage).toBeCalledWith(SAMPLE_UUID, SAMPLE_PAGE_NAME, SAMPLE_PAGE_PROPS);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    warnSpy.mockRestore();
   });
 
   it('Unstarted page will not call update or end page', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation();
     const page = new FSPage(SAMPLE_PAGE_NAME);
     page.update(SAMPLE_PAGE_PROPS);
     page.end();
@@ -82,6 +86,8 @@ describe('FSPage', () => {
 
     expect(updatePage).not.toHaveBeenCalled();
     expect(endPage).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledTimes(2);
+    errorSpy.mockRestore();
   });
 
   it('Page update will merge properties correctly ', () => {
