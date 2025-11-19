@@ -107,12 +107,7 @@ describe('Reading FS properties on iOS', () => {
   });
 
   it('Calls Native Command once even if double wrapped', () => {
-    render(
-      <View
-        ref={applyFSPropertiesWithRef() as (element: View) => void}
-        fsTagName={fsTagNameValue}
-      />,
-    );
+    render(<View ref={applyFSPropertiesWithRef()} fsTagName={fsTagNameValue} />);
     expect(mockNativeCommands.fsTagName).toHaveBeenCalledWith(expect.any(Object), fsTagNameValue);
     expect(mockNativeCommands.fsTagName).toHaveBeenCalledTimes(1);
   });
