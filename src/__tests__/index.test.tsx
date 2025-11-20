@@ -52,6 +52,14 @@ describe('Reading FS properties on iOS', () => {
     jest.clearAllMocks();
   });
 
+  afterAll(() => {
+    global.__turboModuleProxy = undefined;
+    Object.defineProperty(Platform, 'OS', {
+      writable: true,
+      value: originalPlatformOS,
+    });
+  });
+
   it('Reads fs properties correctly', () => {
     const TestComponent = () => {
       return (
@@ -110,13 +118,5 @@ describe('Reading FS properties on iOS', () => {
     render(<View ref={applyFSPropertiesWithRef()} fsTagName={fsTagNameValue} />);
     expect(mockNativeCommands.fsTagName).toHaveBeenCalledWith(expect.any(Object), fsTagNameValue);
     expect(mockNativeCommands.fsTagName).toHaveBeenCalledTimes(1);
-  });
-
-  afterAll(() => {
-    global.__turboModuleProxy = undefined;
-    Object.defineProperty(Platform, 'OS', {
-      writable: true,
-      value: originalPlatformOS,
-    });
   });
 });
