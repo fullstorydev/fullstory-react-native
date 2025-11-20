@@ -104,13 +104,13 @@ export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<FSNat
     if (element && isTurboModuleEnabled && Platform.OS === 'ios') {
       let currentProps: Record<keyof NativeCommands, string | object>;
 
-      if (getInternalInstanceHandleFromPublicInstance && element) {
+      if (getInternalInstanceHandleFromPublicInstance) {
         currentProps =
           getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
       } else {
         // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
         // @ts-expect-error `currentProps` is missing in `NativeMethods`
-        currentProps = element?.currentProps;
+        currentProps = element.currentProps;
       }
       if (currentProps) {
         const fsClass = currentProps.fsClass as string;
