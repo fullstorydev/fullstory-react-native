@@ -2,7 +2,7 @@
 import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
-import { ForwardedRef } from 'react';
+import { ComponentRef, ForwardedRef } from 'react';
 import { FullstoryStatic, isTurboModuleEnabled, LogLevel } from './fullstoryInterface';
 
 interface NativeProps extends ViewProps {
@@ -52,12 +52,12 @@ export { FSPage } from './FSPage';
 type FSComponentType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  fsClass: (viewRef: React.ElementRef<FSComponentType>, fsClass: string) => void;
-  fsAttribute: (viewRef: React.ElementRef<FSComponentType>, fsAttribute: object) => void;
-  fsTagName: (viewRef: React.ElementRef<FSComponentType>, fsTagName: string) => void;
-  dataElement: (viewRef: React.ElementRef<FSComponentType>, dataElement: string) => void;
-  dataSourceFile: (viewRef: React.ElementRef<FSComponentType>, dataElement: string) => void;
-  dataComponent: (viewRef: React.ElementRef<FSComponentType>, dataElement: string) => void;
+  fsClass: (viewRef: ComponentRef<FSComponentType>, fsClass: string) => void;
+  fsAttribute: (viewRef: ComponentRef<FSComponentType>, fsAttribute: object) => void;
+  fsTagName: (viewRef: ComponentRef<FSComponentType>, fsTagName: string) => void;
+  dataElement: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
+  dataSourceFile: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
+  dataComponent: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
 }
 
 /* 
@@ -92,21 +92,25 @@ type MaybeFSForwardedRef<T> = ForwardedRef<T> & {
   [FS_REF_SYMBOL]?: boolean;
 };
 
-export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<unknown>) {
+type FSNativeElement = ComponentRef<FSComponentType> & {
+  currentProps?: Record<string, unknown>;
+};
+
+export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<FSNativeElement>) {
   if (existingRef && existingRef[FS_REF_SYMBOL]) {
     return existingRef;
   }
-  function refWrapper(element: React.ElementRef<FSComponentType>) {
-    if (isTurboModuleEnabled && Platform.OS === 'ios') {
+  function refWrapper(element: FSNativeElement | null) {
+    if (element && isTurboModuleEnabled && Platform.OS === 'ios') {
       let currentProps: Record<keyof NativeCommands, string | object>;
 
-      if (getInternalInstanceHandleFromPublicInstance && element) {
+      if (getInternalInstanceHandleFromPublicInstance) {
         currentProps =
           getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
       } else {
         // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
         // @ts-expect-error `currentProps` is missing in `NativeMethods`
-        currentProps = element?.currentProps;
+        currentProps = element.currentProps;
       }
       if (currentProps) {
         const fsClass = currentProps.fsClass as string;
