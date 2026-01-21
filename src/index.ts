@@ -110,33 +110,33 @@ function sharedRefWrapper(element: FSNativeElement | null) {
       currentProps = element.currentProps;
     }
     if (currentProps) {
-      const fsClass = currentProps.fsClass as string;
-      if (fsClass) {
+      const fsClass = currentProps.fsClass;
+      if (fsClass && typeof fsClass === 'string') {
         Commands.fsClass(element, fsClass);
       }
 
-      const fsAttribute = currentProps.fsAttribute as object;
-      if (fsAttribute) {
+      const fsAttribute = currentProps.fsAttribute;
+      if (fsAttribute && typeof fsAttribute === 'object') {
         Commands.fsAttribute(element, fsAttribute);
       }
 
-      const fsTagName = currentProps.fsTagName as string;
-      if (fsTagName) {
+      const fsTagName = currentProps.fsTagName;
+      if (fsTagName && typeof fsTagName === 'string') {
         Commands.fsTagName(element, fsTagName);
       }
 
-      const dataElement = currentProps.dataElement as string;
-      if (dataElement) {
+      const dataElement = currentProps.dataElement;
+      if (dataElement && typeof dataElement === 'string') {
         Commands.dataElement(element, dataElement);
       }
 
-      const dataComponent = currentProps.dataComponent as string;
-      if (dataComponent) {
+      const dataComponent = currentProps.dataComponent;
+      if (dataComponent && typeof dataComponent === 'string') {
         Commands.dataComponent(element, dataComponent);
       }
 
-      const dataSourceFile = currentProps.dataSourceFile as string;
-      if (dataSourceFile) {
+      const dataSourceFile = currentProps.dataSourceFile;
+      if (dataSourceFile && typeof dataSourceFile === 'string') {
         Commands.dataSourceFile(element, dataSourceFile);
       }
     }
