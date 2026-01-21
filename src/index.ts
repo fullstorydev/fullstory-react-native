@@ -96,54 +96,73 @@ type FSNativeElement = ComponentRef<FSComponentType> & {
   currentProps?: Record<string, unknown>;
 };
 
+// Shared wrapper for components without refs (most common case)
+function sharedRefWrapper(element: FSNativeElement | null) {
+  if (element && isTurboModuleEnabled && Platform.OS === 'ios') {
+    let currentProps: Record<keyof NativeCommands, string | object>;
+
+    if (getInternalInstanceHandleFromPublicInstance) {
+      currentProps =
+        getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
+    } else {
+      // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
+      // @ts-expect-error `currentProps` is missing in `NativeMethods`
+      currentProps = element.currentProps;
+    }
+    if (currentProps) {
+      const fsClass = currentProps.fsClass as string;
+      if (fsClass) {
+        Commands.fsClass(element, fsClass);
+      }
+
+      const fsAttribute = currentProps.fsAttribute as object;
+      if (fsAttribute) {
+        Commands.fsAttribute(element, fsAttribute);
+      }
+
+      const fsTagName = currentProps.fsTagName as string;
+      if (fsTagName) {
+        Commands.fsTagName(element, fsTagName);
+      }
+
+      const dataElement = currentProps.dataElement as string;
+      if (dataElement) {
+        Commands.dataElement(element, dataElement);
+      }
+
+      const dataComponent = currentProps.dataComponent as string;
+      if (dataComponent) {
+        Commands.dataComponent(element, dataComponent);
+      }
+
+      const dataSourceFile = currentProps.dataSourceFile as string;
+      if (dataSourceFile) {
+        Commands.dataSourceFile(element, dataSourceFile);
+      }
+    }
+  }
+}
+
+Object.defineProperty(sharedRefWrapper, FS_REF_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+  configurable: false,
+});
+
 export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<FSNativeElement>) {
+  // Return early if already wrapped
   if (existingRef && existingRef[FS_REF_SYMBOL]) {
     return existingRef;
   }
+
+  // Use shared wrapper for null/undefined refs
+  if (!existingRef) {
+    return sharedRefWrapper;
+  }
+
   function refWrapper(element: FSNativeElement | null) {
-    if (element && isTurboModuleEnabled && Platform.OS === 'ios') {
-      let currentProps: Record<keyof NativeCommands, string | object>;
-
-      if (getInternalInstanceHandleFromPublicInstance) {
-        currentProps =
-          getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
-      } else {
-        // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
-        // @ts-expect-error `currentProps` is missing in `NativeMethods`
-        currentProps = element.currentProps;
-      }
-      if (currentProps) {
-        const fsClass = currentProps.fsClass as string;
-        if (fsClass) {
-          Commands.fsClass(element, fsClass);
-        }
-
-        const fsAttribute = currentProps.fsAttribute as object;
-        if (fsAttribute) {
-          Commands.fsAttribute(element, fsAttribute);
-        }
-
-        const fsTagName = currentProps.fsTagName as string;
-        if (fsTagName) {
-          Commands.fsTagName(element, fsTagName);
-        }
-
-        const dataElement = currentProps.dataElement as string;
-        if (dataElement) {
-          Commands.dataElement(element, dataElement);
-        }
-
-        const dataComponent = currentProps.dataComponent as string;
-        if (dataComponent) {
-          Commands.dataComponent(element, dataComponent);
-        }
-
-        const dataSourceFile = currentProps.dataSourceFile as string;
-        if (dataSourceFile) {
-          Commands.dataSourceFile(element, dataSourceFile);
-        }
-      }
-    }
+    sharedRefWrapper(element);
 
     if (existingRef) {
       if (typeof existingRef === 'function') {
