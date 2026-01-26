@@ -2,7 +2,10 @@
   "name": "@fullstory/react-native",
   "version": "1.8.0",
   "description": "The official FullStory React Native plugin",
-  "repository": "git://github.com/fullstorydev/fullstory-react-native.git",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fullstorydev/fullstory-react-native.git"
+  },
   "homepage": "https://github.com/fullstorydev/fullstory-react-native",
   "author": "FullStory",
   "license": "MIT",
