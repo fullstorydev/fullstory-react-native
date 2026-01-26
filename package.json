@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@fullstory/babel-plugin-annotate-react": "^2.3.2",
-    "@fullstory/babel-plugin-react-native": "^1.5.2"
+    "@fullstory/babel-plugin-react-native": "^1.6.0"
   },
   "peerDependencies": {
     "expo": ">=47.0.0",
