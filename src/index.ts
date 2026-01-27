@@ -35,7 +35,7 @@ const {
   anonymize: () => null,
   identify: () => null,
   setUserVars: () => null,
-  onReady: () => Promise.resolve({ isReady: false }),
+  onReady: () => Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
   getCurrentSession: () => Promise.resolve(''),
   getCurrentSessionURL: () => Promise.resolve(''),
   consent: () => null,
