@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1
+
+Enhanced performance of attribute detection on iOS.
+
 ## 1.8.0
 
 iOS: Dynamically swizzle view commands to RCTViewComponentView subclasses.
