@@ -10,7 +10,11 @@ const FullStory = isTurboModuleEnabled
   ? require('./NativeFullStory').default
   : NativeModules.FullStory;
 
-const { startPage, endPage, updatePage } = FullStory;
+const { startPage, endPage, updatePage } = FullStory || {
+  startPage: () => null,
+  endPage: () => null,
+  updatePage: () => null,
+};
 
 type UnknownObj = {
   [key: string]: unknown | UnknownObj;
