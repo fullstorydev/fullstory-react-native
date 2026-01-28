@@ -3,7 +3,12 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ComponentRef, ForwardedRef } from 'react';
-import { FullstoryStatic, isTurboModuleEnabled, LogLevel } from './fullstoryInterface';
+import {
+  FullstoryStatic,
+  isTurboModuleEnabled,
+  LogLevel,
+  SupportedFSAttributes,
+} from './fullstoryInterface';
 
 interface NativeProps extends ViewProps {
   fsClass?: string;
@@ -69,30 +74,15 @@ export { FSPage } from './FSPage';
 type FSComponentType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  fsClass: (viewRef: ComponentRef<FSComponentType>, fsClass: string) => void;
-  fsAttribute: (viewRef: ComponentRef<FSComponentType>, fsAttribute: object) => void;
-  fsTagName: (viewRef: ComponentRef<FSComponentType>, fsTagName: string) => void;
-  dataElement: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
-  dataSourceFile: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
-  dataComponent: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
+  setBatchProperties: (viewRef: ComponentRef<FSComponentType>, props: object) => void;
 }
 
-/*
-  Calling these commands sequentially will *not* lead to an intermediate state where views
-  have incomplete attribute values. React's rendering phases protects against this race condition.
-  See DOC-1863 for more information.
+/* 
+  Batching all property commands into a single native call to reduce the window for race conditions
+  with React Native's rendering scheduler.
 */
-const SUPPORTED_FS_ATTRIBUTES = [
-  'fsClass',
-  'fsAttribute',
-  'fsTagName',
-  'dataElement',
-  'dataComponent',
-  'dataSourceFile',
-] as (keyof NativeCommands)[];
-
 const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: SUPPORTED_FS_ATTRIBUTES,
+  supportedCommands: ['setBatchProperties'],
 });
 
 let getInternalInstanceHandleFromPublicInstance: Function | undefined;
@@ -116,45 +106,50 @@ type FSNativeElement = ComponentRef<FSComponentType> & {
 // Shared wrapper for components without refs (most common case)
 function sharedRefWrapper(element: FSNativeElement | null) {
   if (element && isTurboModuleEnabled && Platform.OS === 'ios' && !Platform.isTV) {
-    let currentProps: Record<keyof NativeCommands, string | object>;
+    let currentProps: Record<string, unknown> | undefined;
 
     if (getInternalInstanceHandleFromPublicInstance) {
       currentProps =
         getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
     } else {
-      // https://github.com/facebook/react-native/blob/87d2ea9c364c7ea393d11718c195dfe580c916ef/packages/react-native/Libraries/Components/TextInput/TextInputState.js#L109C23-L109C67
-      // @ts-expect-error `currentProps` is missing in `NativeMethods`
       currentProps = element.currentProps;
     }
     if (currentProps) {
+      const batchedProps: Partial<Record<SupportedFSAttributes, string | object>> = {};
+
       const fsClass = currentProps.fsClass;
       if (fsClass && typeof fsClass === 'string') {
-        Commands.fsClass(element, fsClass);
+        batchedProps.fsClass = fsClass;
       }
 
       const fsAttribute = currentProps.fsAttribute;
       if (fsAttribute && typeof fsAttribute === 'object') {
-        Commands.fsAttribute(element, fsAttribute);
+        batchedProps.fsAttribute = fsAttribute;
       }
 
       const fsTagName = currentProps.fsTagName;
       if (fsTagName && typeof fsTagName === 'string') {
-        Commands.fsTagName(element, fsTagName);
+        batchedProps.fsTagName = fsTagName;
       }
 
       const dataElement = currentProps.dataElement;
       if (dataElement && typeof dataElement === 'string') {
-        Commands.dataElement(element, dataElement);
+        batchedProps.dataElement = dataElement;
       }
 
       const dataComponent = currentProps.dataComponent;
       if (dataComponent && typeof dataComponent === 'string') {
-        Commands.dataComponent(element, dataComponent);
+        batchedProps.dataComponent = dataComponent;
       }
 
       const dataSourceFile = currentProps.dataSourceFile;
       if (dataSourceFile && typeof dataSourceFile === 'string') {
-        Commands.dataSourceFile(element, dataSourceFile);
+        batchedProps.dataSourceFile = dataSourceFile;
+      }
+
+      // Send all properties as a single batched command
+      if (Object.keys(batchedProps).length > 0) {
+        Commands.setBatchProperties(element, batchedProps);
       }
     }
   }

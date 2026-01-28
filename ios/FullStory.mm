@@ -375,20 +375,30 @@ static void swizzle_handleCommand_for_class(Class cls) {
     
     // Create new implementation
     IMP newIMP = imp_implementationWithBlock(^void(id self, const NSString *commandName, const NSArray *args) {
-        if ([commandName isEqualToString:@"fsAttribute"]) {
-            set_fsAttribute(args[0], self);
-        } else if ([commandName isEqualToString:@"fsClass"]) {
-            set_fsClass(args[0], self);
-        } else if ([commandName isEqualToString:@"dataElement"]) {
-            set_dataElement(args[0], self);
-        } else if ([commandName isEqualToString:@"dataSourceFile"]) {
-            set_dataSourceFile(args[0], self);
-        } else if ([commandName isEqualToString:@"fsTagName"]) {
-            set_fsTagName(args[0], self);
-        } else if ([commandName isEqualToString:@"dataComponent"]) {
-            set_dataComponent(args[0], self);
+        if ([commandName isEqualToString:@"setBatchProperties"]) {
+            // Batched properties command - applies all properties in a single call
+            // to reduce race conditions with React Native's rendering scheduler
+            NSDictionary *props = args[0];
+            if (props[@"fsAttribute"]) {
+                set_fsAttribute(props[@"fsAttribute"], self);
+            }
+            if (props[@"fsClass"]) {
+                set_fsClass(props[@"fsClass"], self);
+            }
+            if (props[@"fsTagName"]) {
+                set_fsTagName(props[@"fsTagName"], self);
+            }
+            if (props[@"dataElement"]) {
+                set_dataElement(props[@"dataElement"], self);
+            }
+            if (props[@"dataSourceFile"]) {
+                set_dataSourceFile(props[@"dataSourceFile"], self);
+            }
+            if (props[@"dataComponent"]) {
+                set_dataComponent(props[@"dataComponent"], self);
+            }
         } else {
-            // Call original implementation (captured in closure)
+            // Call original implementation for any other commands
             ((void (*)(id, SEL, const NSString *, const NSArray *))originalIMP)(self, handleCommandSel, commandName, args);
         }
     });
