@@ -18,6 +18,10 @@ const FullStory = isTurboModuleEnabled
   ? require('./NativeFullStory').default
   : NativeModules.FullStory;
 
+if (!FullStory) {
+  console.warn('FullStory: Native module not found. Falling back to stub implementations.');
+}
+
 const {
   anonymize,
   identify,
