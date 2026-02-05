@@ -25,6 +25,14 @@ export enum LogLevel {
   Assert = 5, // Clamps to Error on Android
 }
 
+export type SupportedFSAttributes =
+  | 'fsClass'
+  | 'fsAttribute'
+  | 'fsTagName'
+  | 'dataElement'
+  | 'dataComponent'
+  | 'dataSourceFile';
+
 export declare type FullstoryStatic = {
   LogLevel: typeof LogLevel;
   anonymize(): void;
