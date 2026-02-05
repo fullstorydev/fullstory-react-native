@@ -18,6 +18,10 @@ const FullStory = isTurboModuleEnabled
   ? require('./NativeFullStory').default
   : NativeModules.FullStory;
 
+if (!FullStory) {
+  console.warn('FullStory: Native module not found. Falling back to stub implementations.');
+}
+
 const {
   anonymize,
   identify,
@@ -31,7 +35,20 @@ const {
   restart,
   log,
   resetIdleTimer,
-} = FullStory;
+} = FullStory || {
+  anonymize: () => null,
+  identify: () => null,
+  setUserVars: () => null,
+  onReady: () => Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
+  getCurrentSession: () => Promise.resolve(''),
+  getCurrentSessionURL: () => Promise.resolve(''),
+  consent: () => null,
+  event: () => null,
+  shutdown: () => null,
+  restart: () => null,
+  log: () => null,
+  resetIdleTimer: () => null,
+};
 
 const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default
@@ -60,7 +77,7 @@ interface NativeCommands {
   dataComponent: (viewRef: ComponentRef<FSComponentType>, dataElement: string) => void;
 }
 
-/* 
+/*
   Calling these commands sequentially will *not* lead to an intermediate state where views
   have incomplete attribute values. React's rendering phases protects against this race condition.
   See DOC-1863 for more information.
@@ -98,7 +115,7 @@ type FSNativeElement = ComponentRef<FSComponentType> & {
 
 // Shared wrapper for components without refs (most common case)
 function sharedRefWrapper(element: FSNativeElement | null) {
-  if (element && isTurboModuleEnabled && Platform.OS === 'ios') {
+  if (element && isTurboModuleEnabled && Platform.OS === 'ios' && !Platform.isTV) {
     let currentProps: Record<keyof NativeCommands, string | object>;
 
     if (getInternalInstanceHandleFromPublicInstance) {
