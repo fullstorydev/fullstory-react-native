@@ -10,12 +10,7 @@ declare global {
 
 jest.mock('react-native/Libraries/Utilities/codegenNativeCommands', () => {
   const commands = {
-    fsClass: jest.fn(),
-    fsAttribute: jest.fn(),
-    fsTagName: jest.fn(),
-    dataElement: jest.fn(),
-    dataComponent: jest.fn(),
-    dataSourceFile: jest.fn(),
+    setBatchProperties: jest.fn(),
   };
   return jest.fn(() => commands);
 });
@@ -71,12 +66,16 @@ describe('Reading FS properties on iOS', () => {
 
     render(<TestComponent />);
 
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledWith(expect.any(Object), fsTagNameValue);
-    expect(mockNativeCommands.fsClass).toHaveBeenCalledWith(expect.any(Object), fsClassValue);
-    expect(mockNativeCommands.fsAttribute).toHaveBeenCalledWith(
+    // All properties should be batched into a single setBatchProperties call
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
       expect.any(Object),
-      fsAttributeValue,
+      expect.objectContaining({
+        fsTagName: fsTagNameValue,
+        fsClass: fsClassValue,
+        fsAttribute: fsAttributeValue,
+      }),
     );
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
   });
 
   it('Annotate plugin annotates correctly', () => {
@@ -85,15 +84,16 @@ describe('Reading FS properties on iOS', () => {
     };
     render(<TestComponent />);
 
-    expect(mockNativeCommands.dataElement).toHaveBeenCalledWith(expect.any(Object), 'Text');
-    expect(mockNativeCommands.dataComponent).toHaveBeenCalledWith(
+    // All properties should be batched into a single setBatchProperties call
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
       expect.any(Object),
-      'TestComponent',
+      expect.objectContaining({
+        dataElement: 'Text',
+        dataComponent: 'TestComponent',
+        dataSourceFile: 'index.test.tsx',
+      }),
     );
-    expect(mockNativeCommands.dataSourceFile).toHaveBeenCalledWith(
-      expect.any(Object),
-      'index.test.tsx',
-    );
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
   });
 
   it('Handles existing ref objects correctly', () => {
@@ -101,8 +101,13 @@ describe('Reading FS properties on iOS', () => {
     render(<View ref={ref} fsTagName={fsTagNameValue} />);
     expect(ref.current).toBeDefined();
     expect((ref.current as any)?._reactInternals?.type).toBe(View);
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledWith(expect.any(Object), fsTagNameValue);
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledTimes(1);
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        fsTagName: fsTagNameValue,
+      }),
+    );
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
   });
 
   it('Handles existing ref functions correctly', () => {
@@ -110,13 +115,23 @@ describe('Reading FS properties on iOS', () => {
     render(<View ref={ref} fsTagName={fsTagNameValue} />);
     expect(ref).toHaveBeenCalledWith(expect.any(Object));
     expect((ref.mock.calls[0][0] as any)?._reactInternals?.type).toBe(View);
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledWith(expect.any(Object), fsTagNameValue);
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledTimes(1);
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        fsTagName: fsTagNameValue,
+      }),
+    );
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
   });
 
   it('Calls Native Command once even if double wrapped', () => {
     render(<View ref={applyFSPropertiesWithRef()} fsTagName={fsTagNameValue} />);
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledWith(expect.any(Object), fsTagNameValue);
-    expect(mockNativeCommands.fsTagName).toHaveBeenCalledTimes(1);
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        fsTagName: fsTagNameValue,
+      }),
+    );
+    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
   });
 });
