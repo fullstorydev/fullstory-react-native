@@ -376,26 +376,36 @@ static void swizzle_handleCommand_for_class(Class cls) {
     // Create new implementation
     IMP newIMP = imp_implementationWithBlock(^void(id self, const NSString *commandName, const NSArray *args) {
         if ([commandName isEqualToString:@"setBatchProperties"]) {
+            NSUInteger commandCount = 0;
             // Batched properties command - applies all properties in a single call
             // to reduce race conditions with React Native's rendering scheduler
             NSDictionary *props = args[0];
             if (props[@"fsAttribute"]) {
                 set_fsAttribute(props[@"fsAttribute"], self);
+                commandCount++;
             }
             if (props[@"fsClass"]) {
                 set_fsClass(props[@"fsClass"], self);
+                commandCount++;
             }
             if (props[@"fsTagName"]) {
                 set_fsTagName(props[@"fsTagName"], self);
+                commandCount++;
             }
             if (props[@"dataElement"]) {
                 set_dataElement(props[@"dataElement"], self);
+                commandCount++;
             }
             if (props[@"dataSourceFile"]) {
                 set_dataSourceFile(props[@"dataSourceFile"], self);
+                commandCount++;
             }
             if (props[@"dataComponent"]) {
                 set_dataComponent(props[@"dataComponent"], self);
+                commandCount++;
+            }
+            if (props.count != commandCount) {
+                NSLog(@"FullStory: WARNING: Unrecognized command found in batch property command keys %@", [props allKeys]);
             }
         } else {
             // Call original implementation for any other commands
