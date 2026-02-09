@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.2
+
+Fixed a bug where Fullstory attribute changes on rerenders were ignored.
+Batch Fullstory attribute updates into a single native command call.
+Provide API subs for unsupported platforms.
+
 ## 1.8.1
 
 Enhanced performance of attribute detection on iOS.
