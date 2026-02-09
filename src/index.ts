@@ -162,14 +162,16 @@ Object.defineProperty(sharedRefWrapper, FS_REF_SYMBOL, {
   configurable: false,
 });
 
-export function applyFSPropertiesWithRef(existingRef?: MaybeFSForwardedRef<FSNativeElement>) {
+export function applyFSPropertiesWithRef(
+  existingRef?: MaybeFSForwardedRef<FSNativeElement>,
+  hasDynamicAttributes = true,
+) {
   // Return early if already wrapped
   if (existingRef && existingRef[FS_REF_SYMBOL]) {
     return existingRef;
   }
 
-  // Use shared wrapper for null/undefined refs
-  if (!existingRef) {
+  if (!existingRef && !hasDynamicAttributes) {
     return sharedRefWrapper;
   }
 
