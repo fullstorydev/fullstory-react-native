@@ -171,6 +171,7 @@ export function applyFSPropertiesWithRef(
     return existingRef;
   }
 
+  // Use shared wrapper for null/undefined refs or static attributes
   if (!existingRef && !hasDynamicAttributes) {
     return sharedRefWrapper;
   }
