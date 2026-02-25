@@ -2,6 +2,8 @@ package com.fullstory.reactnative;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
@@ -10,11 +12,16 @@ import com.fullstory.FS;
 import com.fullstory.FSOnReadyListener;
 import com.fullstory.FSSessionData;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.lang.reflect.Method;
 public class FullStoryModuleImpl {
+
+    interface SessionStartedListener {
+        void onSessionStarted(WritableMap sessionData);
+    }
 
     public static final String NAME = "FullStory";
     private static final String TAG = "FullStoryModuleImpl";
@@ -65,39 +72,61 @@ public class FullStoryModuleImpl {
         FS.setUserVars(toMap(userVars));
     }
 
+    private static final List<Promise> pendingOnReadyPromises = new ArrayList<>();
+
+    public static void initSessionListener(
+            @Nullable SessionStartedListener sessionStartedListener) {
+        synchronized (pendingOnReadyPromises) {
+            for (Promise p : pendingOnReadyPromises) {
+                // covering possible race condition only in development during hot reloading
+                p.reject("MODULE_RESET", "FullStory module was re-initialized");
+            }
+            pendingOnReadyPromises.clear();
+        }
+        FS.setReadyListener(new FSOnReadyListener() {
+            @Override
+            public void onReady(FSSessionData sessionData) {
+                resolveAndClearOnReadyPromises(sessionData);
+
+                if (sessionStartedListener != null) {
+                    sessionStartedListener.onSessionStarted(buildSessionMap(sessionData));
+                }
+            }
+        });
+    }
+
     public static void onReady(Promise promise) {
         if (promise == null) {
             return;
         }
 
-        // we can only invoke the promise callback once, so create an AtomicReference
-        // to handle the logic
-        final AtomicReference<Promise> promiseOneShot = new AtomicReference(promise);
-        FS.setReadyListener(new FSOnReadyListener() {
-            @Override
-            public void onReady(FSSessionData sessionData) {
-                // get the current value and set the new value to null
-                Promise promise = promiseOneShot.getAndSet(null);
-                if (promise == null) {
-                    // this was already run once, so ignore
-                    return;
-                }
-
-                WritableMap map = Arguments.createMap();
-
-                // add the replay start url
-                map.putString("replayStartUrl", sessionData.getCurrentSessionURL());
-
-                // add the replay now url
-                map.putString("replayNowUrl", FS.getCurrentSessionURL(true));
-
-                // add the session id
-                map.putString("sessionId", FS.getCurrentSession());
-
-                // now resolve the promise
-                promise.resolve(map);
+        synchronized (pendingOnReadyPromises) {
+            pendingOnReadyPromises.add(promise);
+            if (FS.getCurrentSession() != null) {
+                resolveAndClearOnReadyPromises(null);
             }
-        });
+        }
+    }
+
+    // Resolves and clears all pending onReady promises. Thread-safe.
+    private static void resolveAndClearOnReadyPromises(@Nullable FSSessionData sessionData) {
+        synchronized (pendingOnReadyPromises) {
+            WritableMap map = buildSessionMap(sessionData);
+            for (Promise p : pendingOnReadyPromises) {
+                p.resolve(map);
+            }
+            pendingOnReadyPromises.clear();
+        }
+    }
+
+    private static WritableMap buildSessionMap(@Nullable FSSessionData sessionData) {
+        WritableMap map = Arguments.createMap();
+        String replayStartUrl = sessionData != null ? sessionData.getCurrentSessionURL() : FS.getCurrentSessionURL();
+        map.putString("replayStartUrl", replayStartUrl != null ? replayStartUrl : "");
+        map.putString("replayNowUrl", FS.getCurrentSessionURL(true));
+        String sessionId = FS.getCurrentSession();
+        map.putString("sessionId", sessionId != null ? sessionId : "");
+        return map;
     }
 
     public static void getCurrentSession(Promise promise) {

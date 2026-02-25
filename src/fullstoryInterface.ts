@@ -1,3 +1,5 @@
+import { FSSessionData, Spec } from './NativeFullStory';
+
 declare const global: {
   RN$Bridgeless?: boolean;
   __turboModuleProxy?: unknown;
@@ -10,11 +12,6 @@ interface UserVars {
   email?: string;
   [key: string]: any;
 }
-export type OnReadyResponse = {
-  replayStartUrl: string;
-  replayNowUrl: string;
-  sessionId: string;
-};
 
 export enum LogLevel {
   Log = 0, // Clamps to Debug on iOS
@@ -33,20 +30,27 @@ export type SupportedFSAttributes =
   | 'dataComponent'
   | 'dataSourceFile';
 
-export declare type FullstoryStatic = {
+type SharedMethods = Pick<
+  Spec,
+  | 'anonymize'
+  | 'identify'
+  | 'onReady'
+  | 'getCurrentSession'
+  | 'getCurrentSessionURL'
+  | 'consent'
+  | 'event'
+  | 'shutdown'
+  | 'restart'
+  | 'resetIdleTimer'
+>;
+
+export declare type FullstoryStatic = SharedMethods & {
   LogLevel: typeof LogLevel;
-  anonymize(): void;
-  identify(uid: string, userVars?: UserVars): void;
   setUserVars(userVars: UserVars): void;
-  onReady(): Promise<OnReadyResponse>;
-  getCurrentSession(): Promise<string>;
-  getCurrentSessionURL(): Promise<string>;
-  consent(userConsents: boolean): void;
-  event(eventName: string, eventProperties: Object): void;
-  shutdown(): void;
-  restart(): void;
   log(logLevel: LogLevel, message: string): void;
-  resetIdleTimer(): void;
+  readonly onFullstoryDidStartSession: (
+    listener: (data: FSSessionData) => void,
+  ) => { remove: () => void } | null;
 };
 
 declare module 'react' {

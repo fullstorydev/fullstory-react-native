@@ -28,32 +28,20 @@ if (!FullStory) {
 }
 
 const {
-  anonymize,
-  identify,
-  setUserVars,
-  onReady,
-  getCurrentSession,
-  getCurrentSessionURL,
-  consent,
-  event,
-  shutdown,
-  restart,
-  log,
-  resetIdleTimer,
-} = FullStory || {
-  anonymize: () => null,
-  identify: () => null,
-  setUserVars: () => null,
-  onReady: () => Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
-  getCurrentSession: () => Promise.resolve(''),
-  getCurrentSessionURL: () => Promise.resolve(''),
-  consent: () => null,
-  event: () => null,
-  shutdown: () => null,
-  restart: () => null,
-  log: () => null,
-  resetIdleTimer: () => null,
-};
+  anonymize = () => null,
+  identify = () => null,
+  setUserVars = () => null,
+  onReady = () => Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
+  getCurrentSession = () => Promise.resolve(''),
+  getCurrentSessionURL = () => Promise.resolve(''),
+  consent = () => null,
+  event = () => null,
+  shutdown = () => null,
+  restart = () => null,
+  log = () => null,
+  resetIdleTimer = () => null,
+  onFullstoryDidStartSession = () => ({ remove: () => null }),
+} = FullStory ?? {};
 
 const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default
@@ -212,6 +200,7 @@ const FullstoryAPI: FullstoryStatic = {
   log,
   resetIdleTimer,
   LogLevel,
+  onFullstoryDidStartSession,
 };
 
 export const PrivateInterface: FullStoryPrivateStatic =

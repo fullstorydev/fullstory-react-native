@@ -10,6 +10,11 @@ const noopPromise = () => {
   return Promise.reject(new Error(warningMessage));
 };
 
+const noopListener = () => {
+  console.warn(warningMessage);
+  return { remove: noop };
+};
+
 const FullstoryAPI: FullstoryStatic = {
   LogLevel,
   anonymize: noop,
@@ -24,6 +29,7 @@ const FullstoryAPI: FullstoryStatic = {
   restart: noop,
   log: noop,
   resetIdleTimer: noop,
+  onFullstoryDidStartSession: noopListener,
 };
 
 export default FullstoryAPI;
