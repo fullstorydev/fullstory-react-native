@@ -10,7 +10,16 @@
 #import "FSReactSwizzle.h"
 
 @implementation FullStory {
-    RCTPromiseResolveBlock onReadyPromise;
+    NSMutableArray<RCTPromiseResolveBlock> *onReadyPromises;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        FS.delegate = self;
+        onReadyPromises = [NSMutableArray new];
+    }
+    return self;
 }
 
 NSString *const PagesAPIError = @"Unable to access native FullStory pages API and call %@. Pages API will not function correctly. Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.";
@@ -170,33 +179,43 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
     }
 }
 
-- (void) fullstoryDidStartSession:(NSString *)sessionUrl {
-    // this method can be executed both by onReady below and by the Fullstory SDK,
-    // because this object is a delegate, so avoid any possible race
-    @synchronized (self) {
-        if (!onReadyPromise)
-            return;
-
+// Resolves and clears all pending onReady promises.
+// Must be called within @synchronized(self).
+- (void) resolveOnReadyPromisesWithURL:(NSString *)sessionUrl {
+    if (onReadyPromises.count > 0) {
         NSMutableDictionary *dict = [NSMutableDictionary new];
         dict[@"replayStartUrl"] = sessionUrl;
-        dict[@"replayNowUrl"] = [FS currentSessionURL: true];
-        dict[@"sessionId"] = FS.currentSession;
-        onReadyPromise(dict);
-
-        onReadyPromise = nil;
+        dict[@"replayNowUrl"] = [FS currentSessionURL: true] ?: @"";
+        dict[@"sessionId"] = FS.currentSession ?: @"";
+        for (RCTPromiseResolveBlock p in onReadyPromises) {
+            p(dict);
+        }
+        [onReadyPromises removeAllObjects];
     }
+}
+
+- (void) fullstoryDidStartSession:(NSString *)sessionUrl {
+    @synchronized (self) {
+        [self resolveOnReadyPromisesWithURL:sessionUrl];
+    }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+    [self emitOnFullstoryDidStartSession:@{
+        @"replayStartUrl": sessionUrl,
+        @"replayNowUrl": [FS currentSessionURL: true] ?: @"",
+        @"sessionId": FS.currentSession ?: @"",
+    }];
+#endif
 }
 
 - (void) onReady:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     @synchronized (self) {
-        onReadyPromise = [resolve copy];
-    }
-    FS.delegate = self;
+        [onReadyPromises addObject:[resolve copy]];
 
-    if (FS.currentSessionURL) {
-        /* If we already have a session running, fire the promise
-         * immediately. */
-        [self fullstoryDidStartSession:FS.currentSessionURL];
+        if (FS.currentSessionURL) {
+            // If we already have a session running, resolve all pending promises directly
+            [self resolveOnReadyPromisesWithURL:FS.currentSessionURL];
+        }
     }
 }
 
