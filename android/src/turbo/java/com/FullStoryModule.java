@@ -10,7 +10,7 @@ public class FullStoryModule extends NativeFullStorySpec {
     FullStoryModule(ReactApplicationContext context) {
         super(context);
         FullStoryModuleImpl.initSessionListener(
-            sessionData -> emitOnFullstoryDidStartSession(sessionData)
+            sessionData -> emitOnSessionStarted(sessionData)
         );
     }
 

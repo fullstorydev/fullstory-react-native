@@ -3,6 +3,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ComponentRef, ForwardedRef } from 'react';
+import type { FSSessionData } from './NativeFullStory';
 import {
   FullstoryStatic,
   isTurboModuleEnabled,
@@ -31,7 +32,8 @@ const {
   anonymize = () => null,
   identify = () => null,
   setUserVars = () => null,
-  onReady = () => Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
+  onReady: nativeOnReady = () =>
+    Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
   getCurrentSession = () => Promise.resolve(''),
   getCurrentSessionURL = () => Promise.resolve(''),
   consent = () => null,
@@ -40,8 +42,34 @@ const {
   restart = () => null,
   log = () => null,
   resetIdleTimer = () => null,
-  onFullstoryDidStartSession = () => ({ remove: () => null }),
+  onSessionStarted = () => ({ remove: () => null }),
 } = FullStory ?? {};
+
+function onReady(): Promise<FSSessionData>;
+function onReady(listener: (data: FSSessionData) => void): { remove: () => void };
+function onReady(
+  listener?: (data: FSSessionData) => void,
+): Promise<FSSessionData> | { remove: () => void } {
+  if (!listener) {
+    return nativeOnReady();
+  }
+
+  if (!isTurboModuleEnabled) {
+    console.warn('FullStory: onReady with a listener is only supported on the New Architecture.');
+    return { remove: () => null };
+  }
+
+  // Fire immediately if a session is already active
+  getCurrentSessionURL().then((url: string) => {
+    if (url) {
+      getCurrentSession().then((sessionId: string) => {
+        listener({ replayStartUrl: url, replayNowUrl: url, sessionId });
+      });
+    }
+  });
+
+  return onSessionStarted(listener);
+}
 
 const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default
@@ -200,7 +228,6 @@ const FullstoryAPI: FullstoryStatic = {
   log,
   resetIdleTimer,
   LogLevel,
-  onFullstoryDidStartSession,
 };
 
 export const PrivateInterface: FullStoryPrivateStatic =

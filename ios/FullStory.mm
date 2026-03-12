@@ -200,7 +200,7 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
     }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-    [self emitOnFullstoryDidStartSession:@{
+    [self emitOnSessionStarted:@{
         @"replayStartUrl": sessionUrl,
         @"replayNowUrl": [FS currentSessionURL: true] ?: @"",
         @"sessionId": FS.currentSession ?: @"",

@@ -48,9 +48,7 @@ export declare type FullstoryStatic = SharedMethods & {
   LogLevel: typeof LogLevel;
   setUserVars(userVars: UserVars): void;
   log(logLevel: LogLevel, message: string): void;
-  readonly onFullstoryDidStartSession: (
-    listener: (data: FSSessionData) => void,
-  ) => { remove: () => void } | null;
+  onReady(listener: (data: FSSessionData) => void): { remove: () => void };
 };
 
 declare module 'react' {
