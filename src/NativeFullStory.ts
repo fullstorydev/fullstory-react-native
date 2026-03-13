@@ -25,6 +25,9 @@ export interface Spec extends TurboModule {
   startPage(nonce: string, pageName: string, pageProperties?: Object): void;
   endPage(uuid: string): void;
   updatePage(uuid: string, pageProperties: Object): void;
+  // Not exposed in the public API. Must be declared here because TurboModule codegen
+  // requires all native event emitters to be defined on the Spec interface. Used
+  // internally by onReady() to support the listener-based overload.
   readonly onSessionStarted: EventEmitter<FSSessionData>;
 }
 
