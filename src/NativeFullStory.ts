@@ -1,12 +1,19 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
-import { OnReadyResponse } from './fullstoryInterface';
+import type { EventEmitter } from 'react-native/Libraries/Types/CodegenTypes';
+
+// needs to be defined here, cannot be imported
+export type FSSessionData = {
+  replayStartUrl: string;
+  replayNowUrl: string;
+  sessionId: string;
+};
 
 export interface Spec extends TurboModule {
   anonymize(): void;
   identify(uid: string, userVars?: Object): void;
   setUserVars(userVars: Object): void;
-  onReady(): Promise<OnReadyResponse>;
+  onReady(): Promise<FSSessionData>;
   getCurrentSession(): Promise<string>;
   getCurrentSessionURL(): Promise<string>;
   consent(userConsents: boolean): void;
@@ -18,6 +25,10 @@ export interface Spec extends TurboModule {
   startPage(nonce: string, pageName: string, pageProperties?: Object): void;
   endPage(uuid: string): void;
   updatePage(uuid: string, pageProperties: Object): void;
+  // Not exposed in the public API. Must be declared here because TurboModule codegen
+  // requires all native event emitters to be defined on the Spec interface. Used
+  // internally by onReady() to support the listener-based overload.
+  readonly onSessionStarted: EventEmitter<FSSessionData>;
 }
 
 export default TurboModuleRegistry.get<Spec>('FullStory');
