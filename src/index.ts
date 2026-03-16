@@ -3,6 +3,7 @@ import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ComponentRef, ForwardedRef } from 'react';
+import type { FSSessionData } from './NativeFullStory';
 import {
   FullstoryStatic,
   isTurboModuleEnabled,
@@ -28,32 +29,47 @@ if (!FullStory) {
 }
 
 const {
-  anonymize,
-  identify,
-  setUserVars,
-  onReady,
-  getCurrentSession,
-  getCurrentSessionURL,
-  consent,
-  event,
-  shutdown,
-  restart,
-  log,
-  resetIdleTimer,
-} = FullStory || {
-  anonymize: () => null,
-  identify: () => null,
-  setUserVars: () => null,
-  onReady: () => Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
-  getCurrentSession: () => Promise.resolve(''),
-  getCurrentSessionURL: () => Promise.resolve(''),
-  consent: () => null,
-  event: () => null,
-  shutdown: () => null,
-  restart: () => null,
-  log: () => null,
-  resetIdleTimer: () => null,
-};
+  anonymize = () => null,
+  identify = () => null,
+  setUserVars = () => null,
+  onReady: nativeOnReady = () =>
+    Promise.resolve({ replayStartUrl: '', replayNowUrl: '', sessionId: '' }),
+  getCurrentSession = () => Promise.resolve(''),
+  getCurrentSessionURL = () => Promise.resolve(''),
+  consent = () => null,
+  event = () => null,
+  shutdown = () => null,
+  restart = () => null,
+  log = () => null,
+  resetIdleTimer = () => null,
+  onSessionStarted = () => ({ remove: () => null }),
+} = FullStory ?? {};
+
+function onReady(): Promise<FSSessionData>;
+function onReady(listener: (data: FSSessionData) => void): { remove: () => void };
+function onReady(
+  listener?: (data: FSSessionData) => void,
+): Promise<FSSessionData> | { remove: () => void } {
+  if (!listener) {
+    return nativeOnReady();
+  }
+
+  if (!isTurboModuleEnabled) {
+    console.warn('FullStory: onReady with a listener is only supported on the New Architecture.');
+    return { remove: () => null };
+  }
+
+  // Fire immediately if a session is already active
+  getCurrentSessionURL().then((url: string) => {
+    if (url) {
+      getCurrentSession().then((sessionId: string) => {
+        listener({ replayStartUrl: url, replayNowUrl: url, sessionId });
+      });
+    }
+  });
+
+  return onSessionStarted(listener);
+}
 
 const FullStoryPrivate = isTurboModuleEnabled
   ? require('./NativeFullStoryPrivate').default

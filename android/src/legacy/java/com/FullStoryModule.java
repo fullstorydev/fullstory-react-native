@@ -10,6 +10,7 @@ public class FullStoryModule extends ReactContextBaseJavaModule {
 
     FullStoryModule(ReactApplicationContext context) {
         super(context);
+        FullStoryModuleImpl.initSessionListener(null);
     }
 
     @Override
