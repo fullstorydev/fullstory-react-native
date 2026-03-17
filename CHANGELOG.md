@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0
+
+Add a new `onReady` API for new architecture. See [docs](https://developer.fullstory.com/mobile/react-native/fullcapture/callbacks-and-delegates/) for details.
+
 ## 1.8.2
 
 Fixed a bug where Fullstory attribute changes on rerenders were ignored.
