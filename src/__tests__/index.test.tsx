@@ -134,4 +134,43 @@ describe('Reading FS properties on iOS', () => {
     );
     expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
   });
+
+  it('ref object is set to null when component unmounts', () => {
+    const ref = React.createRef<View>();
+    const { unmount } = render(<View ref={ref} fsTagName={fsTagNameValue} />);
+    expect(ref.current).not.toBeNull();
+    unmount();
+    expect(ref.current).toBeNull();
+  });
+
+  it('ref callback is called with null when component unmounts', () => {
+    const ref = jest.fn<(element: View | null) => void>();
+    const { unmount } = render(<View ref={ref} fsTagName={fsTagNameValue} />);
+    expect(ref).toHaveBeenCalledWith(expect.any(Object));
+    unmount();
+    expect(ref).toHaveBeenLastCalledWith(null);
+  });
+
+  it.failing(
+    'custom component with FS attributes does not have phantom ref injected into its props',
+    () => {
+      const childRef = React.createRef<View>();
+
+      const CustomComponent = (props: { fsClass?: string; children?: React.ReactNode }) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { fsClass: _fsClass, ...rest } = props;
+        return <View ref={childRef} {...rest} />;
+      };
+
+      render(<CustomComponent fsClass={fsClassValue} />);
+
+      expect(childRef.current).not.toBeNull();
+      expect((childRef.current as any)?._reactInternals?.type).toBe(View);
+    },
+  );
+
+  it('component without FS attributes does not trigger setBatchProperties', () => {
+    render(<View />);
+    expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+  });
 });
