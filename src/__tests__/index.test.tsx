@@ -151,7 +151,7 @@ describe('Reading FS properties on iOS', () => {
     expect(ref).toHaveBeenLastCalledWith(null);
   });
 
-  it.failing(
+  it(
     'custom component with FS attributes does not have phantom ref injected into its props',
     () => {
       const childRef = React.createRef<View>();
