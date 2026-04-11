@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@fullstory/babel-plugin-annotate-react": "^2.3.2",
-    "@fullstory/babel-plugin-react-native": "github:TaduJR/fullstory-babel-plugin-react-native#fix/react-19-non-enumerable-synthetic-refs"
+    "@fullstory/babel-plugin-react-native": "^1.6.1"
   },
   "peerDependencies": {
     "expo": ">=47.0.0",
