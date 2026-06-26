@@ -2,7 +2,7 @@
 import { HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
-import { ComponentRef, ForwardedRef } from 'react';
+import { ComponentRef } from 'react';
 import type { FSSessionData } from './NativeFullStory';
 import {
   FullstoryStatic,
@@ -87,13 +87,15 @@ declare type FullStoryPrivateStatic = {
 const identifyWithProperties = (uid: string, userVars = {}) => identify(uid, userVars);
 
 export { FSPage } from './FSPage';
+
 type FSComponentType = HostComponent<NativeProps>;
+type FSNativeInstance = ComponentRef<FSComponentType>;
 
 interface NativeCommands {
-  setBatchProperties: (viewRef: ComponentRef<FSComponentType>, props: object) => void;
+  setBatchProperties: (viewRef: FSNativeInstance, props: object) => void;
 }
 
-/* 
+/*
   Batching all property commands into a single native call to reduce the window for race conditions
   with React Native's rendering scheduler.
 */
@@ -101,117 +103,51 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setBatchProperties'],
 });
 
-let getInternalInstanceHandleFromPublicInstance: Function | undefined;
-
-try {
-  // This import confuses the metro resolver in earlier versions of react-native.
-  getInternalInstanceHandleFromPublicInstance =
-    require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
-} catch (e) {}
-
-export const FS_REF_SYMBOL = Symbol('fullstory.ref');
-
-type MaybeFSForwardedRef<T> = ForwardedRef<T> & {
-  [FS_REF_SYMBOL]?: boolean;
-};
-
-type FSNativeElement = ComponentRef<FSComponentType> & {
-  currentProps?: Record<string, unknown>;
-};
-
-// Shared wrapper for components without refs (most common case)
-function sharedRefWrapper(element: FSNativeElement | null) {
-  if (element && isTurboModuleEnabled && Platform.OS === 'ios' && !Platform.isTV) {
-    let currentProps: Record<string, unknown> | undefined;
-
-    if (getInternalInstanceHandleFromPublicInstance) {
-      currentProps =
-        getInternalInstanceHandleFromPublicInstance(element)?.stateNode?.canonical.currentProps;
-    } else {
-      currentProps = element.currentProps;
-    }
-    if (currentProps) {
-      const batchedProps: Partial<Record<SupportedFSAttributes, string | object>> = {};
-
-      const fsClass = currentProps.fsClass;
-      if (fsClass && typeof fsClass === 'string') {
-        batchedProps.fsClass = fsClass;
-      }
-
-      const fsAttribute = currentProps.fsAttribute;
-      if (fsAttribute && typeof fsAttribute === 'object') {
-        batchedProps.fsAttribute = fsAttribute;
-      }
-
-      const fsTagName = currentProps.fsTagName;
-      if (fsTagName && typeof fsTagName === 'string') {
-        batchedProps.fsTagName = fsTagName;
-      }
-
-      const dataElement = currentProps.dataElement;
-      if (dataElement && typeof dataElement === 'string') {
-        batchedProps.dataElement = dataElement;
-      }
-
-      const dataComponent = currentProps.dataComponent;
-      if (dataComponent && typeof dataComponent === 'string') {
-        batchedProps.dataComponent = dataComponent;
-      }
-
-      const dataSourceFile = currentProps.dataSourceFile;
-      if (dataSourceFile && typeof dataSourceFile === 'string') {
-        batchedProps.dataSourceFile = dataSourceFile;
-      }
-
-      // Send all properties as a single batched command
-      if (Object.keys(batchedProps).length > 0) {
-        Commands.setBatchProperties(element, batchedProps);
-      }
-    }
-  }
-}
-
-Object.defineProperty(sharedRefWrapper, FS_REF_SYMBOL, {
-  value: true,
-  enumerable: false,
-  writable: false,
-  configurable: false,
-});
-
-export function applyFSPropertiesWithRef(
-  existingRef?: MaybeFSForwardedRef<FSNativeElement>,
-  hasDynamicAttributes = true,
+/**
+ * Applies FullStory properties to an already-committed native instance by
+ * dispatching a single batched native command. Invoked by the FullStory babel
+ * plugin's Fabric commit-phase hook with the host component's public instance
+ * and its committed props. iOS New Architecture only; on the old architecture
+ * the regular view-manager prop pipeline applies these props instead.
+ */
+export function applyFSPropertiesToInstance(
+  instance: FSNativeInstance | null | undefined,
+  props: Record<string, unknown> | null | undefined,
 ) {
-  // Return early if already wrapped
-  if (existingRef && existingRef[FS_REF_SYMBOL]) {
-    return existingRef;
+  if (!instance || !props) {
+    return;
+  }
+  if (!(isTurboModuleEnabled && Platform.OS === 'ios' && !Platform.isTV)) {
+    return;
   }
 
-  // Use shared wrapper for null/undefined refs or static attributes
-  if (!existingRef && !hasDynamicAttributes) {
-    return sharedRefWrapper;
+  const batchedProps: Partial<Record<SupportedFSAttributes, string | object>> = {};
+
+  const { fsClass, fsAttribute, fsTagName, dataElement, dataComponent, dataSourceFile } = props;
+
+  if (typeof fsClass === 'string') {
+    batchedProps.fsClass = fsClass;
+  }
+  if (fsAttribute && typeof fsAttribute === 'object') {
+    batchedProps.fsAttribute = fsAttribute;
+  }
+  if (typeof fsTagName === 'string') {
+    batchedProps.fsTagName = fsTagName;
+  }
+  if (typeof dataElement === 'string') {
+    batchedProps.dataElement = dataElement;
+  }
+  if (typeof dataComponent === 'string') {
+    batchedProps.dataComponent = dataComponent;
+  }
+  if (typeof dataSourceFile === 'string') {
+    batchedProps.dataSourceFile = dataSourceFile;
   }
 
-  function refWrapper(element: FSNativeElement | null) {
-    sharedRefWrapper(element);
-
-    if (existingRef) {
-      if (typeof existingRef === 'function') {
-        existingRef(element);
-      } else {
-        existingRef.current = element;
-      }
-    }
+  // Send all properties as a single batched command.
+  if (Object.keys(batchedProps).length > 0) {
+    Commands.setBatchProperties(instance, batchedProps);
   }
-
-  Object.defineProperty(refWrapper, FS_REF_SYMBOL, {
-    value: true,
-    enumerable: false,
-    writable: false,
-    configurable: false,
-  });
-
-  return refWrapper;
 }
 
 const FullstoryAPI: FullstoryStatic = {
