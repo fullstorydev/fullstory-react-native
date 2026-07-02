@@ -125,22 +125,22 @@ export function applyFSPropertiesToInstance(
 
   const { fsClass, fsAttribute, fsTagName, dataElement, dataComponent, dataSourceFile } = props;
 
-  if (typeof fsClass === 'string') {
+  if (fsClass && typeof fsClass === 'string') {
     batchedProps.fsClass = fsClass;
   }
   if (fsAttribute && typeof fsAttribute === 'object') {
     batchedProps.fsAttribute = fsAttribute;
   }
-  if (typeof fsTagName === 'string') {
+  if (fsTagName && typeof fsTagName === 'string') {
     batchedProps.fsTagName = fsTagName;
   }
-  if (typeof dataElement === 'string') {
+  if (dataElement && typeof dataElement === 'string') {
     batchedProps.dataElement = dataElement;
   }
-  if (typeof dataComponent === 'string') {
+  if (dataComponent && typeof dataComponent === 'string') {
     batchedProps.dataComponent = dataComponent;
   }
-  if (typeof dataSourceFile === 'string') {
+  if (dataSourceFile && typeof dataSourceFile === 'string') {
     batchedProps.dataSourceFile = dataSourceFile;
   }
 
