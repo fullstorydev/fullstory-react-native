@@ -1,8 +1,6 @@
-import * as React from 'react';
-import { render } from '@testing-library/react-native';
-import { Text, Platform, View } from 'react-native';
+import { Platform } from 'react-native';
 import { jest } from '@jest/globals';
-import { applyFSPropertiesWithRef } from '../index';
+import { applyFSPropertiesToInstance } from '../index';
 
 declare global {
   var __turboModuleProxy: unknown;
@@ -33,7 +31,7 @@ const fsTagNameValue = 'custom-text-element';
 const fsClassValue = 'custom-text-class';
 const fsAttributeValue = { color: 'red' };
 
-describe('Reading FS properties on iOS', () => {
+describe('FS properties on iOS New Architecture', () => {
   beforeAll(() => {
     originalPlatformOS = Platform.OS;
     global.__turboModuleProxy = jest.fn(() => ({}));
@@ -55,104 +53,60 @@ describe('Reading FS properties on iOS', () => {
     });
   });
 
-  it('Reads fs properties correctly', () => {
-    const TestComponent = () => {
-      return (
-        <Text fsTagName={fsTagNameValue} fsClass={fsClassValue} fsAttribute={fsAttributeValue}>
-          Test Title
-        </Text>
-      );
-    };
+  describe('applyFSPropertiesToInstance', () => {
+    const instance = {} as any;
 
-    render(<TestComponent />);
-
-    // All properties should be batched into a single setBatchProperties call
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
+    it('batches all fs* and data* properties into a single command', () => {
+      applyFSPropertiesToInstance(instance, {
         fsTagName: fsTagNameValue,
         fsClass: fsClassValue,
         fsAttribute: fsAttributeValue,
-      }),
-    );
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
-  });
-
-  it('Annotate plugin annotates correctly', () => {
-    const TestComponent = () => {
-      return <Text>Test Title</Text>;
-    };
-    render(<TestComponent />);
-
-    // All properties should be batched into a single setBatchProperties call
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
         dataElement: 'Text',
         dataComponent: 'TestComponent',
         dataSourceFile: 'index.test.tsx',
-      }),
-    );
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
-  });
+      });
 
-  it('Handles existing ref objects correctly', () => {
-    const ref = React.createRef<View>();
-    render(<View ref={ref} fsTagName={fsTagNameValue} />);
-    expect(ref.current).toBeDefined();
-    expect((ref.current as any)?._reactInternals?.type).toBe(View);
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(instance, {
         fsTagName: fsTagNameValue,
-      }),
-    );
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
-  });
+        fsClass: fsClassValue,
+        fsAttribute: fsAttributeValue,
+        dataElement: 'Text',
+        dataComponent: 'TestComponent',
+        dataSourceFile: 'index.test.tsx',
+      });
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
+    });
 
-  it('Handles existing ref functions correctly', () => {
-    const ref = jest.fn<(element: View) => void>();
-    render(<View ref={ref} fsTagName={fsTagNameValue} />);
-    expect(ref).toHaveBeenCalledWith(expect.any(Object));
-    expect((ref.mock.calls[0][0] as any)?._reactInternals?.type).toBe(View);
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
-        fsTagName: fsTagNameValue,
-      }),
-    );
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
-  });
+    it('only forwards recognized, correctly-typed properties', () => {
+      applyFSPropertiesToInstance(instance, {
+        fsClass: fsClassValue,
+        fsTagName: 123,
+        somethingElse: 'ignored',
+      } as Record<string, unknown>);
 
-  it('Calls Native Command once even if double wrapped', () => {
-    render(<View ref={applyFSPropertiesWithRef()} fsTagName={fsTagNameValue} />);
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
-        fsTagName: fsTagNameValue,
-      }),
-    );
-    expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
-  });
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(instance, {
+        fsClass: fsClassValue,
+      });
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
+    });
 
-  it('ref object is set to null when component unmounts', () => {
-    const ref = React.createRef<View>();
-    const { unmount } = render(<View ref={ref} fsTagName={fsTagNameValue} />);
-    expect(ref.current).not.toBeNull();
-    unmount();
-    expect(ref.current).toBeNull();
-  });
+    it('does not dispatch when there are no FS properties', () => {
+      applyFSPropertiesToInstance(instance, { somethingElse: 'ignored' });
+      expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+    });
 
-  it('ref callback is called with null when component unmounts', () => {
-    const ref = jest.fn<(element: View | null) => void>();
-    const { unmount } = render(<View ref={ref} fsTagName={fsTagNameValue} />);
-    expect(ref).toHaveBeenCalledWith(expect.any(Object));
-    unmount();
-    expect(ref).toHaveBeenLastCalledWith(null);
-  });
+    it('no-ops when the instance or props is missing', () => {
+      applyFSPropertiesToInstance(null, { fsClass: fsClassValue });
+      applyFSPropertiesToInstance(instance, null);
+      applyFSPropertiesToInstance(instance, undefined);
+      expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+    });
 
-  it('component without FS attributes does not trigger setBatchProperties', () => {
-    render(<View />);
-    expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+    it('does not dispatch when not on iOS', () => {
+      Object.defineProperty(Platform, 'OS', { writable: true, value: 'android' });
+      applyFSPropertiesToInstance(instance, { fsClass: fsClassValue });
+      Object.defineProperty(Platform, 'OS', { writable: true, value: 'ios' });
+      expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+    });
   });
 });

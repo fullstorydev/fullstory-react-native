@@ -85,15 +85,15 @@ Place the `handleCommand` check under the `DEBUG_FS_RN_FABRIC_THIRD_PARTY` prepr
 
 ## 1.4.1
 
-Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.1.0` for New Architecture support.
+Updated the minimum version for the Fullstory `@fullstory/babel-plugin-react-native` babel plugin to `1.1.0` for New Architecture support.
 
 ## 1.4.0
 
-Added support for the [React Native New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page) (this includes support for Fabric and Turbo Native Modules). Refer to the [New Architecture](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-FullStory-React-Native-Capture#01HHCXMMZQ970DRWFA0XC03ER4) section of the FullStory React Native Getting Started guide for more information about minimum SDK and plugin versions.
+Added support for the [React Native New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page) (this includes support for Fabric and Turbo Native Modules). Refer to the [New Architecture](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-Fullstory-React-Native-Capture#01HHCXMMZQ970DRWFA0XC03ER4) section of the Fullstory React Native Getting Started guide for more information about minimum SDK and plugin versions.
 
 ## 1.3.0
 
-Add support for FullStory Pages API.
+Add support for Fullstory Pages API.
 Set up tsconfig and update TypeScript types.
 
 ## 1.2.1
@@ -108,7 +108,7 @@ Update gradle configs.
 
 ## 1.1.2
 
-Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.0.3` to fix attributes in RN 71.
+Updated the minimum version for the Fullstory `@fullstory/babel-plugin-react-native` babel plugin to `1.0.3` to fix attributes in RN 71.
 Add dependency overrides to fix `npm audit` warnings.
 
 ## 1.1.1
@@ -125,19 +125,19 @@ Added `FS.resetIdleTimer` to the TypeScript types.
 
 ## 1.0.6
 
-Added support for calling `FS.resetIdleTimer`. This release now requires a minimum FullStory plugin version of `1.14.0`.
+Added support for calling `FS.resetIdleTimer`. This release now requires a minimum Fullstory plugin version of `1.14.0`.
 
 ## 1.0.5
 
-Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to 1.0.2, to better work around metro server issues.
+Updated the minimum version for the Fullstory `@fullstory/babel-plugin-react-native` babel plugin to 1.0.2, to better work around metro server issues.
 
 ## 1.0.4
 
-Updated the minimum versions for the FullStory babel plugins. Added a Typescript declaration for the FullStory base attributes. Added Typescript declarations for the FullStory API.
+Updated the minimum versions for the Fullstory babel plugins. Added a Typescript declaration for the Fullstory base attributes. Added Typescript declarations for the Fullstory API.
 
 ## 1.0.3
 
-Added the ability to invoke the `log` API from within React Native. See more information [here](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-FullStory-React-Native-Recording#01FM34C43RGW28NMC8PDWC7EZB)
+Added the ability to invoke the `log` API from within React Native. See more information [here](https://help.fullstory.com/hc/en-us/articles/360052419133-Getting-Started-with-Fullstory-React-Native-Recording#01FM34C43RGW28NMC8PDWC7EZB)
 
 ## 1.0.2
 
