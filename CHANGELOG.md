@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.0
+
+iOS New Architecture: replaced ref rewriting with applyFSPropertiesToInstance, a new function invoked directly by the Fullstory babel plugin's Fabric commit-phase hook.
+
 ## 1.9.0
 
 Add a new `onReady` API for new architecture. See [docs](https://developer.fullstory.com/mobile/react-native/fullcapture/callbacks-and-delegates/) for details.
