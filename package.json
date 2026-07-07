@@ -38,8 +38,8 @@
     "prepack": "bob build"
   },
   "dependencies": {
-    "@fullstory/babel-plugin-annotate-react": "^2.3.2",
-    "@fullstory/babel-plugin-react-native": "^1.6.4"
+    "@fullstory/babel-plugin-annotate-react": "~2.4.0",
+    "@fullstory/babel-plugin-react-native": "~1.7.0"
   },
   "peerDependencies": {
     "expo": ">=47.0.0",
