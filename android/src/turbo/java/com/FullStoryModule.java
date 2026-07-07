@@ -9,6 +9,11 @@ public class FullStoryModule extends NativeFullStorySpec {
 
     FullStoryModule(ReactApplicationContext context) {
         super(context);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
         FullStoryModuleImpl.initSessionListener(
             sessionData -> emitOnSessionStarted(sessionData)
         );
