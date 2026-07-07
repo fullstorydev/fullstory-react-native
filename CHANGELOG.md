@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.1
+
+Android: Fixed a crash that occurred on the New Architecture when a FullStory session became ready before the TurboModule event emitter was initialized.
+
 ## 1.10.0
 
 iOS New Architecture: replaced ref rewriting with applyFSPropertiesToInstance, a new function invoked directly by the Fullstory babel plugin's Fabric commit-phase hook.
