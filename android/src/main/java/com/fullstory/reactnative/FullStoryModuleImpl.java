@@ -95,6 +95,19 @@ public class FullStoryModuleImpl {
         });
     }
 
+    /**
+     * Called when the React Native module is invalidated (e.g. the ReactHost/bridge is being
+     * destroyed during Activity recreation or reload). Unregisters the FullStory ready listener so
+     * that a session-ready callback can never fire against a destroyed module instance, and drops
+     * any pending onReady promises.
+     */
+    public static void tearDownSessionListener() {
+        FS.setReadyListener(null);
+        synchronized (pendingOnReadyPromises) {
+            pendingOnReadyPromises.clear();
+        }
+    }
+
     public static void onReady(Promise promise) {
         if (promise == null) {
             return;
