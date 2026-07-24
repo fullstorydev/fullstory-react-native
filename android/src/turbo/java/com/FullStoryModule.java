@@ -7,6 +7,14 @@ import com.facebook.react.bridge.ReadableMap;
 
 public class FullStoryModule extends NativeFullStorySpec {
 
+    /**
+     * Guards emitOnSessionStarted against module invalidation. The FullStory SDK dispatches
+     * session-ready callbacks asynchronously on the main thread, so a callback can arrive while
+     * (or after) React Native tears down this module and its JS runtime.
+     */
+    private final Object emitLock = new Object();
+    private boolean invalidated = false;
+
     FullStoryModule(ReactApplicationContext context) {
         super(context);
     }
@@ -14,9 +22,25 @@ public class FullStoryModule extends NativeFullStorySpec {
     @Override
     public void initialize() {
         super.initialize();
-        FullStoryModuleImpl.initSessionListener(
-            sessionData -> emitOnSessionStarted(sessionData)
-        );
+        FullStoryModuleImpl.initSessionListener(sessionData -> {
+            synchronized (emitLock) {
+                if (invalidated) {
+                    // The module was torn down after this callback was queued; the event
+                    // emitter is no longer safe to touch.
+                    return;
+                }
+                emitOnSessionStarted(sessionData);
+            }
+        });
+    }
+
+    @Override
+    public void invalidate() {
+        synchronized (emitLock) {
+            invalidated = true;
+        }
+        FullStoryModuleImpl.tearDownSessionListener();
+        super.invalidate();
     }
 
     @Override
