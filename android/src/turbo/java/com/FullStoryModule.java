@@ -22,6 +22,14 @@ public class FullStoryModule extends NativeFullStorySpec {
     @Override
     public void initialize() {
         super.initialize();
+        /**
+         * JavaTurboModule's event-emitter callback has a null-pointer crash on 32-bit Android
+         * processes across several RN versions
+         * Since SIGSEGV cannot be caught in Java, skip the listener on affected 32-bit builds.
+         */
+        if (!android.os.Process.is64Bit() && !isTurboEventEmitterSafe()) {
+            return;
+        }
         FullStoryModuleImpl.initSessionListener(sessionData -> {
             synchronized (emitLock) {
                 if (invalidated) {
@@ -32,6 +40,33 @@ public class FullStoryModule extends NativeFullStorySpec {
                 emitOnSessionStarted(sessionData);
             }
         });
+    }
+
+    /**
+     * Returns true if the running React Native version has the fix for the 32-bit
+     * TurboModule event-emitter crash https://github.com/react/react-native/issues/51628
+
+     * Falls back to true if the version cannot be determined, since an inaccessible
+     * ReactNativeVersion implies a future RN version that already has the fix.
+     */
+    private static boolean isTurboEventEmitterSafe() {
+        try {
+            java.lang.reflect.Field field =
+                Class.forName("com.facebook.react.modules.systeminfo.ReactNativeVersion")
+                     .getField("VERSION");
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> v = (java.util.Map<String, Object>) field.get(null);
+            int major = (int) v.get("major");
+            int minor = (int) v.get("minor");
+            int patch = (int) v.get("patch");
+            // Fixed in: 0.79.6, 0.80.1, 0.81.0+
+            return major > 0
+                || minor >= 81
+                || (minor == 80 && patch >= 1)
+                || (minor == 79 && patch >= 6);
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     @Override
