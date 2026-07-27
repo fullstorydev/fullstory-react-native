@@ -26,6 +26,13 @@ NSString *const PagesAPIError = @"Unable to access native FullStory pages API an
 
 RCT_EXPORT_MODULE()
 
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"fsOnSessionStarted"];
+}
+
+- (void)startObserving {}
+- (void)stopObserving {}
+
 RCT_EXPORT_METHOD(anonymize)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -199,13 +206,11 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
         [self resolveOnReadyPromisesWithURL:sessionUrl];
     }
 
-#ifdef RCT_NEW_ARCH_ENABLED
-    [self emitOnSessionStarted:@{
+    [self sendEventWithName:@"fsOnSessionStarted" body:@{
         @"replayStartUrl": sessionUrl,
         @"replayNowUrl": [FS currentSessionURL: true] ?: @"",
         @"sessionId": FS.currentSession ?: @"",
     }];
-#endif
 }
 
 - (void) onReady:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {

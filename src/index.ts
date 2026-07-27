@@ -1,5 +1,5 @@
 // When adding new imports, please verify that they are not causing the metro resolver to fail in earlier versions of react-native.
-import { HostComponent, NativeModules, Platform } from 'react-native';
+import { DeviceEventEmitter, HostComponent, NativeModules, Platform } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
 import { ComponentRef } from 'react';
@@ -42,7 +42,6 @@ const {
   restart = () => null,
   log = () => null,
   resetIdleTimer = () => null,
-  onSessionStarted = () => ({ remove: () => null }),
 } = FullStory ?? {};
 
 function onReady(): Promise<FSSessionData>;
@@ -68,7 +67,7 @@ function onReady(
     }
   });
 
-  return onSessionStarted(listener);
+  return DeviceEventEmitter.addListener('fsOnSessionStarted', listener);
 }
 
 const FullStoryPrivate = isTurboModuleEnabled
