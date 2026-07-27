@@ -28,6 +28,8 @@ public class FullStoryModule extends NativeFullStorySpec {
          * Since SIGSEGV cannot be caught in Java, skip the listener on affected 32-bit builds.
          */
         if (!android.os.Process.is64Bit() && !isTurboEventEmitterSafe()) {
+            // Pass null so that no event is emitted, matching the legacy module's behaviour on this path.
+            FullStoryModuleImpl.initSessionListener(null);
             return;
         }
         FullStoryModuleImpl.initSessionListener(sessionData -> {
