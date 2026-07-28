@@ -14,7 +14,7 @@
 }
 
 - (instancetype)init {
-    self = [super init];
+    self = [super initWithDisabledObservation];
     if (self) {
         FS.delegate = self;
         onReadyPromises = [NSMutableArray new];
@@ -29,9 +29,6 @@ RCT_EXPORT_MODULE()
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"fsOnSessionStarted"];
 }
-
-- (void)startObserving {}
-- (void)stopObserving {}
 
 RCT_EXPORT_METHOD(anonymize)
 {

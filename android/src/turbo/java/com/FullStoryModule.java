@@ -13,7 +13,8 @@ public class FullStoryModule extends NativeFullStorySpec {
      * session-ready callbacks asynchronously on the main thread, so a callback can arrive while
      * (or after) React Native tears down this module and its JS runtime.
      */
-    private volatile boolean invalidated = false;
+    private final Object emitLock = new Object();
+    private boolean invalidated = false;
 
     FullStoryModule(ReactApplicationContext context) {
         super(context);
@@ -23,18 +24,24 @@ public class FullStoryModule extends NativeFullStorySpec {
     public void initialize() {
         super.initialize();
         FullStoryModuleImpl.initSessionListener(sessionData -> {
-            if (invalidated) {
-                return;
+            synchronized (emitLock) {
+                if (invalidated) {
+                    // The module was torn down after this callback was queued; the event
+                    // emitter is no longer safe to touch.
+                    return;
+                }
+                getReactApplicationContext()
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit("fsOnSessionStarted", sessionData);
             }
-            getReactApplicationContext()
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("fsOnSessionStarted", sessionData);
         });
     }
 
     @Override
     public void invalidate() {
-        invalidated = true;
+        synchronized (emitLock) {
+            invalidated = true;
+        }
         FullStoryModuleImpl.tearDownSessionListener();
         super.invalidate();
     }
