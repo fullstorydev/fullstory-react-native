@@ -1,4 +1,4 @@
-#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 #import <FullStory/FS.h>
 #import <FullStory/FSDelegate.h>
 
@@ -7,13 +7,13 @@
 #endif
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface FullStory : NativeFullStorySpecBase <FSDelegate>
+@interface FullStory : RCTEventEmitter <NativeFullStorySpec, FSDelegate>
 @end
 
 @interface FullStoryPrivate : NativeFullStoryPrivateSpecBase <FSDelegate>
 @end
 #else
-@interface FullStory : NSObject <RCTBridgeModule, FSDelegate>
+@interface FullStory : RCTEventEmitter <FSDelegate>
 @end
 
 @interface FullStoryPrivate : NSObject <RCTBridgeModule, FSDelegate>
@@ -29,7 +29,6 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 @interface FullStory () <NativeFullStorySpec>
 @end
-
 @interface FullStoryPrivate () <NativeFullStoryPrivateSpec>
 @end
 #endif

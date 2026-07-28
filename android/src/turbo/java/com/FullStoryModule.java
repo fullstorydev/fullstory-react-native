@@ -4,11 +4,12 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 public class FullStoryModule extends NativeFullStorySpec {
 
     /**
-     * Guards emitOnSessionStarted against module invalidation. The FullStory SDK dispatches
+     * Guards the DeviceEventEmitter call against module invalidation. The FullStory SDK dispatches
      * session-ready callbacks asynchronously on the main thread, so a callback can arrive while
      * (or after) React Native tears down this module and its JS runtime.
      */
@@ -29,7 +30,9 @@ public class FullStoryModule extends NativeFullStorySpec {
                     // emitter is no longer safe to touch.
                     return;
                 }
-                emitOnSessionStarted(sessionData);
+                getReactApplicationContext()
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit("fsOnSessionStarted", sessionData);
             }
         });
     }

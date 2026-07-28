@@ -14,7 +14,7 @@
 }
 
 - (instancetype)init {
-    self = [super init];
+    self = [super initWithDisabledObservation];
     if (self) {
         FS.delegate = self;
         onReadyPromises = [NSMutableArray new];
@@ -25,6 +25,10 @@
 NSString *const PagesAPIError = @"Unable to access native FullStory pages API and call %@. Pages API will not function correctly. Make sure that your plugin is at least version 1.41; if the issue persists, please contact FullStory Support.";
 
 RCT_EXPORT_MODULE()
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"fsOnSessionStarted"];
+}
 
 RCT_EXPORT_METHOD(anonymize)
 {
@@ -199,13 +203,11 @@ RCT_EXPORT_METHOD(updatePage:(NSString *)nonce pageProperties:(NSDictionary *)pa
         [self resolveOnReadyPromisesWithURL:sessionUrl];
     }
 
-#ifdef RCT_NEW_ARCH_ENABLED
-    [self emitOnSessionStarted:@{
+    [self sendEventWithName:@"fsOnSessionStarted" body:@{
         @"replayStartUrl": sessionUrl,
         @"replayNowUrl": [FS currentSessionURL: true] ?: @"",
         @"sessionId": FS.currentSession ?: @"",
     }];
-#endif
 }
 
 - (void) onReady:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
