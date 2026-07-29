@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.2
+
+Android: Fixed a crash on the New Architecture where a FullStory session-ready callback could fire against a destroyed TurboModule after the React host was torn down.
+
+Android and iOS: Replaced the TurboModule event emitter with DeviceEventEmitter, fixing compatibility on 32-bit devices and enabling the `onReady` callback on the Old Architecture.
+
 ## 1.10.1
 
 Android: Fixed a crash that occurred on the New Architecture when a FullStory session became ready before the TurboModule event emitter was initialized.
