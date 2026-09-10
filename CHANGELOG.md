@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1
+
+Updated the minimum version for the FullStory `@fullstory/babel-plugin-react-native` babel plugin to `1.6.4`.
+
 ## 1.9.0
 
 Add a new `onReady` API for new architecture. See [docs](https://developer.fullstory.com/mobile/react-native/fullcapture/callbacks-and-delegates/) for details.
