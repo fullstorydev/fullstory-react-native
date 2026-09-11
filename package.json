@@ -1,6 +1,6 @@
 {
   "name": "@fullstory/react-native",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "description": "The official FullStory React Native plugin",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
   "peerDependencies": {
     "expo": ">=47.0.0",
     "react": "*",
-    "react-native": ">=0.66.0"
+    "react-native": ">=0.83.0"
   },
   "peerDependenciesMeta": {
     "expo": {

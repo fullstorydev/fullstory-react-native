@@ -10,6 +10,13 @@ Fullstory's React Native plugin exposes access to the Fullstory Native Mobile SD
 - [Getting Started Guide](https://help.fullstory.com/hc/en-us/articles/360052419133)
 - [Email us](mailto:mobile-support@fullstory.com)
 
+## React Native version compatibility
+
+| React Native version | `@fullstory/react-native` version |
+| -------------------- | --------------------------------- |
+| `>=0.83.0`           | `>=1.10.0`                        |
+| `<=0.82.0`           | `~1.9.0`                          |
+
 ## Install the React Native plugin
 
 #### with npm

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.3
+
+Updated the minimum supported React Native peer dependency version to `0.83.0`.
+
 ## 1.10.2
 
 Android: Fixed a crash on the New Architecture where a FullStory session-ready callback could fire against a destroyed TurboModule after the React host was torn down.
