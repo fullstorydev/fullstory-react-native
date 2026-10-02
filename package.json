@@ -18,6 +18,8 @@
     "plugin/build",
     "src",
     "fullstory_react-native.podspec",
+    "Package.swift",
+    "react-native.config.js",
     "app.plugin.js",
     "lib"
   ],

@@ -3,7 +3,7 @@
 #import <FullStory/FSDelegate.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "FullStorySpec.h"
+#import <FullStorySpec/FullStorySpec.h>
 #endif
 
 #ifdef RCT_NEW_ARCH_ENABLED
