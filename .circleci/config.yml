@@ -2,7 +2,7 @@ version: 2.1
 executors:
   browser-executor:
     docker:
-      - image: circleci/node:16-browsers
+      - image: cimg/node:22.23-browsers
     working_directory: ~/repo
 jobs:
   build-react-native:
@@ -11,14 +11,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install
           command: npm ci
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Audit
           command: npm audit --audit-level=low --omit=dev
@@ -31,6 +31,39 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: [.]
+  # Oldest react-native in the peer range. Before 0.85 the Jest preset ships inside react-native
+  # itself, and the @react-native/jest-preset in jest.config.js (0.87) can't run against it, so
+  # override it with `--preset react-native`. Expo 55 is the SDK that pairs with RN 0.83.
+  test-min-react-native:
+    executor: browser-executor
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: npm ci
+      - run:
+          name: Install minimum react-native
+          command: npm install --no-save --legacy-peer-deps react-native@0.83 react@19.2.0 expo@55
+      - run:
+          name: Test src
+          command: npx jest --config jest.config.js --preset react-native
+      - run:
+          name: Test plugin
+          command: npm run test:plugin
+  # Oldest expo in the peer range. The config plugin tests don't need react-native, only expo.
+  test-min-expo:
+    executor: browser-executor
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: npm ci
+      - run:
+          name: Install minimum expo
+          command: npm install --no-save --legacy-peer-deps expo@47
+      - run:
+          name: Test plugin
+          command: npm run test:plugin
   deploy-react-native:
     executor: browser-executor
     steps:
@@ -51,10 +84,20 @@ workflows:
             # test on all branches and tags (all branches are included by default)
             tags:
               only: /.*/
+      - test-min-react-native:
+          filters:
+            tags:
+              only: /.*/
+      - test-min-expo:
+          filters:
+            tags:
+              only: /.*/
       - hold:
           type: approval
           requires:
             - build-react-native
+            - test-min-react-native
+            - test-min-expo
           filters:
             # hold only on version tags
             tags:
