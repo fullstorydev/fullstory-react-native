@@ -19,6 +19,13 @@ module FullStoryPodfileCheck
   NAME_LINE = /^\s*['"]FullStory['"]/
   # A pod call can span lines, but not many.
   MAX_STATEMENT_LINES = 10
+  # Set to 1 to warn instead of failing when FullStory would come from trunk.
+  ALLOW_TRUNK_ENV = 'FS_ALLOW_TRUNK'
+
+  # Raised when FullStory would come from trunk. A subclass of Pod::Informative,
+  # when CocoaPods is loaded, so pod install shows the message without a trace.
+  base = defined?(Pod::Informative) ? Pod::Informative : StandardError
+  TrunkError = Class.new(base)
 
   # Returns [source, statement]. source is :none (no FullStory pod), :url (it
   # names a source like :http) or :trunk (a bare name or version). statement is
@@ -45,13 +52,35 @@ module FullStoryPodfileCheck
     [statement =~ SOURCE_OPTION ? :url : :trunk, statement]
   end
 
-  # Reads the Podfile at path. A missing or unreadable file counts as :none.
+  # Reads the Podfile at path. Returns :unknown, with the error message as the
+  # statement, if the Podfile can't be found, read or checked, so a broken
+  # check never stops pod install.
   def self.read(path)
-    return [:none, nil] unless path && File.file?(path)
+    return [:unknown, 'no Podfile found'] unless path && File.file?(path)
     source(File.read(path))
-  rescue StandardError => e
-    Pod::UI.puts "[FullStory] Couldn't read Podfile at #{path.inspect}: #{e.message}" if defined?(Pod::UI)
-    [:none, nil]
+  rescue StandardError, ScriptError => e
+    [:unknown, "#{e.class}: #{e.message}"]
+  end
+
+  # Acts on what read returned. Fails with message when FullStory would come
+  # from trunk, unless FS_ALLOW_TRUNK=1. Warns when the Podfile couldn't
+  # be checked. Returns true when it warned instead of failing.
+  def self.trunk_check!(source, statement, message, env: ENV, ui: defined?(Pod::UI) ? Pod::UI : nil)
+    case source
+    when :unknown
+      ui&.warn "[FullStory] Couldn't check your Podfile (#{statement}). If FullStory comes from " \
+               "CocoaPods trunk, it won't get new versions. Setup steps: #{SETUP_URL}"
+      true
+    when :trunk, :none
+      if env[ALLOW_TRUNK_ENV] == '1'
+        ui&.warn "#{message} (Continuing because #{ALLOW_TRUNK_ENV}=1.)"
+        true
+      else
+        raise TrunkError, "#{message} To build anyway, set #{ALLOW_TRUNK_ENV}=1."
+      end
+    else
+      false
+    end
   end
 
   # The version in a FullStory xcframework URL, or nil.

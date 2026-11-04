@@ -4,11 +4,18 @@ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
-require_relative 'fullstory_podfile_check'
-
 # Read the Podfile as text. Parsing it would re-enter the Podfile, which is
-# still running when autolinking loads this podspec.
-fullstory_podfile_source, _ = FullStoryPodfileCheck.read(Pod::Config.instance.podfile_path)
+# still running when autolinking loads this podspec. If the check itself can't
+# load, warn and carry on rather than stop pod install.
+begin
+  require_relative 'fullstory_podfile_check'
+  fullstory_podfile_source, fullstory_podfile_statement =
+    FullStoryPodfileCheck.read(Pod::Config.instance.podfile_path)
+rescue StandardError, ScriptError => e
+  Pod::UI.warn "[FullStory] Couldn't check your Podfile (#{e.class}: #{e.message}). If FullStory " \
+               "comes from CocoaPods trunk, it won't get new versions."
+  fullstory_podfile_source = :skip
+end
 
 Pod::Spec.new do |s|
   s.name         = "fullstory_react-native"
@@ -28,18 +35,20 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   # CocoaPods trunk no longer gets new FullStory versions, so a FullStory pod
-  # resolved from trunk goes stale. Warn unless the Podfile names a source.
+  # resolved from trunk goes stale. Fail unless the Podfile names a source.
   s.dependency "FullStory", "~> 1.14"
-  fs_http_line = "pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-X.Y.Z-xcframework.tar.gz'"
-  case fullstory_podfile_source
-  when :trunk
-    Pod::UI.warn "[FullStory] Your Podfile adds FullStory without a URL, so CocoaPods takes it from " \
-                 "CocoaPods trunk, which no longer gets new versions. Change that line to: #{fs_http_line} " \
-                 "Setup steps: #{FullStoryPodfileCheck::SETUP_URL}"
-  when :none
-    Pod::UI.warn "[FullStory] No FullStory pod in your Podfile, so CocoaPods will use the last FullStory " \
-                 "version on CocoaPods trunk, which no longer gets new versions. Add this to your Podfile: #{fs_http_line} " \
-                 "Setup steps: #{FullStoryPodfileCheck::SETUP_URL}"
+  unless fullstory_podfile_source == :skip
+    fs_http_line = "pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-X.Y.Z-xcframework.tar.gz'"
+    setup = "Setup steps: #{FullStoryPodfileCheck::SETUP_URL}"
+    trunk_message = case fullstory_podfile_source
+      when :trunk
+        "[FullStory] Your Podfile adds FullStory without a URL, so CocoaPods takes it from CocoaPods " \
+        "trunk, which no longer gets new versions. Change that line to: #{fs_http_line} #{setup}"
+      when :none
+        "[FullStory] No FullStory pod in your Podfile, so CocoaPods will use the last FullStory version " \
+        "on CocoaPods trunk, which no longer gets new versions. Add this to your Podfile: #{fs_http_line} #{setup}"
+      end
+    FullStoryPodfileCheck.trunk_check!(fullstory_podfile_source, fullstory_podfile_statement, trunk_message)
   end
 
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.

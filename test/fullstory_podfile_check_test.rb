@@ -255,12 +255,12 @@ class FullStoryPodfileCheckTest < Minitest::Test
 
   # Reading from disk.
 
-  def test_read_missing_file
-    assert_equal [:none, nil], FullStoryPodfileCheck.read('/no/such/Podfile')
+  def test_read_missing_file_is_unknown
+    assert_equal :unknown, FullStoryPodfileCheck.read('/no/such/Podfile')[0]
   end
 
-  def test_read_nil_path
-    assert_equal [:none, nil], FullStoryPodfileCheck.read(nil)
+  def test_read_nil_path_is_unknown
+    assert_equal :unknown, FullStoryPodfileCheck.read(nil)[0]
   end
 
   def test_read_real_file
@@ -269,5 +269,95 @@ class FullStoryPodfileCheckTest < Minitest::Test
       File.write(path, "  pod 'FullStory', :http => '#{URL}'\n")
       assert_equal :url, FullStoryPodfileCheck.read(path)[0]
     end
+  end
+
+  def test_read_unreadable_file_is_unknown
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, 'Podfile')
+      File.write(path, "  pod 'FullStory'\n")
+      File.chmod(0o000, path)
+      skip 'running as a user that can read any file' if File.readable?(path)
+      source, detail = FullStoryPodfileCheck.read(path)
+      assert_equal :unknown, source
+      assert_match(/Permission denied/, detail)
+    end
+  end
+
+  def test_read_never_raises_when_parsing_fails
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, 'Podfile')
+      # Not valid UTF-8, so the regex match raises inside source.
+      File.binwrite(path, "  pod 'FullStory'\xff\n".b)
+      source, detail = FullStoryPodfileCheck.read(path)
+      assert_equal :unknown, source
+      assert_match(/ArgumentError/, detail)
+    end
+  end
+
+  # Acting on the result.
+
+  class FakeUI
+    attr_reader :warnings
+
+    def initialize
+      @warnings = []
+    end
+
+    def warn(message)
+      @warnings << message
+    end
+  end
+
+  def check(source, env: {}, statement: nil)
+    ui = FakeUI.new
+    result = FullStoryPodfileCheck.trunk_check!(source, statement, 'trunk message', env: env, ui: ui)
+    [result, ui.warnings]
+  end
+
+  def test_url_source_passes_quietly
+    assert_equal [false, []], check(:url)
+  end
+
+  def test_trunk_line_raises
+    error = assert_raises(FullStoryPodfileCheck::TrunkError) { check(:trunk) }
+    assert_match(/trunk message/, error.message)
+    assert_match(/FS_ALLOW_TRUNK=1/, error.message)
+  end
+
+  def test_no_line_raises
+    assert_raises(FullStoryPodfileCheck::TrunkError) { check(:none) }
+  end
+
+  def test_env_var_turns_trunk_error_into_warning
+    result, warnings = check(:trunk, env: { 'FS_ALLOW_TRUNK' => '1' })
+    assert_equal true, result
+    assert_equal 1, warnings.length
+    assert_match(/trunk message/, warnings.first)
+    assert_match(/FS_ALLOW_TRUNK=1/, warnings.first)
+  end
+
+  def test_env_var_also_covers_no_line
+    result, = check(:none, env: { 'FS_ALLOW_TRUNK' => '1' })
+    assert_equal true, result
+  end
+
+  def test_env_var_must_be_exactly_one
+    %w[0 true yes].each do |value|
+      assert_raises(FullStoryPodfileCheck::TrunkError) { check(:trunk, env: { 'FS_ALLOW_TRUNK' => value }) }
+    end
+  end
+
+  def test_unknown_source_warns_and_does_not_raise
+    result, warnings = check(:unknown, statement: 'Errno::EACCES: Permission denied')
+    assert_equal true, result
+    assert_equal 1, warnings.length
+    assert_match(/Couldn't check your Podfile \(Errno::EACCES: Permission denied\)/, warnings.first)
+    assert_match(/#{Regexp.escape(FullStoryPodfileCheck::SETUP_URL)}/, warnings.first)
+  end
+
+  def test_unknown_source_warns_even_with_env_var
+    result, warnings = check(:unknown, env: { 'FS_ALLOW_TRUNK' => '1' }, statement: 'x')
+    assert_equal true, result
+    assert_equal 1, warnings.length
   end
 end
