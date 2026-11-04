@@ -32,7 +32,11 @@ module FullStoryPodfileCheck
 
     statement = ''
     lines[start, MAX_STATEMENT_LINES].each do |line|
-      code = line.sub(/\s#.*$/, '').strip
+      # Drop a comment, whether it starts the line or follows code.
+      code = line.sub(/(^|\s)#.*$/, '').strip
+      # A blank or comment-only line inside a wrapped call doesn't end it.
+      next if code.empty?
+
       statement << ' ' << code
       # Keep reading while the call clearly goes on to the next line.
       break unless code.end_with?(',', '\\', '(', '=>', ':')

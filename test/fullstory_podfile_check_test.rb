@@ -168,6 +168,37 @@ class FullStoryPodfileCheckTest < Minitest::Test
     assert_equal :url, source_of(podfile)
   end
 
+  def test_wrapped_with_comment_only_line
+    podfile = "  pod 'FullStory',\n    # pinned to our release bucket\n    :http => '#{URL}'\n"
+    assert_equal :url, source_of(podfile)
+  end
+
+  def test_wrapped_with_unindented_comment_line
+    podfile = "  pod 'FullStory',\n# note\n    :path => '../pods/FullStory'\n"
+    assert_equal :url, source_of(podfile)
+  end
+
+  def test_wrapped_with_blank_line
+    podfile = "  pod 'FullStory',\n\n    :http => '#{URL}'\n"
+    assert_equal :url, source_of(podfile)
+  end
+
+  def test_wrapped_with_comment_line_keeps_url_version
+    podfile = "  pod 'FullStory', :http =>\n    # 1.75.2 until the fix ships\n    'https://ios-releases.fullstory.com/fullstory-1.75.2-xcframework.tar.gz'\n"
+    _, statement = FullStoryPodfileCheck.source(podfile)
+    assert_equal '1.75.2', FullStoryPodfileCheck.url_version(statement)
+  end
+
+  def test_blank_line_after_finished_call_does_not_join_next_pod
+    podfile = "  pod 'FullStory', '1.76.0'\n\n  pod 'Other', :http => 'https://example.com/other.tar.gz'\n"
+    assert_equal :trunk, source_of(podfile)
+  end
+
+  def test_hash_inside_url_is_kept
+    _, statement = FullStoryPodfileCheck.source("  pod 'FullStory', :http => 'https://example.com/fullstory-1.76.0-xcframework.tar.gz#sha'\n")
+    assert_equal '1.76.0', FullStoryPodfileCheck.url_version(statement)
+  end
+
   def test_wrapped_version_only_stays_trunk
     podfile = "  pod 'FullStory',\n    '~> 1.76.0'\n"
     assert_equal :trunk, source_of(podfile)
