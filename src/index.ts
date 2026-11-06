@@ -106,45 +106,65 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
  * Applies FullStory properties to an already-committed native instance by
  * dispatching a single batched native command. Invoked by the FullStory babel
  * plugin's Fabric commit-phase hook with the host component's public instance
- * and its committed props. iOS New Architecture only; on the old architecture
- * the regular view-manager prop pipeline applies these props instead.
+ * and a batch containing only the properties that changed: a value to set, or
+ * null to clear a property that was removed. iOS New Architecture only; on the
+ * old architecture the regular view-manager prop pipeline applies these props
+ * instead.
+ *
+ * Values are re-validated here so a plugin that passes a full props object
+ * (older plugin versions) never forwards unrelated props to native.
  */
 export function applyFSPropertiesToInstance(
   instance: FSNativeInstance | null | undefined,
-  props: Record<string, unknown> | null | undefined,
+  batch: Record<string, unknown> | null | undefined,
 ) {
-  if (!instance || !props) {
+  if (!instance || !batch) {
     return;
   }
   if (!(isTurboModuleEnabled && Platform.OS === 'ios' && !Platform.isTV)) {
     return;
   }
 
-  const batchedProps: Partial<Record<SupportedFSAttributes, string | object>> = {};
+  // Unrolled on purpose: this runs for every view the babel plugin queues, and looping over a key
+  // list was measured at ~3x the cost. null clears a removed property; anything else must be the
+  // right type, since native casts these values and a wrong type would crash it.
+  const batchedProps: Partial<Record<SupportedFSAttributes, string | object | null>> = {};
+  let hasProps = false;
+  let value: unknown;
 
-  const { fsClass, fsAttribute, fsTagName, dataElement, dataComponent, dataSourceFile } = props;
-
-  if (fsClass && typeof fsClass === 'string') {
-    batchedProps.fsClass = fsClass;
+  value = batch.fsClass;
+  if (value === null || (value && typeof value === 'string')) {
+    batchedProps.fsClass = value;
+    hasProps = true;
   }
-  if (fsAttribute && typeof fsAttribute === 'object') {
-    batchedProps.fsAttribute = fsAttribute;
+  value = batch.fsAttribute;
+  if (value === null || (value && typeof value === 'object')) {
+    batchedProps.fsAttribute = value;
+    hasProps = true;
   }
-  if (fsTagName && typeof fsTagName === 'string') {
-    batchedProps.fsTagName = fsTagName;
+  value = batch.fsTagName;
+  if (value === null || (value && typeof value === 'string')) {
+    batchedProps.fsTagName = value;
+    hasProps = true;
   }
-  if (dataElement && typeof dataElement === 'string') {
-    batchedProps.dataElement = dataElement;
+  value = batch.dataElement;
+  if (value === null || (value && typeof value === 'string')) {
+    batchedProps.dataElement = value;
+    hasProps = true;
   }
-  if (dataComponent && typeof dataComponent === 'string') {
-    batchedProps.dataComponent = dataComponent;
+  value = batch.dataComponent;
+  if (value === null || (value && typeof value === 'string')) {
+    batchedProps.dataComponent = value;
+    hasProps = true;
   }
-  if (dataSourceFile && typeof dataSourceFile === 'string') {
-    batchedProps.dataSourceFile = dataSourceFile;
+  value = batch.dataSourceFile;
+  if (value === null || (value && typeof value === 'string')) {
+    batchedProps.dataSourceFile = value;
+    hasProps = true;
   }
 
   // Send all properties as a single batched command.
-  if (Object.keys(batchedProps).length > 0) {
+  if (hasProps) {
     Commands.setBatchProperties(instance, batchedProps);
   }
 }
