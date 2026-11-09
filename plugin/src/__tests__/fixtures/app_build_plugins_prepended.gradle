@@ -1,0 +1,8 @@
+plugins {
+    id("com.datadoghq.dd-sdk-android-gradle-plugin") version "1.+"
+}
+apply plugin: "com.android.application"
+
+android {
+    compileSdkVersion 34
+}

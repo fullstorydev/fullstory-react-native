@@ -59,29 +59,88 @@ const addFullStoryGradlePlugin = (appBuildGradle, { org, host, logLevel, logcatL
     if (!(0, semver_1.valid)(version)) {
         throw new Error(`Fullstory version is not valid. Version: ${version}`);
     }
-    return (0, generateCode_1.mergeContents)({
-        tag: `@fullstory/react-native plugin`,
-        src: appBuildGradle,
-        newSrc: `apply plugin: 'fullstory'
+    const newSrc = `apply plugin: 'fullstory'
       fullstory {
           org '${org}'
           ${host
-            ? (0, semver_1.lt)(version, '1.37.0')
-                ? `server 'https://${host}'`
-                : `serverUrl 'https://${host}'`
-            : ''}
+        ? (0, semver_1.lt)(version, '1.37.0')
+            ? `server 'https://${host}'`
+            : `serverUrl 'https://${host}'`
+        : ''}
           ${logLevel ? `logLevel '${logLevel}'` : ''}
           ${logcatLevel ? `logcatLevel '${logcatLevel}'` : ''}
           ${enabledVariants ? `enabledVariants '${enabledVariants}'` : ''}
           ${typeof recordOnStart === 'boolean' ? `recordOnStart ${recordOnStart}` : ''}
           ${getCustomConfigs(additionalConfigs)}
-      }`,
-        anchor: /./,
-        offset: 1,
-        comment: '//',
-    }).contents;
+      }`;
+    return mergeAfterAndroidPlugin(appBuildGradle, newSrc);
 };
 exports.addFullStoryGradlePlugin = addFullStoryGradlePlugin;
+const FULLSTORY_PLUGIN_TAG = '@fullstory/react-native plugin';
+const ANDROID_APPLY_PLUGIN = /^\s*apply plugin:\s*["']com\.android\.application["']/;
+const PLUGINS_BLOCK_START = /^\s*plugins\s*\{/;
+// Strips line comments and string literals so braces inside them are not counted.
+function stripNoise(line) {
+    return line.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, '""').replace(/\/\/.*$/, '');
+}
+// Returns the index of the line that closes the last `plugins { }` block, or -1.
+function findLastPluginsBlockEnd(lines) {
+    let last = -1;
+    for (let i = 0; i < lines.length; i++) {
+        if (!PLUGINS_BLOCK_START.test(stripNoise(lines[i]))) {
+            continue;
+        }
+        let depth = 0;
+        for (let j = i; j < lines.length; j++) {
+            for (const ch of stripNoise(lines[j])) {
+                if (ch === '{') {
+                    depth++;
+                }
+                else if (ch === '}') {
+                    depth--;
+                }
+            }
+            if (depth === 0) {
+                last = j;
+                i = j;
+                break;
+            }
+        }
+    }
+    return last;
+}
+/**
+ * Inserts our block after the Android application plugin is applied, so it never lands inside
+ * (or ahead of) another plugin's `plugins {}` block regardless of what else has modified the file.
+ *
+ * 1. `apply plugin: 'com.android.application'` -> insert after that line.
+ * 2. Only `plugins { id("com.android.application") }` -> insert after the last `plugins {}` block
+ *    (Gradle requires every `plugins {}` block to come before any other statement).
+ * 3. Otherwise throw rather than guess a position that could produce an invalid build file.
+ */
+function mergeAfterAndroidPlugin(src, newSrc) {
+    const merge = (contents, anchor, offset) => (0, generateCode_1.mergeContents)({
+        tag: FULLSTORY_PLUGIN_TAG,
+        src: contents,
+        newSrc,
+        anchor,
+        offset,
+        comment: '//',
+    }).contents;
+    const lines = src.split('\n');
+    if (lines.some(line => ANDROID_APPLY_PLUGIN.test(line))) {
+        return merge(src, ANDROID_APPLY_PLUGIN, 1);
+    }
+    const end = findLastPluginsBlockEnd(lines);
+    if (end >= 0) {
+        const head = lines.slice(0, end + 1).join('\n');
+        const tail = lines.slice(end + 1).join('\n');
+        return `${head}\n${merge(tail, /^/, 0)}`;
+    }
+    throw new Error("@fullstory/react-native: couldn't find `apply plugin: 'com.android.application'` or a " +
+        '`plugins { }` block in android/app/build.gradle to anchor the FullStory Gradle plugin to.' +
+        ' Please contact Fullstory support.');
+}
 const withAppBuildGradleDelegate = (expoConfig, pluginConfigs) => {
     return (0, config_plugins_1.withAppBuildGradle)(expoConfig, ({ modResults, ...config }) => {
         if (modResults.language !== 'groovy') {
