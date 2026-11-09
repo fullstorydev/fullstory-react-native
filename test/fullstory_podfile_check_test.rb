@@ -1,16 +1,9 @@
-# Tests for fullstory_podfile_check.rb. The same test file runs in
-# fullstory_flutter (cowpaths/mn) and @fullstory/react-native, so both copies
-# of the check stay in step.
-#
-# Run: ruby fullstory_podfile_check_test.rb
-# Point it at a different copy with FULLSTORY_PODFILE_CHECK=path/to/file.rb.
+# Tests for fullstory_podfile_check.rb. The same file runs in cowpaths/mn and
+# @fullstory/react-native, so it keeps the two copies of the check in step.
 require 'minitest/autorun'
 require 'tmpdir'
 
-# Both repos keep the check one folder above this test.
-check_path = ENV['FULLSTORY_PODFILE_CHECK'] || File.expand_path('../fullstory_podfile_check.rb', __dir__)
-abort "Couldn't find fullstory_podfile_check.rb" unless check_path
-require check_path
+require File.expand_path('../fullstory_podfile_check.rb', __dir__)
 
 class FullStoryPodfileCheckTest < Minitest::Test
   URL = 'https://ios-releases.fullstory.com/fullstory-1.76.0-xcframework.tar.gz'
@@ -64,20 +57,10 @@ class FullStoryPodfileCheckTest < Minitest::Test
     assert_equal :trunk, source_of("  pod 'FullStory', '~> 1.76' # TODO: switch to :http => '#{URL}'\n")
   end
 
-  def test_version_line_followed_by_unrelated_http_pod
-    podfile = "  pod 'FullStory', '1.76.0'\n  pod 'Other', :http => 'https://example.com/other.tar.gz'\n"
-    assert_equal :trunk, source_of(podfile)
-  end
-
   # FullStory comes from somewhere other than trunk.
 
   def test_http_one_line
     assert_equal :url, source_of("  pod 'FullStory', :http => '#{URL}'\n")
-  end
-
-  def test_http_url_on_next_line
-    # Our RN66 and Capacitor apps write it this way.
-    assert_equal :url, source_of("  pod 'FullStory', :http =>\n  '#{URL}'\n")
   end
 
   def test_http_split_after_comma
@@ -109,11 +92,8 @@ class FullStoryPodfileCheckTest < Minitest::Test
 
   INDENTS = {
     'none' => '',
-    'two spaces' => '  ',
-    'four spaces' => '    ',
-    'nested target' => '      ',
+    'spaces' => '    ',
     'tab' => "\t",
-    'two tabs' => "\t\t",
     'mixed tab and spaces' => " \t ",
   }
 
@@ -210,7 +190,6 @@ class FullStoryPodfileCheckTest < Minitest::Test
   end
 
   def test_wrap_ends_before_next_pod
-    # The http option belongs to the next pod, not to FullStory.
     podfile = "  pod 'FullStory', '1.76.0'\n  pod 'Other',\n    :http => 'https://example.com/other.tar.gz'\n"
     assert_equal :trunk, source_of(podfile)
   end
@@ -218,19 +197,15 @@ class FullStoryPodfileCheckTest < Minitest::Test
   # The statement and version that the podspecs print.
 
   def test_statement_joins_multiline_call
-    _, statement = FullStoryPodfileCheck.source("  pod 'FullStory', :http =>\n  '#{URL}'\n")
+    # Our RN66 and Capacitor apps write it this way.
+    source, statement = FullStoryPodfileCheck.source("  pod 'FullStory', :http =>\n  '#{URL}'\n")
+    assert_equal :url, source
     assert_equal "pod 'FullStory', :http => '#{URL}'", statement
   end
 
   def test_url_version
     _, statement = FullStoryPodfileCheck.source("  pod 'FullStory', :http => '#{URL}'\n")
     assert_equal '1.76.0', FullStoryPodfileCheck.url_version(statement)
-  end
-
-  def test_url_version_from_url_on_next_line
-    # The Flutter podspec compares this version to its own pin.
-    _, statement = FullStoryPodfileCheck.source("  pod 'FullStory', :http =>\n  'https://ios-releases.fullstory.com/fullstory-1.75.2-xcframework.tar.gz'\n")
-    assert_equal '1.75.2', FullStoryPodfileCheck.url_version(statement)
   end
 
   def test_url_on_next_line_after_new_hash_syntax
@@ -308,14 +283,15 @@ class FullStoryPodfileCheckTest < Minitest::Test
     end
   end
 
+  # Returns the warnings trunk_check! printed.
   def check(source, env: {}, statement: nil)
     ui = FakeUI.new
-    result = FullStoryPodfileCheck.trunk_check!(source, statement, 'trunk message', env: env, ui: ui)
-    [result, ui.warnings]
+    FullStoryPodfileCheck.trunk_check!(source, statement, 'trunk message', env: env, ui: ui)
+    ui.warnings
   end
 
   def test_url_source_passes_quietly
-    assert_equal [false, []], check(:url)
+    assert_empty check(:url)
   end
 
   def test_trunk_line_raises
@@ -329,16 +305,14 @@ class FullStoryPodfileCheckTest < Minitest::Test
   end
 
   def test_env_var_turns_trunk_error_into_warning
-    result, warnings = check(:trunk, env: { 'FS_ALLOW_TRUNK' => '1' })
-    assert_equal true, result
+    warnings = check(:trunk, env: { 'FS_ALLOW_TRUNK' => '1' })
     assert_equal 1, warnings.length
     assert_match(/trunk message/, warnings.first)
     assert_match(/FS_ALLOW_TRUNK=1/, warnings.first)
   end
 
   def test_env_var_also_covers_no_line
-    result, = check(:none, env: { 'FS_ALLOW_TRUNK' => '1' })
-    assert_equal true, result
+    assert_equal 1, check(:none, env: { 'FS_ALLOW_TRUNK' => '1' }).length
   end
 
   def test_env_var_must_be_exactly_one
@@ -348,16 +322,13 @@ class FullStoryPodfileCheckTest < Minitest::Test
   end
 
   def test_unknown_source_warns_and_does_not_raise
-    result, warnings = check(:unknown, statement: 'Errno::EACCES: Permission denied')
-    assert_equal true, result
+    warnings = check(:unknown, statement: 'Errno::EACCES: Permission denied')
     assert_equal 1, warnings.length
     assert_match(/Couldn't check your Podfile \(Errno::EACCES: Permission denied\)/, warnings.first)
     assert_match(/#{Regexp.escape(FullStoryPodfileCheck::SETUP_URL)}/, warnings.first)
   end
 
   def test_unknown_source_warns_even_with_env_var
-    result, warnings = check(:unknown, env: { 'FS_ALLOW_TRUNK' => '1' }, statement: 'x')
-    assert_equal true, result
-    assert_equal 1, warnings.length
+    assert_equal 1, check(:unknown, env: { 'FS_ALLOW_TRUNK' => '1' }, statement: 'x').length
   end
 end

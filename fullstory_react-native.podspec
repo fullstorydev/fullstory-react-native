@@ -4,9 +4,8 @@ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
-# Read the Podfile as text. Parsing it would re-enter the Podfile, which is
-# still running when autolinking loads this podspec. If the check itself can't
-# load, warn and carry on rather than stop pod install.
+# Read the Podfile as text, since parsing it would re-enter the Podfile that's
+# loading this podspec. If the check can't load, warn instead of failing.
 begin
   require_relative 'fullstory_podfile_check'
   fullstory_podfile_source, fullstory_podfile_statement =
@@ -34,8 +33,8 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.requires_arc = true
 
-  # CocoaPods trunk no longer gets new FullStory versions, so a FullStory pod
-  # resolved from trunk goes stale. Fail unless the Podfile names a source.
+  # CocoaPods trunk is read-only from December 2, 2026, so fail unless the
+  # Podfile names another source for FullStory.
   s.dependency "FullStory", "~> 1.14"
   unless fullstory_podfile_source == :skip
     fs_http_line = "pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-X.Y.Z-xcframework.tar.gz'"
