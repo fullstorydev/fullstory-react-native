@@ -106,19 +106,20 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
  * Applies FullStory properties to an already-committed native instance by
  * dispatching a single batched native command. Invoked by the FullStory babel
  * plugin's Fabric commit-phase hook with the host component's public instance
- * and a batch containing only the properties that changed: a value to set, or
- * null to clear a property that was removed. iOS New Architecture only; on the
- * old architecture the regular view-manager prop pipeline applies these props
- * instead.
+ * and its committed props. iOS New Architecture only; on the old architecture
+ * the regular view-manager prop pipeline applies these props instead.
  *
- * Values are re-validated here so a plugin that passes a full props object
- * (older plugin versions) never forwards unrelated props to native.
+ * A prop with a valid value is sent as it is. A prop whose value is null is sent
+ * as null, which tells native to clear it: the babel plugin sets a prop to null
+ * when it was removed since the previous commit (e.g. fsClass 'fs-unmask' ->
+ * undefined). Anything else is ignored. Types are validated because native casts
+ * these values and a wrong type would crash it.
  */
 export function applyFSPropertiesToInstance(
   instance: FSNativeInstance | null | undefined,
-  batch: Record<string, unknown> | null | undefined,
+  props: Record<string, unknown> | null | undefined,
 ) {
-  if (!instance || !batch) {
+  if (!instance || !props) {
     return;
   }
   if (!(isTurboModuleEnabled && Platform.OS === 'ios' && !Platform.isTV)) {
@@ -126,40 +127,34 @@ export function applyFSPropertiesToInstance(
   }
 
   // Unrolled on purpose: this runs for every view the babel plugin queues, and looping over a key
-  // list was measured at ~3x the cost. null clears a removed property; anything else must be the
-  // right type, since native casts these values and a wrong type would crash it.
+  // list was measured at ~3x the cost.
   const batchedProps: Partial<Record<SupportedFSAttributes, string | object | null>> = {};
   let hasProps = false;
-  let value: unknown;
 
-  value = batch.fsClass;
-  if (value === null || (value && typeof value === 'string')) {
-    batchedProps.fsClass = value;
+  const { fsClass, fsAttribute, fsTagName, dataElement, dataComponent, dataSourceFile } = props;
+
+  if (fsClass === null || (fsClass && typeof fsClass === 'string')) {
+    batchedProps.fsClass = fsClass;
     hasProps = true;
   }
-  value = batch.fsAttribute;
-  if (value === null || (value && typeof value === 'object')) {
-    batchedProps.fsAttribute = value;
+  if (fsAttribute === null || (fsAttribute && typeof fsAttribute === 'object')) {
+    batchedProps.fsAttribute = fsAttribute;
     hasProps = true;
   }
-  value = batch.fsTagName;
-  if (value === null || (value && typeof value === 'string')) {
-    batchedProps.fsTagName = value;
+  if (fsTagName === null || (fsTagName && typeof fsTagName === 'string')) {
+    batchedProps.fsTagName = fsTagName;
     hasProps = true;
   }
-  value = batch.dataElement;
-  if (value === null || (value && typeof value === 'string')) {
-    batchedProps.dataElement = value;
+  if (dataElement === null || (dataElement && typeof dataElement === 'string')) {
+    batchedProps.dataElement = dataElement;
     hasProps = true;
   }
-  value = batch.dataComponent;
-  if (value === null || (value && typeof value === 'string')) {
-    batchedProps.dataComponent = value;
+  if (dataComponent === null || (dataComponent && typeof dataComponent === 'string')) {
+    batchedProps.dataComponent = dataComponent;
     hasProps = true;
   }
-  value = batch.dataSourceFile;
-  if (value === null || (value && typeof value === 'string')) {
-    batchedProps.dataSourceFile = value;
+  if (dataSourceFile === null || (dataSourceFile && typeof dataSourceFile === 'string')) {
+    batchedProps.dataSourceFile = dataSourceFile;
     hasProps = true;
   }
 
