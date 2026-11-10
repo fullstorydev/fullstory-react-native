@@ -131,10 +131,13 @@ function mergeAfterAndroidPlugin(src, newSrc) {
     if (lines.some(line => ANDROID_APPLY_PLUGIN.test(line))) {
         return merge(src, ANDROID_APPLY_PLUGIN, 1);
     }
-    const end = findLastPluginsBlockEnd(lines);
+    // mergeContents below only sees the text after the `plugins {}` block, so remove any existing
+    // FullStory block from the whole file first; otherwise one before the block would be duplicated.
+    const withoutOurs = (0, generateCode_1.removeContents)({ src, tag: FULLSTORY_PLUGIN_TAG }).contents.split('\n');
+    const end = findLastPluginsBlockEnd(withoutOurs);
     if (end >= 0) {
-        const head = lines.slice(0, end + 1).join('\n');
-        const tail = lines.slice(end + 1).join('\n');
+        const head = withoutOurs.slice(0, end + 1).join('\n');
+        const tail = withoutOurs.slice(end + 1).join('\n');
         return `${head}\n${merge(tail, /^/, 0)}`;
     }
     throw new Error("@fullstory/react-native: couldn't find `apply plugin: 'com.android.application'` or a " +

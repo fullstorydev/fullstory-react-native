@@ -119,6 +119,16 @@ describe('Config Plugin Android Tests', function () {
       }
     });
 
+    it('replaces an existing block that sits before the plugins {} block', async function () {
+      const result = apply(await read('app_build_plugins_existing_block.gradle'));
+      expect(result.match(/@generated begin @fullstory/g)).toHaveLength(1);
+      expect(result).not.toContain('stale-org');
+      expect(depthAtBlock(result)).toBe(0);
+      const lines = result.split('\n');
+      const closeIdx = lines.findIndex(l => l === '}');
+      expect(lines[closeIdx + 1]).toContain('@generated begin @fullstory');
+    });
+
     it('inserts after the last of multiple plugins {} blocks', function () {
       const src =
         'plugins {\n    id("com.datadoghq.dd-sdk-android-gradle-plugin")\n}\n' +
