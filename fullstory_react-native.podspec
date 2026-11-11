@@ -12,7 +12,7 @@ begin
     FullStoryPodfileCheck.read(Pod::Config.instance.podfile_path)
 rescue StandardError, ScriptError => e
   Pod::UI.warn "[FullStory] Couldn't check your Podfile (#{e.class}: #{e.message}). If FullStory " \
-               "comes from CocoaPods trunk, it won't get new versions."
+               "comes from CocoaPods trunk, it will stay on an old version, since trunk no longer accepts new ones."
   fullstory_podfile_source = :skip
 end
 
@@ -42,10 +42,10 @@ Pod::Spec.new do |s|
     trunk_message = case fullstory_podfile_source
       when :trunk
         "[FullStory] Your Podfile adds FullStory without a URL, so CocoaPods takes it from CocoaPods " \
-        "trunk, which no longer gets new versions. Change that line to: #{fs_http_line} #{setup}"
+        "trunk, which no longer accepts new versions. Change that line to: #{fs_http_line} #{setup}"
       when :none
         "[FullStory] No FullStory pod in your Podfile, so CocoaPods will use the last FullStory version " \
-        "on CocoaPods trunk, which no longer gets new versions. Add this to your Podfile: #{fs_http_line} #{setup}"
+        "on CocoaPods trunk, which no longer accepts new versions. Add this to your Podfile: #{fs_http_line} #{setup}"
       end
     FullStoryPodfileCheck.trunk_check!(fullstory_podfile_source, fullstory_podfile_statement, trunk_message)
   end

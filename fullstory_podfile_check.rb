@@ -1,8 +1,8 @@
 # Finds how an app's Podfile adds the FullStory pod, so a podspec can fail when
 # it would come from CocoaPods trunk.
 #
-# Lives in nativemobile/tools/cocoapods in cowpaths/mn. fullstory_flutter ships
-# it through a symlink, and @fullstory/react-native keeps a copy, so change both.
+# A copy of nativemobile/tools/cocoapods/fullstory_podfile_check.rb in
+# cowpaths/mn, minus its Flutter add-to-app handling. Keep the rest in sync.
 module FullStoryPodfileCheck
   SETUP_URL = 'https://help.fullstory.com/hc/en-us/articles/360042772333-Getting-Started-with-iOS-Data-Capture#01FP0FKAH2WAPFHK0JQK9CVCFT'
 
@@ -59,7 +59,7 @@ module FullStoryPodfileCheck
     case source
     when :unknown
       ui&.warn "[FullStory] Couldn't check your Podfile (#{statement}). If FullStory comes from " \
-               "CocoaPods trunk, it won't get new versions. Setup steps: #{SETUP_URL}"
+               "CocoaPods trunk, it will stay on an old version, since trunk no longer accepts new ones. Setup steps: #{SETUP_URL}"
     when :trunk, :none
       raise TrunkError, "#{message} To build anyway, set #{ALLOW_TRUNK_ENV}=1." unless env[ALLOW_TRUNK_ENV] == '1'
 
