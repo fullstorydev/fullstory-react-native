@@ -48,7 +48,7 @@ const withProjectGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   return withProjectBuildGradle(expoConfig, ({ modResults, ...config }) => {
     if (modResults.language !== 'groovy') {
       throw new Error(
-        'Cannot configure FullStory in the project gradle because the file is not groovy.',
+        'Cannot configure Fullstory in the project gradle because the file is not groovy.',
       );
     }
 
@@ -113,24 +113,29 @@ export const addFullStoryGradlePlugin = (
 };
 
 const FULLSTORY_PLUGIN_TAG = '@fullstory/react-native plugin';
-const ANDROID_APPLY_PLUGIN = /^\s*apply plugin:\s*["']com\.android\.application["']/;
+const ANDROID_APPLY_PLUGIN = /^\s*apply\s*\(?\s*plugin\s*:\s*["']com\.android\.application["']/;
 const PLUGINS_BLOCK_START = /^\s*plugins\s*\{/;
 
-// Strips line comments and string literals so braces inside them are not counted.
-function stripNoise(line: string) {
-  return line.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, '""').replace(/\/\/.*$/, '');
+// Blanks out comments and string contents so braces inside them are not counted. Newlines are
+// kept, so the result has the same line numbers as the input.
+function stripNoise(src: string) {
+  return src.replace(
+    /\/\*[\s\S]*?\*\/|\/\/.*$|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'/gm,
+    match => (match.startsWith('/') ? match.replace(/[^\n]/g, '') : '""'),
+  );
 }
 
 // Returns the index of the line that closes the last `plugins { }` block, or -1.
-function findLastPluginsBlockEnd(lines: string[]) {
+function findLastPluginsBlockEnd(rawLines: string[]) {
+  const lines = stripNoise(rawLines.join('\n')).split('\n');
   let last = -1;
   for (let i = 0; i < lines.length; i++) {
-    if (!PLUGINS_BLOCK_START.test(stripNoise(lines[i]))) {
+    if (!PLUGINS_BLOCK_START.test(lines[i])) {
       continue;
     }
     let depth = 0;
     for (let j = i; j < lines.length; j++) {
-      for (const ch of stripNoise(lines[j])) {
+      for (const ch of lines[j]) {
         if (ch === '{') {
           depth++;
         } else if (ch === '}') {
@@ -174,7 +179,7 @@ function mergeAfterAndroidPlugin(src: string, newSrc: string) {
   }
 
   // mergeContents below only sees the text after the `plugins {}` block, so remove any existing
-  // FullStory block from the whole file first; otherwise one before the block would be duplicated.
+  // Fullstory block from the whole file first; otherwise one before the block would be duplicated.
   const withoutOurs = removeContents({ src, tag: FULLSTORY_PLUGIN_TAG }).contents.split('\n');
   const end = findLastPluginsBlockEnd(withoutOurs);
   if (end >= 0) {
@@ -185,7 +190,7 @@ function mergeAfterAndroidPlugin(src: string, newSrc: string) {
 
   throw new Error(
     "@fullstory/react-native: couldn't find `apply plugin: 'com.android.application'` or a " +
-      '`plugins { }` block in android/app/build.gradle to anchor the FullStory Gradle plugin to.' +
+      '`plugins { }` block in android/app/build.gradle to anchor the Fullstory Gradle plugin to.' +
       ' Please contact Fullstory support.',
   );
 }
@@ -197,7 +202,7 @@ const withAppBuildGradleDelegate: ConfigPlugin<FullStoryAndroidProps> = (
   return withAppBuildGradle(expoConfig, ({ modResults, ...config }) => {
     if (modResults.language !== 'groovy') {
       throw new Error(
-        'Cannot configure FullStory in the app gradle because the file is not groovy.',
+        'Cannot configure Fullstory in the app gradle because the file is not groovy.',
       );
     }
 

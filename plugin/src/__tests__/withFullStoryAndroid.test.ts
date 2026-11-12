@@ -89,6 +89,7 @@ describe('Config Plugin Android Tests', function () {
       }
       return -1;
     };
+    const stripBlockComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, '');
 
     it('does not insert inside a prepended plugins {} block', async function () {
       const result = apply(await read('app_build_plugins_prepended.gradle'));
@@ -113,6 +114,7 @@ describe('Config Plugin Android Tests', function () {
         'app_build.gradle',
         'app_build_plugins_prepended.gradle',
         'app_build_plugins_only.gradle',
+        'app_build_plugins_block_comment.gradle',
       ]) {
         const once = apply(await read(name));
         expect(apply(once)).toBe(once);
@@ -131,12 +133,12 @@ describe('Config Plugin Android Tests', function () {
 
     it('inserts after the last of multiple plugins {} blocks', function () {
       const src =
-        'plugins {\n    id("com.datadoghq.dd-sdk-android-gradle-plugin")\n}\n' +
+        'plugins {\n    id("com.example.other-gradle-plugin")\n}\n' +
         'plugins {\n    id("com.android.application")\n}\n\nandroid {\n}\n';
       const result = apply(src);
       expect(depthAtBlock(result)).toBe(0);
       const lines = result.split('\n');
-      // Lines 0-2: datadog plugins {}, 3-5: android plugins {}; ours must follow line 5.
+      // Lines 0-2: other plugins {}, 3-5: android plugins {}; ours must follow line 5.
       expect(lines[5]).toBe('}');
       expect(lines[6]).toContain('@generated begin @fullstory');
     });
@@ -148,6 +150,26 @@ describe('Config Plugin Android Tests', function () {
       const result = apply(src);
       expect(depthAtBlock(result)).toBe(0);
       expect(result.split('\n')[0]).not.toContain('@generated');
+    });
+
+    it('ignores a brace inside a block comment', async function () {
+      const result = apply(await read('app_build_plugins_block_comment.gradle'));
+      expect(depthAtBlock(stripBlockComments(result))).toBe(0);
+      const lines = result.split('\n');
+      const closeIdx = lines.findIndex(l => l === '}');
+      expect(lines[closeIdx + 1]).toContain('@generated begin @fullstory');
+    });
+
+    it('matches apply plugin with extra spaces or parentheses', function () {
+      for (const line of [
+        "apply   plugin:   'com.android.application'",
+        'apply plugin : "com.android.application"',
+        "apply(plugin: 'com.android.application')",
+      ]) {
+        const result = apply(`${line}\n\nandroid {\n}\n`);
+        const lines = result.split('\n');
+        expect(lines[1]).toContain('@generated begin @fullstory');
+      }
     });
 
     it('throws a clear error when no anchor exists', function () {

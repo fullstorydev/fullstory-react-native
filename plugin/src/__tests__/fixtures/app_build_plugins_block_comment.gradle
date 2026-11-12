@@ -1,0 +1,13 @@
+/*
+comment with a brace {
+*/
+plugins {
+    /*
+    comment with a brace {
+    */
+    id("com.android.application")
+}
+
+android {
+    compileSdk = 34
+}

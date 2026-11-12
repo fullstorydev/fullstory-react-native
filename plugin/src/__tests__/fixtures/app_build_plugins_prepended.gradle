@@ -1,5 +1,5 @@
 plugins {
-    id("com.datadoghq.dd-sdk-android-gradle-plugin") version "1.+"
+    id("com.example.other-gradle-plugin") version "1.+"
 }
 apply plugin: "com.android.application"
 
