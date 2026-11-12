@@ -19,16 +19,15 @@ end
 Pod::Spec.new do |s|
   s.name         = "fullstory_react-native"
   s.version      = package["version"]
-  s.summary      = "summary"
+  s.summary      = "Fullstory support for React Native."
   s.description  = <<-DESC
                    @fullstory/react-native
                    DESC
-  s.homepage     = "https://github.com/github_account/fullstory_react-native"
-  s.license      = "MIT"
-  # s.license    = { :type => "MIT", :file => "FILE_LICENSE" }
-  s.authors      = { "Your Name" => "yourname@email.com" }
+  s.homepage     = package["homepage"]
+  s.license      = package["license"]
+  s.authors      = { "Fullstory" => "support@fullstory.com" }
   s.platforms    = { :ios => "9.0" }
-  s.source       = { :git => "https://github.com/github_account/fullstory_react-native.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/fullstorydev/fullstory-react-native.git", :tag => "v#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.requires_arc = true
