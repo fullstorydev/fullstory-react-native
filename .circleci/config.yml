@@ -78,6 +78,16 @@ jobs:
       - run:
           name: Test plugin
           command: npm run test:plugin
+  # The podspec's Podfile check is Ruby, so it runs outside the Node jobs.
+  test-podspec:
+    docker:
+      - image: cimg/ruby:3.3
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Test Podfile check
+          command: ruby test/fullstory_podfile_check_test.rb
   deploy-react-native:
     executor: browser-executor
     steps:
@@ -106,12 +116,17 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - test-podspec:
+          filters:
+            tags:
+              only: /.*/
       - hold:
           type: approval
           requires:
             - build-react-native
             - test-min-react-native
             - test-min-expo
+            - test-podspec
           filters:
             # hold only on version tags
             tags:

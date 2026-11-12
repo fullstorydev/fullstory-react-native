@@ -37,6 +37,22 @@ yarn add @fullstory/react-native
 expo install @fullstory/react-native
 ```
 
+## iOS setup
+
+CocoaPods trunk is read-only from December 2, 2026, and no longer accepts new Fullstory versions. Add the Fullstory pod to `ios/Podfile` with a URL instead:
+
+```ruby
+pod 'FullStory', :http => 'https://ios-releases.fullstory.com/fullstory-X.Y.Z-xcframework.tar.gz'
+```
+
+Then run `pod update FullStory` from the `ios` directory. The pod name is case-sensitive. To upgrade later, change the version in the URL and run `pod update FullStory` again.
+
+`pod install` fails if the Podfile has no `FullStory` line, or one without a URL, since that pod would come from trunk. To build anyway, set `FS_ALLOW_TRUNK=1`.
+
+Expo apps don't need this step. The [config plugin](#configuring-for-expo) adds the line for you.
+
+See the [iOS setup guide](https://help.fullstory.com/hc/en-us/articles/360042772333-Getting-Started-with-iOS-Data-Capture#01FP0FKAH2WAPFHK0JQK9CVCFT) for the build phase and other steps.
+
 ## Configuring the babel plugin
 
 `@fullstory/babel-plugin-react-native` is automatically included as a dependency to the Fullstory React Native plugin. Please refer to the babel plugin's [README.md](https://github.com/fullstorydev/fullstory-babel-plugin-react-native/blob/master/README.md) for information on how to configure it.
