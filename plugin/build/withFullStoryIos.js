@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addFullStoryToPodfile = void 0;
+exports.addFullStoryToPodfile = addFullStoryToPodfile;
 const config_plugins_1 = require("@expo/config-plugins");
 const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
 const fs = require('fs');
@@ -49,7 +49,6 @@ function addFullStoryToPodfile(src, version) {
         comment: '#',
     }).contents;
 }
-exports.addFullStoryToPodfile = addFullStoryToPodfile;
 const withPodfileDelegate = (expoConfig, { version }) => (0, config_plugins_1.withDangerousMod)(expoConfig, [
     'ios',
     async (config) => {

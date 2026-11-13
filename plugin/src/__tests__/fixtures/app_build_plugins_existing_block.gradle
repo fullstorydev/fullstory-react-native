@@ -1,0 +1,13 @@
+// @generated begin @fullstory/react-native plugin - expo prebuild (DO NOT MODIFY) sync-stale
+apply plugin: 'fullstory'
+      fullstory {
+          org 'stale-org'
+      }
+// @generated end @fullstory/react-native plugin
+plugins {
+    id("com.android.application")
+}
+
+android {
+    compileSdk = 34
+}
