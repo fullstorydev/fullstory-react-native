@@ -108,6 +108,12 @@ const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
  * plugin's Fabric commit-phase hook with the host component's public instance
  * and its committed props. iOS New Architecture only; on the old architecture
  * the regular view-manager prop pipeline applies these props instead.
+ *
+ * A prop with a valid value is sent as it is. A prop whose value is null is sent
+ * as null, which tells native to clear it: the babel plugin sets a prop to null
+ * when it was removed since the previous commit (e.g. fsClass 'fs-unmask' ->
+ * undefined). Anything else is ignored. Types are validated because native casts
+ * these values and a wrong type would crash it.
  */
 export function applyFSPropertiesToInstance(
   instance: FSNativeInstance | null | undefined,
@@ -120,31 +126,40 @@ export function applyFSPropertiesToInstance(
     return;
   }
 
-  const batchedProps: Partial<Record<SupportedFSAttributes, string | object>> = {};
+  // Unrolled on purpose: this runs for every view the babel plugin queues, and looping over a key
+  // list was measured at ~3x the cost.
+  const batchedProps: Partial<Record<SupportedFSAttributes, string | object | null>> = {};
+  let hasProps = false;
 
   const { fsClass, fsAttribute, fsTagName, dataElement, dataComponent, dataSourceFile } = props;
 
-  if (fsClass && typeof fsClass === 'string') {
+  if (fsClass === null || (fsClass && typeof fsClass === 'string')) {
     batchedProps.fsClass = fsClass;
+    hasProps = true;
   }
-  if (fsAttribute && typeof fsAttribute === 'object') {
+  if (fsAttribute === null || (fsAttribute && typeof fsAttribute === 'object')) {
     batchedProps.fsAttribute = fsAttribute;
+    hasProps = true;
   }
-  if (fsTagName && typeof fsTagName === 'string') {
+  if (fsTagName === null || (fsTagName && typeof fsTagName === 'string')) {
     batchedProps.fsTagName = fsTagName;
+    hasProps = true;
   }
-  if (dataElement && typeof dataElement === 'string') {
+  if (dataElement === null || (dataElement && typeof dataElement === 'string')) {
     batchedProps.dataElement = dataElement;
+    hasProps = true;
   }
-  if (dataComponent && typeof dataComponent === 'string') {
+  if (dataComponent === null || (dataComponent && typeof dataComponent === 'string')) {
     batchedProps.dataComponent = dataComponent;
+    hasProps = true;
   }
-  if (dataSourceFile && typeof dataSourceFile === 'string') {
+  if (dataSourceFile === null || (dataSourceFile && typeof dataSourceFile === 'string')) {
     batchedProps.dataSourceFile = dataSourceFile;
+    hasProps = true;
   }
 
   // Send all properties as a single batched command.
-  if (Object.keys(batchedProps).length > 0) {
+  if (hasProps) {
     Commands.setBatchProperties(instance, batchedProps);
   }
 }

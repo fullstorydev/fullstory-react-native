@@ -399,30 +399,50 @@ static void swizzle_handleCommand_for_class(Class cls) {
         if ([commandName isEqualToString:@"setBatchProperties"]) {
             NSUInteger commandCount = 0;
             // Batched properties command - applies all properties in a single call
-            // to reduce race conditions with React Native's rendering scheduler
+            // to reduce race conditions with React Native's rendering scheduler.
+            // A key that is present with NSNull means the prop was removed and must be cleared.
             NSDictionary *props = args[0];
-            if (props[@"fsAttribute"]) {
-                set_fsAttribute(props[@"fsAttribute"], self);
+            id value;
+            if ((value = props[@"fsAttribute"])) {
+                // set_fsAttribute removes the previously-set attributes before applying new ones,
+                // so passing nil clears them.
+                set_fsAttribute(value == [NSNull null] ? nil : value, self);
                 commandCount++;
             }
-            if (props[@"fsClass"]) {
-                set_fsClass(props[@"fsClass"], self);
+            if ((value = props[@"fsClass"])) {
+                if (value == [NSNull null]) {
+                    [FS removeAllClasses:self];
+                } else {
+                    set_fsClass(value, self);
+                }
                 commandCount++;
             }
-            if (props[@"fsTagName"]) {
-                set_fsTagName(props[@"fsTagName"], self);
+            if ((value = props[@"fsTagName"])) {
+                set_fsTagName(value == [NSNull null] ? nil : value, self);
                 commandCount++;
             }
-            if (props[@"dataElement"]) {
-                set_dataElement(props[@"dataElement"], self);
+            if ((value = props[@"dataElement"])) {
+                if (value == [NSNull null]) {
+                    [FS removeAttribute:self attributeName:@"data-element"];
+                } else {
+                    set_dataElement(value, self);
+                }
                 commandCount++;
             }
-            if (props[@"dataSourceFile"]) {
-                set_dataSourceFile(props[@"dataSourceFile"], self);
+            if ((value = props[@"dataSourceFile"])) {
+                if (value == [NSNull null]) {
+                    [FS removeAttribute:self attributeName:@"data-source-file"];
+                } else {
+                    set_dataSourceFile(value, self);
+                }
                 commandCount++;
             }
-            if (props[@"dataComponent"]) {
-                set_dataComponent(props[@"dataComponent"], self);
+            if ((value = props[@"dataComponent"])) {
+                if (value == [NSNull null]) {
+                    [FS removeAttribute:self attributeName:@"data-component"];
+                } else {
+                    set_dataComponent(value, self);
+                }
                 commandCount++;
             }
             if (props.count != commandCount) {

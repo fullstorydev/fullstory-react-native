@@ -95,6 +95,66 @@ describe('FS properties on iOS New Architecture', () => {
       expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
     });
 
+    it('forwards null so native clears a removed property (fsClass "fs-unmask" -> undefined)', () => {
+      applyFSPropertiesToInstance(instance, { testID: 'x', fsClass: null });
+
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(instance, {
+        fsClass: null,
+      });
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      'fsClass',
+      'fsAttribute',
+      'fsTagName',
+      'dataElement',
+      'dataComponent',
+      'dataSourceFile',
+    ])('forwards null for %s', key => {
+      applyFSPropertiesToInstance(instance, { [key]: null });
+
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(instance, {
+        [key]: null,
+      });
+    });
+
+    it('forwards a mix of values and nulls, and nothing for keys that are absent', () => {
+      applyFSPropertiesToInstance(instance, {
+        fsTagName: fsTagNameValue,
+        dataElement: 'Text',
+        fsClass: null,
+        fsAttribute: null,
+      });
+
+      expect(mockNativeCommands.setBatchProperties).toHaveBeenCalledWith(instance, {
+        fsTagName: fsTagNameValue,
+        dataElement: 'Text',
+        fsClass: null,
+        fsAttribute: null,
+      });
+    });
+
+    it('treats undefined and other falsy values as absent: only null clears', () => {
+      applyFSPropertiesToInstance(instance, {
+        fsClass: undefined,
+        fsTagName: '',
+        fsAttribute: 0,
+        dataElement: false,
+      });
+      expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+    });
+
+    it('drops invalid values and unrelated props', () => {
+      applyFSPropertiesToInstance(instance, {
+        testID: 'x',
+        style: {},
+        fsClass: 123,
+        fsAttribute: 'str',
+      });
+      expect(mockNativeCommands.setBatchProperties).not.toHaveBeenCalled();
+    });
+
     it('no-ops when the instance or props is missing', () => {
       applyFSPropertiesToInstance(null, { fsClass: fsClassValue });
       applyFSPropertiesToInstance(instance, null);
