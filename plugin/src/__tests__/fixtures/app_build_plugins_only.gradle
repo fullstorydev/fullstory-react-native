@@ -1,0 +1,9 @@
+// leading comment with a { brace
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    compileSdk = 34
+}
