@@ -1,6 +1,6 @@
 {
   "name": "@fullstory/react-native",
-  "version": "1.10.3",
+  "version": "1.11.0",
   "description": "The official FullStory React Native plugin",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@fullstory/babel-plugin-annotate-react": "~2.4.0",
-    "@fullstory/babel-plugin-react-native": "~1.7.0"
+    "@fullstory/babel-plugin-react-native": "~1.8.0"
   },
   "peerDependencies": {
     "expo": ">=47.0.0",

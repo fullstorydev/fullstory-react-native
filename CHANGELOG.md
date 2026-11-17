@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.11.0
+
+Added Swift Package Manager Support
+
+Fixed a bug on iOS New Architecture where removing a Fullstory property was never forwarded to native, leaving the view with a stale prop.
+
+Improved the Android Expo Config Plugin
+
 ## 1.10.3
 
 Updated the minimum supported React Native peer dependency version to `0.83.0`.
